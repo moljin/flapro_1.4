@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block head_css %}
+    <style>
+        a:hover {color: brown}
+        .exam {max-width: 800px; margin: 10px auto 0; border: solid 1px gainsboro; border-radius: 10px; padding: 20px}
+    </style>
+{% endblock %}
+
+{% block content %}
+    <section class="section-container main-width padding10">
+        
+        <a href="https://blog.hopsoffice.com/a387f4a1-a738-425e-a3c1-13af488f5c46" target="_blank">Flask를 FastAPI로 전환하게 된 이유</a><br>
+
+
+        <hr>
+        도커로 배포시, <br>
+            최초 배포시에 db migrate시행하고 난후 <br>
+            다시 models를 수정하는 경우는 다시 완전 db 초기화 migrate를 해야 한다. <br>
+            최초 migrate시에 판매수수료율, 포인트율, 기본 최소 결제금액, 로또 최근 탑10 번호는 직접 워크벤치를 통해 입력해놔야 한다. <br>
+            그래야 카트에 담고 뷰를 할때 internal error가 발생하지 않는다. <br><br>
+
+            [[[ 결제과정의 미완결시 수정 내용 ]]]<br>
+            즉, 결제완료는 됐지만, order_imp_transaction과정이 제대로 완결되지 않은 경우<br>
+            order_imp_transaction은 상점과 아임포트사이의 일치를 확인하고, 상점의 서버에 최종저장하는 과정이다.<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;첫번째, 실제 결제는 완료된것이기 때문에....카트를 살려둬야 하나?<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;카트를 살려두면 아임포트에서 결제가 실제 완료된 것이기 때문에<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;한번더 결제 할 수 있기는 하지만.....<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;두번째, 이용자가 취소할 때는 imp_uid가 필요한데...<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;아임포트에서 결제가 완료되면 보내주기 때문에<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;이것을 먼저 저장해두기는 과정을 해놓기는 했다. <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;그래서 이용자가 직접 결제 취소를 할 수 있기는 하다.....<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;## 아니면, 상점관리자가 아임포트에 들어가서<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;직접 결제취소 하도록 하는 것도 방법이다. 아니면<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;상점 관리자 모드에서 결제취소를 할 수 있게 하든지....<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;이용자에게는 결제취소 노출을 없애고...<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;세번째, 결국 order_imp_transaction과정에서는 에러가 없어야만 한다. <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;코드를 재정비해서 에러를 없애는 것이 관건이기는 하다.<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;아임포트측에서 결제가 완료된 것이기 때문에, <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;상점의 서버에 최종저장하는 과정인 <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;order_imp_transaction을 완벽히 하는 것이 매우 중요하겠다.<br><br>
+
+            <a href="https://chai-iamport.gitbook.io/iamport/" target="_blank" style="color: #c23616">New 아임포트 결제 연동 Docs</a> <br>
+            <a href="https://docs.iamport.kr/implementation/subscription#issue-billing-b" target="_blank" style="color: red">카드를 등록하여 빌링키를 발급 받은 후 결제(정기결제) 연동하기(아임포트)</a><br>
+            <a href="https://iamport.gitbooks.io/iamport/content/rest_api.html" target="_blank">아임포트 비인증 결제모듈, REST API</a><br>
+            <a href="https://github.com/iamport/iamport-rest-client-python" target="_blank">GtHub iamport/iamport-rest-client-python Public</a> <br>
+            <a href="https://guide.iamport.kr/3e6d7f12-6e65-4e54-ab38-1f84c4c9121b" target="_blank">아임포트] 개발 관련 문의</a><br>
+            <a href="https://chai-iamport.gitbook.io/iamport/api/api-4/api-1" target="_blank" style="color: #c23616">비 인증 결제(일회성) API:: 주요 요청 파라미터 상세 설명</a><br>
+            <a href="https://docs.iamport.kr/sdk/javascript-sdk?lang=ko#request_pay-pg" target="_blank"></a>PG사 코드값(클릭하여 자세히보기)<br>
+            <a href="https://github.com/iamport/iamport-manual/tree/master/%EB%B9%84%EC%9D%B8%EC%A6%9D%EA%B2%B0%EC%A0%9C" target="_blank">PG사별 정기결제(빌링) 연동 가이드</a><br>
+            <a href="https://velog.io/@silmxmail/%EC%95%84%EC%9E%84%ED%8F%AC%ED%8A%B8-%EA%B2%B0%EC%A0%9C-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0" target="_blank">블로그]로직 설명::: 아임포트 결제 구현하기</a><br>
+            <a href="https://guide.iamport.kr/d5e9a573-c083-4c0e-bec4-edd894c520b7" target="_blank">아임포트 테스트모드 설정</a><br>
+            <a href="https://chlost.tistory.com/40" target="_blank">아임포트 결제모듈 사용시 주의사항</a><br>
+            <hr>
+            <a href="https://m.blog.naver.com/tius1234/220615180031" target="_blank" style="color: red">flask 웹 브라우저 정보를 통해, iphone / android 구분하기.</a><br>
+            <a href="" target="_blank"></a><br>
+            <a href="" target="_blank"></a><br>
+            <a href="" target="_blank"></a><br>
+            <a href="" target="_blank"></a><br>
+            <hr>
+            <a href="https://www.youtube.com/playlist?list=PLXmMXHVSvS-CoYS177-UvMAQYRfL3fBtX" target="_blank">[동영상] Flask Tutorials by Pretty Printed</a><br>
+            <a href="https://www.youtube.com/watch?v=bjcIAKuRiJw" target="_blank">[동영상] flask-admin roles and permission</a><br>
+            <a href="https://www.youtube.com/watch?v=BIcjT2Zz4bU&list=PLXmMXHVSvS-CoYS177-UvMAQYRfL3fBtX&index=66" target="_blank">[동영상] Flask-Admin - Custom Views</a><br>
+            <a href="https://www.youtube.com/playlist?list=PLHHVSHrmEkdpzLwpKFcXq4vjCedWLAzxL" target="_blank">[동영상] Flask Admin - Customizing and Login Limitation</a><br>
+            <hr>
+            <a href="https://developer.mozilla.org/ko/docs/Web/API/Element/insertAdjacentHTML" target="_blank">Element.insertAdjacentHTML()</a><br>
+            <a href="https://ssssssu12.tistory.com/2" target="_blank" style="color: red">jquery 버튼 중복클릭 막기 (ajax 중복요청 막기)</a><br>
+            <a href="https://coding-restaurant.tistory.com/227" target="_blank">ajax 중복요청, 중복클릭, 중복호출 막는 여러가지 방법들</a><br>
+            <a href="https://wikidocs.net/137924" target="_blank">원하는 시간마다 파이썬 자동 실행</a><br>
+            <a href="https://ourcstory.tistory.com/99" target="_blank">Programming/Python [Python] datetime 날짜, 시간, 분 더하기, 빼기 (현재, 이전, 이후 시간...</a><br>
+            <a href="https://coupangstore.tistory.com/91" target="_blank">파이썬 현재시간 특정시간에 특정기능 실행하기</a><br>
+            <a href="https://ffoorreeuunn.tistory.com/462" target="_blank">[ Python ] 파이썬 비동기 처리 | asyncio | 비동기란 무엇인가 | 비동기 예제</a><br>
+            <a href="https://www.google.com/search?q=%EB%B9%84%EB%8F%99%EA%B8%B0+%ED%8C%8C%EC%9D%B4%EC%8D%AC&sxsrf=ALiCzsal-YxakNPKDPO3hGqcEfBwkSDWvQ%3A1664542405910&ei=xeY2Y6uSN-HGmAXDyKOIAQ&ved=0ahUKEwjriMXWx7z6AhVhI6YKHUPkCBEQ4dUDCA4&uact=5&oq=%EB%B9%84%EB%8F%99%EA%B8%B0+%ED%8C%8C%EC%9D%B4%EC%8D%AC&gs_lcp=Cgdnd3Mtd2l6EAMyBAgjECcyBQgAEIAEMgYIABAeEAUyBggAEB4QCDIGCAAQHhAIMgYIABAeEAgyBggAEB4QCDIGCAAQHhAIMgYIABAeEAgyBggAEB4QCDoKCAAQRxDWBBCwA0oECEEYAEoECEYYAFCTZliTZmCxaGgCcAB4AIABYYgBYZIBATGYAQCgAQHIAQrAAQE&sclient=gws-wiz" target="_blank" style="color: red">구글링====비동기 파이썬</a><br>
+            <a href="https://blog.naver.com/PostView.naver?blogId=duqrlwjddns1&logNo=222268635237&parentCategoryNo=&categoryNo=&viewDate=&isShowPopularPosts=false&from=postView" target="_blank">asyncio로 비동기 처리하기</a><br>
+            <hr>
+
+            <a href="https://bootstrapious.com/p/bootstrap-sidebar" target="_blank">BOOTSTRAP SIDEBAR : Bootstrap 4 </a><br>
+            <a href="https://fontawesome.com/icons" target="_blank">Flask-Admin : Font Awesome 5 </a><br>
+            <hr>
+            <a href="https://www.youtube.com/watch?v=Jp9B0rY6Fxk&t=7s" target="_blank">[동영상 10분 전후] 구글 메일 3rd party 비밀번호 설정법(2단계인증)</a><br>
+            "
+            계정관리로 들어가서 좌측의 보안 클릭후 <span style="color: red">Google에 로그인</span><br>
+            <span style="color: red">2단계인증</span> 설정후 <br>
+            그아래 <span style="color: red">앱 비밀번호</span> 설정 <br>
+            비밀번호 생성을 한 후 ...그것을 <span style="color: red">MAIL_PASSWORD</span>에 적용한다. "<br><hr>
+            <a href="https://fourward.co.kr/blog/meta-tags-for-seo" target="_blank">메타태그(meta tag), SEO 에 도움되는 메타 설정 방법</a><br>
+            <a href="https://www.daleseo.com/html-meta-tags-for-seo/" target="_blank">메타 태그를 통한 검색엔진 최적화 (SEO)</a><br>
+            <a href="https://blog.naver.com/PostView.nhn?isHttpsRedirect=true&blogId=wideeyed&logNo=221797721352" target="_blank">[Python] 지정폴더에 오래된 파일들 삭제하기</a><br>
+            <hr>
+            <a href="https://trustyou.tistory.com/224" target="_blank" style="color: red">데이터 양이 큰 스키마를 삭제할 때 발생: sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query')</a><br>
+            <a href="https://www.youtube.com/watch?v=-fFNuNsR8q4" target="_blank" style="font-weight: bolder">자바스크립트 이벤트 위임 핵심 정리</a><br><br>
+            <a href="https://soogoonsoogoonpythonists.github.io/sqlalchemy-for-pythonist/tutorial/7.%20ORM%20%EB%B0%A9%EC%8B%9D%EC%9C%BC%EB%A1%9C%20%EA%B4%80%EB%A0%A8%20%EA%B0%9C%EC%B2%B4%20%EC%9E%91%EC%97%85%ED%95%98%EA%B8%B0.html#%E1%84%80%E1%85%AA%E1%86%AB%E1%84%80%E1%85%A8%E1%84%83%E1%85%AC%E1%86%AB-%E1%84%80%E1%85%A2%E1%86%A8%E1%84%8E%E1%85%A6-%E1%84%89%E1%85%A1%E1%84%8B%E1%85%AD%E1%86%BC%E1%84%92%E1%85%A1%E1%84%80%E1%85%B5" target="_blank" style="color: red">파이썬 개발자를 위한 SQLAlchemy:: ORM으로 관련 개체 작업하기::: Loading relationshiop의 종류</a><br>
+            <a href="https://loosie.tistory.com/574" target="_blank">[Spring] 조회 API 성능 최적화하기 1 - 지연로딩(Lazy Loading)과 페치 조인(Fetch Join) : ToOne 매핑</a><br>
+            <a href="https://velog.io/@langssi/Relationships" target="_blank">parents를 언제 로드하는지가 왜 중요한가? Lazy loading vs. Eager loading</a><br>
+            <a href="https://edykim.com/ko/post/getting-started-with-sqlalchemy-part-2/" target="_blank">SQLAlchemy 시작하기 – Part 2</a><br>
+            <div style="color: #0e6dcd">이런거...... lazy="joined" ,,,, lazy="dynamic"</div>
+            <a href="https://www.youtube.com/watch?v=g1oFlq7D_nQ" target="_blank" style="color: darkgreen">[동영상] Understanding the Lazy Parameter in Flask-SQLAlchemy Relationships</a><br>
+            <a href="https://intrepidgeeks.com/tutorial/example-description-and-selection-of-backref-lazy-parameter-in-flame-sql-chemy" target="_blank" style="color: crimson; font-weight: bolder">Flask - SQLAlchemy 에서 backref lazy 의 매개 변수 인스턴스 설명과 선택</a><br>
+            <a href="https://weejw.tistory.com/84" target="_blank">2017년/Database::: sqlalchemy relationship</a><br>
+            <a href="https://velog.io/@inourbubble2/SQLAlchemy%EC%9D%98-backref%EC%99%80-backpopulates%EC%9D%98-%EC%B0%A8%EC%9D%B4" target="_blank">SQLAlchemy의 backref와 back_populates의 차이</a><br>
+            <hr>
+            <a href="https://lightrun.com/answers/mozilla-nunjucks-loop-controls" target="_blank">Jinja] Loop Controls</a><br>
+            <a href="https://ash84.io/2018/01/09/jinja-break-for-loop-controls/" target="_blank">jinja - break 사용하기</a><br>
+            <a href="https://kkamikoon.tistory.com/entry/Jinja2-break%EB%AC%B8-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95" target="_blank">jinja2.ext.loopcontrols 적용</a><br>
+            <hr>
+            <a href="https://bluese05.tistory.com/21" target="_blank">docker container에 접속하기</a><br>
+            <a href="https://devjh.tistory.com/165" target="_blank">[Docker] 컨테이너 안에 파일 수정하기 (container config)</a><br>
+            <hr>
+            <a href="https://blog.naver.com/PostView.naver?blogId=wideeyed&logNo=221733253062" target="_blank" style="color: #c23616">[Python] e메일에 이미지 포함해서 보내기 (고급)</a><br>
+            <a href="https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=yysttong&logNo=220687205963" target="_blank">Python + Flask - Email 보내주기</a><br>
+            <a href="https://itiformation.tistory.com/entry/Python%EC%9C%BC%EB%A1%9C-Gmail%EA%B3%84%EC%A0%95%EC%9C%BC%EB%A1%9C-%EB%A9%94%EC%9D%BC%EC%A0%84%EC%86%A1%ED%95%98%EA%B8%B0" target="_blank">Python으로 Gmail계정으로 메일전송하기</a><br>
+            <a href="https://heodolf.tistory.com/100" target="_blank">[SMTP] Python으로 메일 발송 하기. (With. 첨부파일 )</a><br>
+            <a href="https://zladnrms.tistory.com/105" target="_blank">[Python] Gmail을 통해 여러 명에게 HTML 이메일 </a><br>
+            <a href="https://realpython.com/handling-email-confirmation-in-flask/#update-register-view-function-in-projectuserviewspy-again" target="_blank" style="color: red">Handling Email Confirmation During Registration in Flask</a><br>
+            <a href="https://www.notion.so/flask-login-bycrpyt-compute-email-validation-8c6ac809b6854e28ae535d695645e208" target="_blank">flask의 login-bycrpyt와 compute를 활용한 email validation</a><br>
+            <a href="https://mailtrap.io/blog/flask-email-sending/#Other-considerations" target="_blank">Getting started with Flask-Mail</a><br>
+            <hr>
+            <a href="https://velog.io/@code_angler/%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EB%A6%AC%EC%8A%A4%ED%8A%B8-%EB%B9%84%EA%B5%90-%EA%B0%99%EC%9D%80%EA%B0%92-%EB%8B%A4%EB%A5%B8%EA%B0%92set%EC%9E%90%EB%A3%8C%ED%98%95%ED%95%A9%EC%A7%91%ED%95%A9%EA%B5%90%EC%A7%91%ED%95%A9%EC%B0%A8%EC%A7%91%ED%95%A9" target="_blank">리스트 값을 비교하기에 앞서, 집합의 개념에 대해 먼저 알아보자!!</a><br>
+            <a href="" target="_blank"></a><br>
+            <a href="" target="_blank"></a><br>
+            <a href="" target="_blank"></a><br>
+            <a href="" target="_blank"></a><br>
+            <a href="" target="_blank"></a><br>
+            <a href="" target="_blank"></a><br>
+            <a href="" target="_blank"></a><br>
+            <a href="" target="_blank"></a><br>
+            <a href="" target="_blank"></a><br>
+            <a href="" target="_blank"></a><br>
+            <a href="" target="_blank"></a><br>
+
+            <hr>
+
+    </section>
+
+{% endblock %}

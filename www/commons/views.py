@@ -47,6 +47,24 @@ def main():
     # return render_template('moreLoadTest.html')
 
 
+@common.route('/server/dev')
+def server():
+    return render_template('extra_page/server.html')
+
+
+@common.route('/extra/related/dev')
+def extra_dev():
+    if current_user.is_authenticated:
+        cart = Cart.query.filter_by(user_id=current_user.id, is_active=True).first()
+        orders = Order.query.filter_by(buyer_id=current_user.id).all()
+        if cart:
+            return render_template('extra_page/related_dev.html', cart=cart, orders=orders)
+        else:
+            return render_template('extra_page/related_dev.html', orders=orders)
+    else:
+        return render_template('extra_page/related_dev.html')
+
+
 sun_image_obj, image_path = "", ""
 
 
