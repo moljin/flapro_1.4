@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}
+    로또
+{% endblock %}
+
+{% block head_css %}
+    <style>
+
+    </style>
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        getRandom = "{{ url_for("lottos.lotto_return_random") }}"
+        CSRF_TOKEN = "{{ csrf_token() }}"
+    </script>
+    <script src="{{ url_for('static', filename='statics/js/lotto/lotto_test.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+    <br>
+    <div class="main-width">
+        <a href="https://github.com/2dowon/Project-DOTTO" target="_blank" style="color: red">프로젝트 DOTTO는 1회부터 936회까지 추첨된 역대 로또 당첨번호들의 출현 빈도수 데이터를 바탕으로 로또 번호를 생성하는 프로그램</a><br>
+    </div>
+    <div class="main-width">1️⃣ DOTTO 란? <br>
+'인생 한 방' 이라는 로또 1등 당첨자의 소감을 보고 우리도 그 꿈의 실현을 위해 데이터를 기반으로 한 로또 번호 생성기를 만들어보는 것이 어떨까 라는 생각에 '데이터 기반 로또 번호 생성기'라는 주제를 이번 프로젝트의 주제로 선정하였습니다. 데이터를 기반한다는 뜻에서 로또의 L 대신 데이터의 D를 가져온 프로젝트 DOTTO는 1회부터 936회까지 추첨된 역대 로또 당첨번호들의 출현 빈도수 데이터를 바탕으로 로또 번호를 생성하는 프로그램으로 총 936회의 당첨 번호들 중에서 출현 빈도가 높은 10개의 번호를 선정하고 이 번호들 중에서 다시 6개의 번호를 무작위로 추출하는 알고리즘을 구현하고 있습니다.
+    </div>
+    <div class="main-width box">
+        <div class="wrap">
+            <br><br>
+            <a href="#" class="imgarea">
+                로또번호 만들기
+            </a>
+        </div>
+        <p class="bonus"><b>BONUS</b></p>
+        <ul class="navichild"></ul>
+        ============1번 방법==============<br>
+        <div class="lotto-result"></div>
+
+
+    ============2번 방법==============<br>
+    <div class="pick-result"></div>
+
+
+    </div>
+{% endblock %}

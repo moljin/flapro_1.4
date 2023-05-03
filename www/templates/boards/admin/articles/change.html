@@ -1,0 +1,330 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    아티클 수정
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/suneditor/suneditor.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/custom/customSunEditor.css') }}" rel="stylesheet">
+
+    <link href="{{ url_for('static', filename='statics/tagify/tagify.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script src="{{ url_for('static', filename='statics/tagify/tagify.min.js') }}"></script>
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        articleDeleteAjax = '{{ url_for('articles.article_delete_ajax') }}';
+        editorImagesSaveAjax = '{{ url_for('commons.editor_images_save_ajax') }}';
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_articles.article_create') }}">아티클 등록</a></li>
+            <li><a href="{{ url_for('admin_articles.article_list') }}">리스트</a></li>
+            <li><span>변경</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body_section %}
+    <div class="sub-container">
+        <div class="form-container">
+            <div class="site-view mb-20">
+                <a href="{{ url_for("articles.article_detail", _id=target_article.id, slug=target_article.slug) }}" target="_blank">
+                    <button class="uk-button">사이트 보기</button>
+                </a>
+            </div>
+            <form class="articles" method="POST" action="{{ url_for("articles.article_save") }}" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <fieldset class="uk-fieldset">
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            회원:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="user_email" class="uk-select" disabled>
+                                {% for user in users %}
+                                    {% if user.id == target_user.id %}
+                                        <option value="{{ user.email }}" selected>{{ user.email }}</option>
+                                    {% else %}
+                                        <option value="{{ user.email }}">{{ user.email }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            닉네임:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="profile_nickname" class="uk-select" disabled>
+                                {% for user in users %}
+                                    {% if user.id == target_user.id %}
+                                        {% if user.profile_user_set %}
+                                            <option value="{{ user.profile_user_set[0].nickname }}" selected>{{ user.profile_user_set[0].nickname }}</option>
+                                        {% else %}
+                                            <option value="" selected>미등록</option>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            아티클 카테고리:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="ac_title" class="uk-select" disabled>
+                                {% for ac in acs %}
+                                    {% if ac.id == target_article.ac_id %}
+                                        <option value="{{ ac.title }}" selected>{{ ac.title }}</option>
+                                    {% else %}
+                                        <option value="{{ ac.title }}">{{ ac.title }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            제목:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <input class="uk-input mt-5" type="text" id="ac-title" name="title" value="{{ target_article.title }}"/>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            슬러그:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <input disabled class="uk-input mt-5" type="text" id="ac-title" name="title" value="{{ target_article.slug }}"/>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            메타 설명:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <textarea class="uk-textarea mt-5" id="meta_description" rows="2" maxlength="100" minlength="2" name="meta_description" required="required" onkeydown="textAreaHeightAuto(this)" onkeyup="textAreaHeightAuto(this)">{{ target_article.meta_description }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            대표 이미지:
+                        </div>
+                        {% if target_article.img_path %}
+                            <div class="img-path pl-10 pt-5">
+                                <a href="#target-img-path" uk-toggle>
+                                    <img class="img-preview" id="img-preview" src="/{{ target_article.img_path }}" style="margin: 0 auto;">
+                                </a>
+                            </div>
+                            <div id="target-img-path" class="uk-flex-top" uk-modal>
+                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                    <img src="/{{ target_article.img_path }}" style="margin: 0 auto;">
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="img-path pl-10 pt-5">
+                                <img class="img-preview" id="img-preview" src="{{ url_for('static', filename='statics/images/uikit_sample/sample3.png') }}" style="margin: 0 auto;">
+                            </div>
+                        {% endif %}
+
+                        <div class="uk-width-expand pl-10">
+                            {{ form.image(class="image file uk-input mt-5") }}
+                        </div>
+                    </div>
+
+                    <div class="board-form">
+                        <div class="suneditor-form">
+                            {% include "includes/suneditor.html" %}
+                        </div>
+                    </div>
+
+                    <div class="board-form">
+                        <div class="uk-margin">
+                            <input class="uk-input mt-20" id="site_title" maxlength="45" minlength="4" name="site_title" placeholder="사이트 제목" type="text" value="{% if target_article.site_title %}{{ target_article.site_title }}{% endif %}">
+                        </div>
+                    </div>
+                    <div class="board-form">
+                        <div class="uk-margin">
+                            <textarea rows="{% if not target_article.site_url %}1{% endif %}" class="uk-textarea" id="site_url" name="site_url" onkeydown="textAreaHeightAuto(this)" onkeyup="textAreaHeightAuto(this)" placeholder="사이트 주소" >{% if target_article.site_url %}{{ target_article.site_url }}{% endif %}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-25">
+                        <input id="tagify" name="tagify" placeholder="해시태그 입력" value="{% if tags_str %}{{ tags_str }}{% endif %}">
+                        <script>
+                            var input = document.querySelector('#tagify')
+                            var tagify = new Tagify(input);
+                            // 태그가 추가되면 이벤트 발생
+                            tagify.on('add', function () {
+                                console.log(tagify.value); // 입력된 태그 정보 객체
+                            })
+                        </script>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            전시여부:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {% if target_article.available_display %}<input type="checkbox" class="uk-checkbox mt-5" name="available_display" checked>{% else %}<input type="checkbox" class="uk-checkbox mt-5" name="available_display">{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            조회수:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ target_article.view_count }}
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            작성일:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ target_article.created_at|daytime("medium") }}
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            수정일:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ target_article.updated_at|daytime("medium") }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="btn-container">
+                        <input type="hidden" id="sun_init" name="sun_init" value="article_CU">
+                        <input type="hidden" id="sunImage_init" name="sunImage_init" value="adminArticle_change">
+                        <input type="hidden" id="article_id" name="article_id" value="{{ target_article.id }}">
+                        <input type="hidden" id="user_email" name="user_email" value="{{ target_user.email }}">
+                        <input type="hidden" id="user_id" name="user_id" value="{{ target_user.id }}">
+                        <input type="hidden" id="category_id" name="category_id" value="{{ target_article.ac_id }}">
+                        <input type="hidden" id="orm_id" name="orm_id" value="{{ target_article.orm_id }}">
+                        <button class="uk-button uk-button-danger" uk-toggle="target: #article-delete-modal" type="button">삭제</button>
+                        <button class="uk-button uk-button-primary uk-align-right" type="submit" id="form-submit">저장</button>
+                    </div>
+                    <div id="article-delete-modal" class="uk-flex-top" uk-modal>
+                        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                            <button class="uk-modal-close-default" type="button" uk-close></button>
+                            <div class="confirm">정말로 "{{ target_profile.nickname }}"님 아티클을 삭제하시겠어요?</div>
+                            <div class="uk-text-left all-data">
+                                게시글등 관련 모든기록 삭제: <input type="checkbox" class="uk-checkbox ml-10" id="related-all-delete">
+                            </div>
+                            <div class="btn uk-align-right">
+                                <div class="article-delete-btn uk-inline ml-15">
+                                    <button id="article-delete-btn" class="uk-button uk-button-primary" type="button">삭제</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+
+            <!--comment list-->
+            <hr class="no-margin-top-hr">
+            <div class="inlines list-title mb-10">댓글 리스트</div>
+            <div class="inlines list-container">
+                <div class="inlines list">
+                    <table class="uk-table uk-table-middle uk-table-divider">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="uk-text-nowrap">ID</th>
+                                <th scope="col" class="uk-table-expand uk-text-nowrap">유형</th>
+                                <th scope="col" class="uk-text-nowrap">작성자</th>
+                                <th scope="col" class="uk-table-expand uk-text-nowrap">닉네임</th>
+                                <th scope="col" class="uk-table-shrink uk-text-nowrap">등록일</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for comment in target_comments %}
+                                <tr>
+                                    <td data-label="ID" class="">{{ comment.id }}</td>
+                                    <td data-label="유형" class="table-link">
+                                        <a href="#">
+                                            {% if not comment.paired_comment_id %}
+                                                본문 댓글{% if comment.is_secret == True %}(비밀글){% endif %}
+                                            {% else %}
+                                                댓글에 대한 댓글{% if comment.is_secret == True %}(비밀글){% endif %}
+                                            {% endif %}
+                                        </a>
+                                    </td>
+                                    <td data-label="작성자" class="uk-text-nowrap">
+                                        {{ comment.user.email }}
+                                    </td>
+                                    <td data-label="닉네임" class="uk-text-nowrap">
+                                        {{ comment.user.profile_user_set[0].nickname }}
+                                    </td>
+                                    <td data-label="등록일" class="uk-text-nowrap">{{ comment.created_at|daytime("small") }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% if pagination %}
+                {% include 'includes/pagination/pagination.html' %}
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function (event) {
+            update_init()
+            function update_init() {
+                const suneditor_editable = document.querySelector(".se-container .se-wrapper .sun-editor-editable")
+                suneditor_editable.innerHTML = `{{ target_article.content|safe }}`;
+            }
+        })
+    </script>
+    <!-- 필수: main_js -->
+    <script src="{{ url_for('static', filename='statics/suneditor/suneditor.min.js') }}"></script>
+
+    <!--비필수: codeMirror -->
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/htmlmixed.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/xml.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/css.js') }}"></script>
+
+    <!-- 필수: 버튼에 필요-->
+    <script src="{{ url_for('static', filename='statics/suneditor/katex.min.js') }}"></script>
+    <!-- 필수: Language -->
+    <script src="{{ url_for('static', filename='statics/suneditor/ko.js') }}"></script>
+
+    <!-- Custom -->
+    <script src="{{ url_for('static', filename='statics/suneditor/custom/suneditorInit.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/js/articles/article.js') }}"></script>
+
+{% endblock %}

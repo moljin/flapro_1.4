@@ -1,0 +1,258 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    Shop 수정
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/suneditor/suneditor.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/custom/customSunEditor.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        editorImagesSaveAjax = '{{ url_for('commons.editor_images_save_ajax') }}';
+        userEmailSelectAjax = "{{ url_for("commons.user_email_select_ajax") }}";
+        shopSelectAjax = "{{ url_for("products.shop_select_ajax") }}";
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_ecomms.product_list') }}">상품 리스트</a></li>
+            <li><span>등록</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body_section %}
+    <div class="sub-container">
+        <div class="form-container">
+            <form class="products" method="POST" action="{{ url_for("products.product_save") }}" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <fieldset class="uk-fieldset">
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            회원:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="user_email" id="user_email" class="uk-select user">
+                                <option value="" selected>&nbsp;&nbsp;--- &nbsp;선택&nbsp; ---</option>
+                                {% for user in users %}
+                                    {% if user.profile_user_set %}
+                                        {% if (user.profile_user_set[0].level == "판매사업자") and (user.shop_user_set) %}
+                                            <option value="{{ user.email }}">{{ user.email }}</option>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            상점이름:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="shop_id" id="shop_id" class="uk-select shop-select">
+                                <option value="" selected>&nbsp;&nbsp;--- &nbsp;(회원 선택후) 선택&nbsp; ---</option>
+                                <!--shop select option 동적 삽입-->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            상품카테고리:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="category_id" id="category_id" class="uk-select category-select">
+                                <option value="" selected>&nbsp;&nbsp;--- &nbsp;(상점 선택후) 선택&nbsp; ---</option>
+                                <!--category select option 동적 삽입-->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            상품 이름:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.title(class="uk-input mt-5", required="required") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            메타설명:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.meta_description(class="uk-textarea mt-5", required="required", rows="3", onkeydown="textAreaHeightAuto(this)", onkeyup="textAreaHeightAuto(this)") }}
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            썸네일1:
+                        </div>
+                        <div class="thumbnail-img pl-10 pt-5">
+                            <img class="preview-thumbnail" id="thumbnail-preview-1" src="{{ url_for('static', filename='statics/images/shop/shop_cover_image_1.jpg') }}" style="margin: 0 auto;">
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.image1(class="thumbnail uk-input mt-5") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            썸네일2:
+                        </div>
+                        <div class="thumbnail-img pl-10 pt-5">
+                            <img class="preview-thumbnail" id="thumbnail-preview-2" src="{{ url_for('static', filename='statics/images/shop/shop_cover_image_2.jpg') }}" style="margin: 0 auto;">
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.image2(class="thumbnail uk-input mt-5") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            썸네일3:
+                        </div>
+                        <div class="thumbnail-img pl-10 pt-5">
+                            <img class="preview-thumbnail" id="thumbnail-preview-3" src="{{ url_for('static', filename='statics/images/shop/shop_cover_image_3.jpg') }}" style="margin: 0 auto;">
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.image3(class="thumbnail uk-input mt-5") }}
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            가격:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.price(class="uk-input mt-5", required="required") }}
+                        </div>
+                        <div class="pl-10">원</div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            재고:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.stock(class="uk-input mt-5", required="required") }}
+                        </div>
+                        <div class="pl-10">개</div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            기본할인금액:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.base_dc_amount(class="uk-input mt-5", required="required") }}
+                        </div>
+                        <div class="pl-10">원</div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            배송비:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.delivery_pay(class="uk-input mt-5", required="required") }}
+                        </div>
+                        <div class="pl-10">원</div>
+                    </div>
+
+                    <div class="uk-margin form-group editor">
+                        <div class="suneditor-form">
+                            {% include "includes/suneditor.html" %}
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            전시여부:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            <input type="checkbox" class="uk-checkbox mt-5" name="available_display" checked>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            주문가능:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            <input type="checkbox" class="uk-checkbox mt-5" name="available_order" checked>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="inlines title mb-10">상품 옵션 등록</div>
+                    <div class="inlines container mb-15">
+                        <div class="inlines list">
+                            <div class="form-group option mt-10">
+                                <div class="option-add">
+                                    <a href="javascript:void(0);">
+                                        <button class="add-input-btn" type="button">
+                                            옵션추가<i class="fas fa-folder-plus ml-7"></i>
+                                        </button>
+                                    </a>
+                                </div>
+                                <div class="mt-10 option-form-wrapper uk-child-width-1-2@s uk-child-width-1-3@m uk-grid-small" uk-grid>
+                                    <!--동적 삽입-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-container">
+                        <input type="hidden" id="sun_init" name="sun_init" value="product_CU">
+                        <input type="hidden" id="sunImage_init" name="sunImage_init" value="adminProduct_change">
+                        <input type="hidden" id="product_id" name="product_id" value="create">
+                        <input type="hidden" id="orm_id" name="orm_id" value="{{ orm_id }}">
+                        <button class="uk-button uk-button-primary uk-align-right" type="submit" id="form-submit">저장</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <!-- 필수: main_js -->
+    <script src="{{ url_for('static', filename='statics/suneditor/suneditor.min.js') }}"></script>
+
+    <!--비필수: codeMirror -->
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/htmlmixed.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/xml.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/css.js') }}"></script>
+
+    <!-- 필수: 버튼에 필요-->
+    <script src="{{ url_for('static', filename='statics/suneditor/katex.min.js') }}"></script>
+    <!-- 필수: Language -->
+    <script src="{{ url_for('static', filename='statics/suneditor/ko.js') }}"></script>
+
+    <!-- Custom -->
+    <script src="{{ url_for('static', filename='statics/suneditor/custom/suneditorInit.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/js/ecomm/products/products.js') }}"></script>
+
+
+{% endblock %}
+
+
+
+
+
+

@@ -1,0 +1,138 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    결제관련 기본등록
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        {#accountsDeleteAjax = "{{ url_for('accounts.delete_ajax') }}";#}
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_commons.common_create', _type="amount") }}">기본금액 등록</a></li>
+            <li><a href="{{ url_for('admin_commons.common_create', _type="ratio") }}">기본비율 등록</a></li>
+            <li><span>기본등록 리스트</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block body_section %}
+    <div class="list-container">
+        <div class="objects list">
+
+            <form class="mb-15" id="searchForm" method="get" action="{{ url_for('admin_commons.pay_ratio_amount_list') }}" uk-grid>
+                {% include "includes/search.html" %}
+            </form>
+            {% if kw %}
+                {% if lotto_num %}
+                    <div>"{{ kw }}"에 대한 검색결과</div>
+                    <hr>
+                {% else %}
+                    <div>"{{ kw }}"에 대한 검색결과가 없습니다.</div>
+                    <hr>
+                {% endif %}
+            {% endif %}
+            <script src="{{ url_for('static', filename='statics/js/searches/search.js') }}"></script>
+
+            <!--기본비율-->
+            <table class="uk-table uk-table-middle uk-table-divider">
+                <thead>
+                    <tr>
+    {#                    <th scope="col" class="uk-table-shrink"><input class="uk-checkbox" id="all-check" type="checkbox" name="all_checked"></th>#}
+                        <th scope="col" class="uk-text-nowrap">ID</th>
+                        <th scope="col" class="uk-text-nowrap">타이틀</th>
+                        <th scope="col" class="uk-text-nowrap">비율</th>
+                        <th scope="col" class="uk-text-nowrap uk-table-shrink">등록일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for ratio in ratio_objs %}
+                    <tr>
+{#                        <td data-label="체크"><input class="uk-checkbox single" id="{{ ratio.id }}" type="checkbox" name="is_checked"></td>#}
+                        <td data-label="ID" class="">{{ ratio.id }}</td>
+                        <td data-label="타이틀">
+                            <a href="{{ url_for('admin_commons.ratio_change', _id=ratio.id) }}">{{ ratio.title }}</a>
+                        </td>
+                        <td data-label="비율">{{ ratio.ratio }}</td>
+                        <td data-label="등록일" class="uk-text-nowrap">{{ ratio.created_at|daytime("small") }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+{#            <button class="uk-button uk-button-default" uk-toggle="target: #ratio-delete-modal">선택 삭제</button>#}
+
+            <hr> <!--기본금액-->
+            <table class="uk-table uk-table-middle uk-table-divider">
+                <thead>
+                    <tr>
+    {#                    <th scope="col" class="uk-table-shrink"><input class="uk-checkbox" id="all-check" type="checkbox" name="all_checked"></th>#}
+                        <th scope="col" class="uk-text-nowrap">ID</th>
+                        <th scope="col" class="uk-text-nowrap">타이틀</th>
+                        <th scope="col" class="uk-text-nowrap">금액</th>
+                        <th scope="col" class="uk-text-nowrap uk-table-shrink">등록일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for amount in amount_objs %}
+                    <tr>
+{#                        <td data-label="체크"><input class="uk-checkbox single" id="{{ amount.id }}" type="checkbox" name="is_checked"></td>#}
+                        <td data-label="ID" class="">{{ amount.id }}</td>
+                        <td data-label="타이틀">
+                            <a href="{{ url_for('admin_commons.amount_change', _id=amount.id) }}">{{ amount.title }}</a>
+                        </td>
+                        <td data-label="금액">{{ amount.amount }}</td>
+                        <td data-label="등록일" class="uk-text-nowrap">{{ amount.created_at|daytime("small") }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+{#            <button class="uk-button uk-button-default" uk-toggle="target: #amount-delete-modal">선택 삭제</button>#}
+        </div>
+    </div>
+
+{#    <div id="ratio-delete-modal" class="uk-flex-top" uk-modal>#}
+{#        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">#}
+{#            <button class="uk-modal-close-default" type="button" uk-close></button>#}
+{#            정말로 설정비율을 삭제하시겠어요?#}
+{#            <div class="btn uk-inline ml-15 uk-align-right">#}
+{#                <button id="checked-delete-btn" class="uk-button uk-button-primary" type="button">삭제</button>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#    <div id="amount-delete-modal" class="uk-flex-top" uk-modal>#}
+{#        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">#}
+{#            <button class="uk-modal-close-default" type="button" uk-close></button>#}
+{#            정말로 기본 설정금액을 삭제하시겠어요?#}
+{#            <div class="btn uk-inline ml-15 uk-align-right">#}
+{#                <button id="checked-delete-btn" class="uk-button uk-button-primary" type="button">삭제</button>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
+    {% if pagination %}
+        {% include 'includes/pagination/pagination.html' %}
+    {% endif %}
+    <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/js/accounts/accounts.js') }}"></script>
+{% endblock %}
+
+
+
+
+
+

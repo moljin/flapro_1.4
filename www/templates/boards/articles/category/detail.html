@@ -1,0 +1,430 @@
+{% extends "base.html" %}
+
+{% block meta_description %}
+    {% if target_category %}
+    <meta name="description" content="{{ target_category.content }}"/>
+    {% endif %}
+{% endblock %}
+
+{% block title %}
+    아티클 카테고리 상세
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/css/articles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/tagify/tagify.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script src="{{ url_for('static', filename='statics/tagify/tagify.min.js') }}"></script>
+    <script>
+        {% if current_user.is_authenticated %}
+            CSRF_TOKEN = "{{ csrf_token() }}";
+            {% if target_category %}
+                acDetail = '{{ url_for('articles.ac_detail', _id=target_category.id, slug=target_category.slug) }}';
+            {% endif %}
+            {% if (target_user == current_user) or (target_user == "create") %}
+                existingCategoryTitleCheckAjax = '{{ url_for('articles.existing_category_title_check_ajax') }}';
+                acSaveAjax = '{{ url_for('articles.ac_save_ajax') }}';
+                acDeleteAjax = '{{ url_for('articles.ac_delete_ajax') }}';
+            {% endif %}
+
+            {% if (target_user != current_user) and (target_user != "create") %}
+                acSubscribeAjax = '{{ url_for('articles.ac_subscribe_ajax') }}'; //, _id=target_category.id)
+                acSubscribeCancelAjax = '{{ url_for('articles.ac_subscribe_cancel_ajax') }}'; //, _id=target_category.id
+            {% endif %}
+        {% endif %}
+    </script>
+{% endblock %}
+
+{% block body %}
+    <section class="cover-container width-100">
+        {% if target_category %}
+            {% if target_category.img_path %}
+                <div class="uk-height-large uk-flex uk-flex-center uk-flex-middle uk-background-cover uk-light"
+                    data-src="/{{ target_category.img_path }}" id="ac-img-path" uk-img>
+            {% else %}
+                <div class="uk-height-large uk-flex uk-flex-center uk-flex-middle uk-background-cover uk-light"
+                    data-src="{{ url_for('static', filename='statics/images/article/category_cover_image.jpg') }}" id="ac-img-path" uk-img>
+            {% endif %}
+                <div class="category padding10">
+                    <div class="title">
+                        <div>
+                            <h2><span class="ac-title">{{ target_category.title }}</span></h2>
+                        </div>
+                    </div>
+                    <div class="content mt-20">
+                        {{ target_category.content }}
+                    </div>
+                    {% if target_user == current_user %}
+                        <div class="uk-text-right">
+                            <a class="mr-5" href="#category-save-modal" uk-toggle><span uk-icon="cog"></span></a>
+                            <a href="#category-delete-modal" uk-toggle><span uk-icon="trash"></span></a>
+                        </div>
+                    {% endif %}
+                    <div class="writer uk-text-right mt-10">
+                        {% if target_category.user.profile_user_set %}
+                            <a href="{{ url_for("accounts.account_detail", _id=target_category.user.id) }}">
+                                <img src="/{{ target_category.user.profile_user_set[0].profile_img_path }}" alt="">
+                                {{ target_category.user.profile_user_set[0].nickname }}
+                            </a>
+                        {% else %}
+                            By <span>프로필 미등록</span>
+                        {% endif %}
+                        <span class="ml-10">{{ target_category.created_at|daytime("medium") }}</span>
+                    </div>
+
+                    {% if target_user != "create" %}
+                        <section class="category viewcount-subscribe-container" uk-grid>
+                            <!--조회수와 구독수는 비로그인이든 로그인(오너이든 그외 이용자든)이든,
+                            모두 카테고리 디테일(조회수와 구독수 포함)과 그에 포함도 아티클 리스트는 볼수 있다.-->
+                            {% set view_count = target_category.view_count + 7528 %}
+                            {% set subscriber_count = target_category.subscribers|length + 2653 %}
+                            <div class="count-container" uk-grid>
+                                <div class="count"><span class="view-count">조회: {{ view_count|intcomma }}회</span></div>
+                                <div class="count ml-15"><span class="subscribe-count">구독: {{ subscriber_count|intcomma }}명</span></div>
+                            </div>
+                            {% if current_user.is_authenticated and current_user != target_user %}
+                                {% if current_user.profile_user_set %}
+                                    <!--오너는 구독/구독중 안보이고, 비로그인시도 구독/구독중 안보임.
+                                    로그인한 다른 유저는 구독/구독중이 보인다. -->
+                                    <div class="subscribe-container">
+                                        <div class="btn">
+                                            <input type="hidden" id="category-id" value="{{ target_category.id }}">
+                                            <button class="subscribed ml-15" id="cancel-btn" uk-toggle="target: #subscribe-cancel-modal" type="button">구독중</button>
+                                            <button class="ml-15" id="subscribe-btn" type="button">구독</button>
+
+                                            {% if current_user in target_category.subscribers %}
+                                                <script>document.querySelector("#subscribe-btn").style.display = "none"; </script>
+                                                <div id="subscribe-cancel-modal" class="uk-flex-top" uk-modal>
+                                                    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                        <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                        정말로 구독을 취소하시겠어요?
+                                                        <div class="subscribe-cancel-btn uk-align-right uk-inline">
+                                                            <button id="subscribe-cancel-btn" class="uk-button uk-button-primary mt-40 uk-modal-close" type="button">구독 취소</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <script>document.querySelector("#cancel-btn").style.display = "none"; </script>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </section>
+                    {% endif %}
+
+                    <div class="board-form mt-10">
+                        <div class="uk-margin uk-text-right">
+                            {% set len = target_category.tag_ac_set|length %}
+                            {% for tag_obj in target_category.tag_ac_set %}
+                                {% if loop.index < len %}
+                                    <span class="hashTag mr-10">#{{ tag_obj.tag }},</span>
+                                {% elif loop.index == len %}
+                                    <!--마지막 태그는 margin-right: 10px을 없애기 위해...-->
+                                    <span class="hashTag">#{{ tag_obj.tag }}</span>
+                                {% endif %}
+                            {% endfor %}
+                            <script src="{{ url_for('static', filename='statics/js/searches/hashTagSearch.js') }}"></script>
+                        </div>
+                    </div>
+                </div>
+                </div>
+        {% else %}
+            <div class="uk-height-large uk-flex uk-flex-center uk-flex-middle uk-background-cover uk-light"
+                 data-src="{{ url_for('static', filename='statics/images/article/category_cover_image.jpg') }}" id="ac-img-path" uk-img>
+                <div class="category padding20">
+                    <div class="title">
+                        <div>
+                            <h2><span class="ac-title">게시글 카테고리 만들기</span></h2>
+                        </div>
+                    </div>
+                    <div class="content mt-20">
+                        관심이 있거나, 누군가와 공유하고 싶은 지식이나 정보를 카테고리에 담아 보세요! 누군가에게는 큰 도움이 되고, 그 도움이 나에게로 돌아옵니다.
+                    </div>
+                    <div class="uk-text-right">
+                        <a class="mr-5" href="#category-save-modal" uk-toggle><span uk-icon="cog"></span></a>
+                    </div>
+                    <div class="writer uk-text-right mt-10">
+                        By <span class="ml-10">{{ current_user.profile_user_set[0].nickname }}</span>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </section>
+
+    <div class="subscribe-alert"></div>
+
+    <section class="articles-container list main-width">
+        <div class="padding10">
+            <div class="content">
+                <div class="flashes-container">
+                    {% include 'includes/messages.html' %}
+                </div>
+            {% if target_category %}
+                {% if target_user == current_user %}
+                    <div class="category-nav">
+                        <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                            <ul class="uk-breadcrumb">
+                                <li><a href="{{ url_for('articles.all_ac_list') }}">모든 카테고리</a></li>
+                                {% if current_user.is_authenticated %}
+                                    {% if current_user_ac_display_true_list %}
+                                        <li><a href="{{ url_for('articles.user_ac_list', _id=current_user.id) }}">마이 카테고리</a></li>
+                                        {% if current_user_article_display_true_list %}
+                                            <li><a href="{{ url_for("articles.user_article_list", _id=current_user.id) }}">마이 게시글</a></li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                                <li><span class="custom uk-text-truncate">{{ target_category.title }}</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="category-nav">
+                        <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                            <ul class="uk-breadcrumb">
+                                <li><a href="{{ url_for('articles.all_ac_list') }}">모든 카테고리</a></li>
+                                <li><a href="{{ url_for('articles.all_article_list') }}">모든 게시글</a></li>
+                                <li><a href="{{ url_for('articles.user_ac_list', _id=target_user.id) }}">"{{ target_user.profile_user_set[0].nickname }}님"의 카테고리</a></li>
+                                <li><a href="{{ url_for("articles.user_article_list", _id=target_user.id) }}">"{{ target_user.profile_user_set[0].nickname }}님"의 게시글</a></li>
+                                <li><span class="custom uk-text-truncate">{{ target_category.title }}</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                {% if target_user == "create" %}
+                    <div class="category-nav">
+                        <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                            <ul class="uk-breadcrumb">
+                                <li><a href="{{ url_for('articles.all_ac_list') }}">모든 카테고리</a></li>
+                                <li><a href="{{ url_for('articles.all_article_list') }}">모든 게시글</a></li>
+                                {% if current_user.is_authenticated %}
+                                    {% if current_user_ac_display_true_list %}
+                                        <li><a href="{{ url_for('articles.user_ac_list', _id=current_user.id) }}">마이 카테고리</a></li>
+                                        {% if current_user_article_display_true_list %}
+                                            <li><a href="{{ url_for("articles.user_article_list", _id=current_user.id) }}">마이 게시글</a></li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                                <li><span class="custom not uk-text-truncate">카테고리 등록</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+                <form class="mb-15" id="searchForm" method="get" action="{{ url_for('articles.ac_detail', _id=target_category.id, slug=target_category.slug) }}" uk-grid>
+                    {% include "includes/search.html" %}
+                </form>
+                {% if kw %}
+                    {% if articles %}
+                        <div>"{{ kw }}"에 대한 검색결과</div>
+                        <hr>
+                    {% else %}
+                        <div>"{{ kw }}"에 대한 검색결과가 없습니다.</div>
+                        <hr>
+                    {% endif %}
+                {% endif %}
+
+                {% if res_tag %}
+                    {% if articles %}
+                        <div>해시태그 "{{ res_tag }}"에 대한 검색결과</div>
+                        <hr>
+                    {% else %}
+                        <div>해시태그 "{{ res_tag }}"에 대한 검색결과가 없습니다.</div>
+                        <hr>
+                    {% endif %}
+                {% endif %}
+
+                <script src="{{ url_for('static', filename='statics/js/searches/search.js') }}"></script>
+
+
+                <div class="uk-grid-medium uk-child-width-1-2 uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l" uk-grid="masonry: true">
+                    {% if target_category %}
+                        {% if target_user == current_user %}
+                                <a href="{{ url_for("articles.article_create") }}?category_id={{ target_category.id }}&category_title={{ target_category.title }}&&category_slug={{ target_category.slug }}">
+                                    <div class="card-container">
+                                        <div class="uk-card uk-card-default">
+                                            <div class="uk-card-media-top">
+                                                <img src="{{ url_for('static', filename='statics/images/uikit_sample/sample5.jpg') }}">
+                                            </div>
+                                            <div class="uk-card-body">
+                                                <div class="title mb-10">게시글 등록하기</div>
+                                                {% if not articles %}<div class="mb-10">"{{ target_user.profile_user_set[0].nickname }}"님! 첫 게시글을 남겨보세요!</div>{% endif %}
+                                                <div>유익한 내용과 지식등 누군가와 공유하고 싶은 것들은 남겨보세요! </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                        {% endif %}
+                        {% if articles %}
+                            {% for article in articles %} <!-- 같다 === for article in pagination-->
+                                <a href="{{ url_for("articles.article_detail", _id=article.id, slug=article.slug) }}">
+                                    <div class="card-container">
+                                        <div class="uk-card uk-card-default">
+                                            <div class="uk-card-media-top">
+                                                {% if article.img_path %}
+                                                    <img src="/{{ article.img_path }}">
+                                                {% else %}
+                                                    <img src="{{ url_for('static', filename='statics/images/uikit_sample/sample2.png') }}">
+                                                {% endif %}
+                                            </div>
+                                            <div class="uk-card-body">
+                                                <div class="title mb-10">{{ article.title|truncate(25) }}</div>
+                                                <p>{{ article.meta_description|truncate(50)|safe }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        {% else %}
+                            {% if target_user != current_user %}
+                                아직 게시글이 없습니다.
+                            {% endif %}
+                        {% endif %}
+
+                    {% else %}
+                        <div class="card-container">
+                            <div class="uk-card uk-card-default">
+                                <div class="uk-card-media-top">
+                                    <img src="{{ url_for('static', filename='statics/images/uikit_sample/sample1.png') }}">
+                                </div>
+                                <div class="uk-card-body">
+                                    <div class="title mb-10">카테고리 등록중...</div>
+                                    <p>카테고리를 등록하고 나면 해당 카테고리에 누군가와 공유하고 싶은 아티클을 작성할 수 있어요!</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if pagination %}
+                    {% include 'includes/pagination/pagination.html' %}
+                {% endif %}
+
+            </div>
+        </div>
+    </section>
+
+    {% if (target_user == current_user) or (target_user == "create") %}
+        <!--category-save-modal-->
+        <div id="category-save-modal" class="uk-flex-top" uk-modal>
+            <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                <button class="uk-modal-close-default" type="button" uk-close></button>
+                {% if target_category %}
+                    <legend class="uk-legend">카테고리 수정</legend>
+                {% else %}
+                    <legend class="uk-legend">카테고리 작성</legend>
+                {% endif %}
+
+                <div class="category-alert mt-10"></div>
+                <div class="image mt-15">
+                    {% if target_category.img_path %}
+                        <div class="cover">
+                            <input hidden id="cover-image" type="file" accept="image/*" value=""/>
+                            <label for="cover-image">
+                                <img class="cover-preview" id="cover-preview" src="/{{ target_category.img_path }}">
+                            </label>
+                        </div>
+                    {% else %}
+                        <div class="cover">
+                            <input hidden id="cover-image" type="file" accept="image/*" value=""/>
+                            <label for="cover-image">
+                                <img class="cover-preview" id="cover-preview" src="{{ url_for('static', filename='statics/images/article/category_cover_image.jpg') }}">
+                            </label>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if target_category %}
+                    <div class="title" uk-grid>
+                        <div class="title-input">
+                            <input class="uk-input mt-15" type="text" id="ac-title" name="title" maxlength="45" minlength="4" required value="{{ target_category.title }}"/>
+                        </div>
+                        <div class="check-btn mt-15" id="title-check-btn">
+                            <button class="uk-button uk-button-primary">중복확인</button>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <textarea class="uk-textarea mt-15" id="ac-content" rows="3" name="content" placeholder="카테고리의 간단소개(최적 80자, 최대 160자 이내)" required onkeydown="textAreaHeightAuto(this)"
+                                  onkeyup="textAreaHeightAuto(this)">{{ target_category.content }}</textarea>
+                    </div>
+                    <div class="tagify mt-15">
+                        <input id="tagify" name="tagify" placeholder="해시태그 입력" value="{% if tags_str %}{{ tags_str }}{% endif %}">
+                    </div>
+                     <div class="display mt-10">노출 여부:
+                         {% if target_category.available_display %}
+                             <input type="checkbox" class="uk-checkbox ml-10" id="available_display" name="available_display" checked>
+                         {% else %}
+                             <input type="checkbox" class="uk-checkbox ml-10" id="available_display" name="available_display">
+                         {% endif %}
+                     </div>
+                    <input type="hidden" id="category-id" value="{{ target_category.id }}">
+                    <input type="hidden" id="orm-id" value="{{ target_category.orm_id }}">
+                    <div class="save mt-20">
+                        <div class="button" id="category-save-btn">
+                            <button class="uk-button uk-button-primary uk-width-1-1">저장</button>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="title" uk-grid>
+                        <div class="title-input">
+                            {{ form.title(class="uk-input mt-15", id="ac-title", placeholder="제목(45자 이내)", required="required") }}
+                        </div>
+                        <div class="check-btn mt-15" id="title-check-btn">
+                            <button class="uk-button uk-button-primary">중복확인</button>
+                        </div>
+                    </div>
+                    <div class="content">
+                        {{ form.content(class="uk-textarea mt-15", id="ac-content", placeholder="카테고리의 간단한 소개(최적 80자, 최대 160자 이내)", required="required",  onkeydown="textAreaHeightAuto(this)", onkeyup="textAreaHeightAuto(this)") }}
+                    </div>
+                    <div class="tagify mt-15">
+                        <input id="tagify" name="tagify" placeholder="해시태그 입력">
+                    </div>
+                    <div class="display mt-10">노출 여부: {{ form.available_display(class="uk-checkbox ml-10") }}</div>
+                    <input type="hidden" id="category-id" value="create">
+                    <div class="save mt-20">
+                        <div class="button" id="category-save-btn">
+                            <button class="uk-button uk-button-primary uk-width-1-1">저장</button>
+                        </div>
+                    </div>
+                    <input type="hidden" id="orm-id" value="{{ orm_id }}">
+                {% endif %}
+                <script>
+                    var input = document.querySelector('#tagify')
+                    var tagify = new Tagify(input);
+                    // 태그가 추가되면 이벤트 발생
+                    tagify.on('add', function () {
+                        console.log(tagify.value); // 입력된 태그 정보 객체
+                    })
+                </script>
+                <input type="hidden" id="user-id" value="{{ current_user.id }}">
+            </div>
+        </div>
+    {% endif %}
+
+
+    {% if target_user == current_user %}
+        <!--category-delete-modal-->
+        <div id="category-delete-modal" class="uk-flex-top" uk-modal>
+            <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                <button class="uk-modal-close-default" type="button" uk-close></button>
+                정말로 아티클 카테고리를 삭제하시겠어요?
+                <div class="btn uk-inline ml-15">
+                    <button class="uk-button uk-button-primary" type="button">삭제</button>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if current_user.is_authenticated %}
+        <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+        {% if (target_user != current_user) and (target_user != "create") %}
+            <script src="{{ url_for('static', filename='statics/js/articles/subscribe.js') }}"></script>
+        {% elif (target_user == current_user) or (target_user == "create") %}
+            <script src="{{ url_for('static', filename='statics/js/articles/category.js') }}"></script>
+        {% endif %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,219 @@
+.shop-alert, .modal-alert {display: none}
+
+/*shop_detail, product_detail 공통*/
+.viewcount-vote-container .vote-container button, .viewcount-subscribe-container .subscribe-container button {cursor: pointer; max-width: 100px; height: 30px; border-radius: 5px; background: #d539ff; color: white; padding: 0 10px}
+
+/*shop detail == main*/
+.cover-container .symbol-container {position: relative}
+.cover-container .symbol-container .img-container>.img-item>img {position: absolute; top: -90px; left: calc(50% - 85px); width: 170px; height: 170px; border: solid 8px white; border-radius: 50%; object-fit: cover}
+.cover-container .symbol-container .owner-container {position: absolute; top: 5px; left: calc(50% + 80px)}
+.cover-container .symbol-container .owner-container .profile {display: flex; align-items: center}
+.cover-container .symbol-container .owner-container .profile img {width: 1.5rem; height: 1.5rem!important; border-radius: 50%; object-fit: cover;}
+
+.shop-container {margin-top: 85px}
+.shop-container .inner {max-width: 700px; margin: auto}
+.shop-container .inner .title {font-size: 36px; font-weight: 550}
+.viewcount-subscribe-container {justify-content: right}
+.viewcount-subscribe-container .count-container .count {padding-left: 0}
+.viewcount-subscribe-container .subscribe-container {padding-left: 10px}
+.shop-container .inner .set svg {width: 27px}
+
+.products-container .info-comment {font-size: 15px; color: maroon}
+.products-container nav.category-nav {display: flex; justify-content: right}
+.products-container nav.category-nav .uk-navbar-nav {gap: unset}
+.products-container nav.category-nav .uk-navbar-nav li.target-category span.slash,
+.products-container nav.category-nav .uk-navbar-nav li.target-category span.title {font-size: 16px; color: gray}
+.products-container nav.category-nav a.tab {min-height: 30px}
+.products-container nav.category-nav .uk-navbar-dropdown.uk-open {top: 30px!important; padding: 5px 5px 5px 10px}
+.products-container nav.category-nav a {color: blue; font-size: 16px}
+.products-container nav.category-nav a:hover {color: maroon}
+.products-container .products.list div.uk-grid .card-container .uk-card {border-radius: 0 0 15px 15px;}
+.products-container .products.list div.uk-grid .card-container .uk-card img {border-radius: 15px 15px 0 0;}
+.products-container .products.list .card-container .uk-card-body {padding: 20px;}
+.products-container .products.list .card-container .uk-card-body .title {font-size: 18px; font-weight: bold}
+.products-container .shop-nav .breadcrumb span.custom.uk-text-truncate {width: auto}
+
+#shop-save-modal .symbol img {cursor: pointer; width: 70px; height: 70px; border-radius: 50%; border: solid 5px white; object-fit: cover; position: absolute; top: calc(100% - 37px); left: calc(50% - 35px);}
+#shop-save-modal .uk-grid-column-small>*, .uk-grid-small>* {padding-left: 10px}
+#shop-save-modal div.confirm {display: none}
+#shop-save-modal .confirm {display: flex; align-items: center; justify-content: space-between}
+#shop-save-modal .confirm .uk-alert-close {position: unset; opacity: unset; color: white}
+#shop-save-modal .existing-btn.existing-cover {position: absolute; top:0; right: 0; padding: 0 10px; background: maroon; opacity: 0.8; color: white; border-radius: 0 0 0 15px}
+#shop-save-modal .existing-btn.existing-cover:hover{background: #aa2222}
+#shop-save-modal .existing-btn.existing-cover.cancel {display: none; position: absolute; top:0; right: 0}
+#shop-save-modal .modal-alert .alert.alert-danger {width: 100%}
+#shop-save-modal .modal-alert .alert.alert-danger .btn {text-align: right; margin-right: -15px}
+#shop-save-modal .modal-alert .alert.alert-danger button.delete-confirm-btn {border: none; border-radius: 5px; color: white; padding: 0 15px; background: maroon; opacity: 0.8}
+#shop-save-modal .modal-alert .alert.alert-danger button.delete-confirm-btn:hover {background: #aa2222}
+#shop-save-modal .content-container .title .title-input {flex: 1}
+#shop-save-modal .content-container .title .check-btn {padding-left: 20px;}
+
+#shop-delete-modal .uk-modal-dialog {display: flex; justify-content: space-between}
+
+/*shop detail == category register modal*/
+#category-register-modal .caution {font-size: 15px}
+#category-register-modal .caution .upper {color: maroon}
+#category-register-modal .caution .lower {color: #aa2222}
+#category-register-modal .existing-category .existing-alert .alert {width: 100%}
+#category-register-modal .existing-category .existing-alert .alert .response-container .btn {text-align: right}
+#category-register-modal .existing-category .existing-alert .alert .response-container .btn button {padding: 0 15px; color: maroon; font-size: 20px; border: unset}
+#category-register-modal input[type="checkbox"][disabled] {background-color: lightgray; border: none}
+#category-register-modal .category-register-btn {display: none}
+#category-register-modal .existing-category .loop-inner {display: flex; align-items: center; background: #f8f8f8}
+#category-register-modal .existing-category .loop-inner .btn {display: flex; align-items: center}
+#category-register-modal .existing-category .loop-inner .btn button {padding: 0 15px; color: maroon; font-size: 20px; border: unset}
+#category-register-modal .existing-category .loop-inner .btn button:hover {background: unset; color: #aa1111}
+#category-register-modal .existing-category .loop-inner .btn button.category-save-btn {display: none}
+#category-register-modal .category-add button .fa-folder-plus {font-size: 20px}
+#category-register-modal .cancel-input-btn {cursor: pointer; opacity: unset; background: transparent; top: unset; color: #aa1111; font-size: 16px}
+#category-register-modal .cancel-input-btn:hover {color: maroon}
+
+/*shop list*/
+.products-container.shop.list div.uk-grid .card-container .uk-card {border-radius: 0 0 15px 15px;}
+.products-container.shop.list div.uk-grid .card-container .uk-card .img-container {position: relative}
+.products-container.shop.list div.uk-grid .card-container .uk-card .shop-cover img {border-radius: 15px 15px 0 0;}
+.products-container.shop.list div.uk-grid .card-container .uk-card .shop-symbol img {width: 60px; height: 60px; border-radius: 50%; border: solid white 5px}
+.products-container.shop.list div.uk-grid .card-container .uk-card .shop-symbol {position: absolute; bottom: -30px; right: 10px}
+.products-container.shop.list .card-container .uk-card-body .content .inner {font-size: 15px}
+.products-container.shop.list .card-container .uk-card-body .inner {display: flex; align-items: center; justify-content: right}
+.products-container.shop.list .card-container .uk-card-body .inner img {width: 1.5rem; height: 1.5rem!important; border-radius: 50%; object-fit: cover;}
+.products-container.shop.list .card-container .uk-card-body .count-container {font-size: 14px}
+.products-container.shop.list .card-container .uk-card-body {padding: 20px;}
+.products-container.shop.list .card-container .uk-card-body .title {font-size: 18px; font-weight: bold}
+.products-container.shop.list .uk-breadcrumb>:nth-child(n+2):not(.uk-first-column)::before {margin: 0 5px}
+
+/*product create*/
+.products-container.product.create .form-container .thumbnail button.help {position: absolute; bottom: 0; right: 0; cursor: pointer; padding: 0 15px; border-radius: 10px 0 0; background: #aa1111; opacity: 0.7; border: none}
+.products-container.product.create .form-container .thumbnail button.help:hover {background: maroon}
+.products-container.product.create .form-container .thumbnail .uk-slideshow-items img {cursor: pointer}
+
+.products-container.product.create .form-container .info {padding-left: 20px}
+.products-container.product.create .form-container .info .uk-breadcrumb>:nth-child(n+2):not(.uk-first-column)::before {margin: 0 5px;}
+.products-container.product.create .form-container .info img.profile-img,
+.products-container.product.create .form-container .info img.symbol-img {width: 28px; height: 28px; border-radius: 50%; object-fit: cover; margin: 0 7px}
+
+.products-container.product.create .form-container .info .category-select {align-items: center; padding: 7px}
+
+.products-container.product.create .form-container .info .info-content .pl-7.pr-7.mt-15.uk-grid {align-items: center}
+.products-container.product.create .form-container .info .info-content .pl-7.pr-7.mt-7.uk-grid {align-items: center; margin-top: 7px}
+
+.products-container.product.create .form-container .info .info-content > div.pl-7.pr-7.mt-5,
+.products-container.product.create .form-container .info .info-content > div.pl-7.pr-7.mt-10 {width: 100%; display: flex; align-items: center}
+.products-container.product.create .form-container .info .info-content > div.pl-7.pr-7 .mt-5.mb-5 {display: flex; align-items: center}
+.products-container.product.create .form-container .info .form-input {padding: 7px}
+
+.form-group.option .option-add {position: sticky; top: 10px; z-index: 1}
+.form-group.option div.option-add {display: flex; justify-content: flex-end;}
+.form-group.option .option-add button.add-input-btn {width: 6rem; background: #aa1111; opacity: 0.7; font-size: 14px; color: white; cursor: pointer;height: 35px; display: flex; align-items: center;border-radius: 5px}
+.form-group.option .option-add button.add-input-btn:hover {background: maroon; opacity: 0.7}
+
+.form-group.option .option-form-wrapper {margin-left: 1px}
+.form-group.option .option-form-wrapper .option-form .form-group {display: flex; align-items: center}
+.form-group.option .option-form-wrapper  .option-form.uk-alert {padding-right: 15px}
+.form-group.option div.option-add i.fa-folder-plus {font-size: 20px}
+.form-group.option .option-form-wrapper .cancel-input-btn.remove-input {width: 6rem; background: #faa05a; font-size: 14px; color: white; cursor: pointer;height: 35px; display: flex; align-items: center;border-radius: 5px}
+.form-group.option .option-form-wrapper .cancel-input-btn.remove-input:hover {background: coral}
+.form-group.option .option-form-wrapper i.fa-folder-minus {font-size: 20px}
+.cancel-input-btn.remove-input.uk-alert-close.uk-close {right: 20px; opacity: 1}
+
+.products-container.product.create .form-container .form-group.btn button.uk-button {z-index: 20; position: fixed; left: 0; bottom: 0; width: 100%; cursor: pointer; height: 45px; opacity: 0.8; font-size: 16px; color: white; background: rgb(6, 82, 221);}
+.products-container.product.create .form-container .form-group.btn button.uk-button:hover {background: blue}
+
+/*product detail*/
+/*.uk-tab::before {border-bottom: unset}*/
+.viewcount-vote-container .count-container .count.ml-15 {padding-left: 0}
+.products-container.product.detail .form-container .info {padding-left: 30px}
+.products-container.product.detail .form-container .info form .uk-grid-mt {margin-top: 10px}
+.products-container.product.detail .form-container .info form .select-container {display: flex; align-items: center; margin-top: 10px}
+.products-container.product.detail .form-container .info img.profile-img,
+.products-container.product.detail .form-container .info img.symbol-img {width: 28px; height: 28px; border-radius: 50%; object-fit: cover; margin: 0 7px}
+.products-container.product.detail .form-container .info .uk-breadcrumb>:nth-child(n+2):not(.uk-first-column)::before {margin: 0 5px}
+
+.products-container.product.detail .form-container .info > div.info-content.detail > form > div.applied-price.uk-grid > div.original-price {color: #7f8c8d}
+.products-container.product.detail .form-container .info > .info-content.detail > form > div.applied-price.uk-grid > div.uk-width-expand.expand-pl {padding-left: 10px; font-size: 20px; font-weight: bold}
+.products-container.product.detail .form-container .info > div.info-content.detail > form > div.select-container div.uk-width-expand.expand-pl {padding-left: 10px}
+@media screen and (max-width: 590px) {
+    .shop-container {margin-top: 115px;}
+    .cover-container .symbol-container .owner-container {position: absolute; top: 90px; right: 10px; left: unset}
+}
+
+.pd-plus, .pd-minus, .op-plus, .op-minus {padding: 0 10px}
+.pd.uk-form-width-xsmall, .op.uk-form-width-xsmall {width: 2.5rem !important; text-align: center;}
+.add-to-cart {z-index: 6; position: fixed; height: 45px; left: 0; bottom: 0; background: #0652DD; font-size: 16px; color: white; border: none; border-radius: 0; width: 100%; opacity: 0.8;}
+.add-to-cart:hover {background: blue; color: white; opacity: 0.7}
+.pd-updel-btn {z-index: 6; position: fixed; right: 10px; bottom: 55px;}
+.pd-updel-btn button {padding: 0 20px; border: none; background:  #aa1111; color: white; opacity: 0.7}
+.pd-updel-btn button:hover {background: maroon; color: white}
+.pd-updel-btn a {padding-left: 20px;}
+
+button.op-cancel {border: solid 1px gray; height: 30px; top: 15px; padding: 2px 10px; font-size: 14px; border-radius: 2px}
+button.op-cancel svg {display: none}
+
+/*.hide {display: none}*/
+/*.showStep-1 {max-height: 3000px; overflow: hidden}*/
+/*.showStep-2 {max-height: 7000px; overflow: hidden}*/
+
+/*product review*/
+.products-container.product.review .image-container {display: flex; flex-wrap: wrap; gap: 10px; justify-content: center}
+.products-container.product.review .image-wrapper {position: relative}
+.products-container.product.review button.image-cancel {position: absolute; top: 0; right: 0; border: unset; padding: 0 15px; font-size: 20px; color: white; font-weight: 600}
+.products-container.product.review .new.content,
+.products-container.product.review .old.content {border: solid 1px #e5e5e5; border-radius: 2px}
+.products-container.product.review .old.content .old-img-container .uk-position-relative {width: 100%}
+.products-container.product.review .old.content .old-img-container .uk-position-relative .uk-slider-items {display: flex; gap: 10px}
+.products-container.product.review .old.content .old-img img {width: 100%; height: 100%; object-fit: cover}
+.review-change-modal .image-change-container {display: flex; flex-wrap: wrap; gap: 10px; justify-content: center}
+.review-change-modal .image-change-wrapper {position: relative}
+.review-change-modal button.image-change-cancel {position: absolute; top: 0; right: 0; border: unset; padding: 0 15px; font-size: 20px; color: white; font-weight: 600}
+.review-change-modal .image-change-wrapper label div img {width: 160px; height: 160px; object-fit: cover}
+
+/*product question*/
+.products-container.product.qna > .main-width > hr {background-color: transparent; margin-bottom: 0}
+.products-container.product.qna .question.old.list table {margin-top: 10px}
+.question.old.list .question-content .question {position: relative}
+.question.old.list .question-content .question .delete-container {display: none}
+.question.old.list .question-content .question .delete-container .question-delete-modal-btn {position: absolute; bottom: 0; padding: 0 30px 0 10px; margin-left: 55px; border: unset}
+.question.old.list .question-content .question-form .question-cancel-btn {padding: 0 10px 0 30px}
+.question.new .question-form-container .question-btn-container {display: flex; justify-content: right}
+.question.new .question-form-container .question-form .btn-container,
+.question.old.list .question-content .question-form .btn-container,
+.question.old.list .question-content .reply-form .btn-container {border: solid 1px #e5e5e5; border-top: none; display: flex; justify-content: space-between}
+.question.new .question-form-container .question-form .btn-container button,
+.question.old.list .question-content .question-form .btn-container button,
+.question.old.list .question-content .reply-form .btn-container button {border: unset}
+.question.new .question-form-container .question-form .secret-type,
+.question.old.list tbody tr div.question-content .question .secret-type {display: flex; align-items: center; justify-content: flex-end}
+.question.new .question-form-container .question-form .secret-type .type .uk-select:not([multiple]):not([size]),
+.question.old.list .question-content .question-form .secret-type .type .uk-select:not([multiple]):not([size]) {padding-right: 30px}
+.question.old.list tbody tr div.is-secret {display: flex; align-items: center}
+@media screen and (max-width: 1170px) {
+    .question.old.list tbody tr div.is-secret {display: flex; justify-content: right}
+    table td .question-content .question .content,
+    table td .question-content .reply .content,
+    table td .question-content .question .inner .title,
+    table td .question-content .reply .inner .title,
+    table td .se-wrapper-inner.se-wrapper-wysiwyg.sun-editor-editable {text-align: left}
+    table td .question-content .question .modal-btn-container {display: flex} /*에티터의 내용 삭제버튼 정렬*/
+}
+.question.old.list tbody tr div.question-content {display: none}
+.question.old.list tbody tr div.question-content.open {display: block}
+.question.old.list tbody tr div.question-content .reply .created-at {text-align: right; font-size: 14px; color: gray}
+.question.old.list tbody tr div.question-content .question-update-btn-container.pseudo {display: none}
+.question.old.list tbody tr div.question-content .question-update-btn-container,
+.question.old.list tbody tr div.question-content .reply-btn-container,
+.question.old.list tbody tr div.question-content .reply-update-btn-container {display: flex; justify-content: right}
+.question.old.list tbody tr div.question-content .reply-form-container {display: none}
+.question.old.list tbody tr div.question-content .reply-form-container .se-toolbar.sun-editor-common {text-align: left}
+.question.old.list tbody tr div.question-content .reply-form-container .reply-form .btn-container {border: solid 1px #e5e5e5; border-top: none; display: flex; justify-content: space-between}
+.question.old.list tbody tr div.question-content .reply-form-container .reply-form .btn-container button {border: unset}
+#question-submit {font-size: 20px}
+
+/*product list*/
+.products-container.product.list div.uk-grid .card-container .uk-card {border-radius: 0 0 15px 15px;}
+.products-container.product.list div.uk-grid .card-container .uk-card .img-container img {border-radius: 15px 15px 0 0;}
+.products-container.product.list .card-container .uk-card-body {padding: 20px;}
+.products-container.product.list .card-container .uk-card-body .title {font-size: 18px; font-weight: bold}
+.products-container.product.list .uk-breadcrumb>:nth-child(n+2):not(.uk-first-column)::before {margin: 0 5px}
+
+
+

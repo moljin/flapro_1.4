@@ -1,0 +1,96 @@
+/*register*/
+.form-container.register {max-width: 700px; margin: 0 auto; border: solid 1px #ced6e0; border-radius: 5px; padding: 20px 30px}
+.form-container.register .register-alert {display: none}
+
+.btn-container.uk-grid {justify-content: right}
+.tab-container.upper .email-container,
+.tab-container.upper .sign-container {display: none}
+
+.tab-container.lower .check-container .check {padding: 10px 0; border-bottom: solid 1px #f1f2f6}
+.tab-container.lower .check-container .required {color: red}
+.tab-container.lower .check-container .third-input {display: flex; align-items: center}
+.tab-container.lower .check-container .third-div {padding-left: 0}
+.tab-container.lower .check-container .third-refuse {font-size: 12px; color: red}
+.tab-container.lower .email-container,
+.tab-container.lower .sign-container {display: none}
+
+.tab-container.lower .email-container .email-div {flex: 1}
+.tab-container.lower .email-container .email-btn {padding-left: 15px}
+.tab-container.lower .email-container .email-btn .v-btn {padding: 0 15px}
+
+.btn-container .btn {flex: 1}
+.btn-container .btn.check,
+.btn-container .btn.sign,
+.btn-container .btn.register-btn {display: none}
+
+/*password*/
+.form-container.password {max-width: 700px; margin: 0 auto; border: solid 1px #ced6e0; border-radius: 5px; padding: 20px 30px}
+.form-container.password .password-alert {display: none}
+
+.tab-container.upper .password,
+.tab-container.lower .password{display: none}
+.button-container.uk-grid {justify-content: right}
+.button-container.uk-grid .btn.email,
+.button-container.uk-grid .btn.submit {display: none}
+
+.tab-container.lower .email .email-div {flex: 1}
+.tab-container.lower .email .email-btn {padding-left: 15px}
+.tab-container.lower .email .email-btn .v-btn {padding: 0 15px}
+
+.button-container .btn {flex: 1}
+
+/*username-email*/
+.form-container.email {max-width: 700px; margin: 0 auto; border: solid 1px #ced6e0; border-radius: 5px; padding: 20px 30px}
+
+/*auth-request*/
+.form-container.auth {max-width: 700px; margin: 0 auto; border: solid 1px #ced6e0; border-radius: 5px; padding: 20px 30px}
+
+/*account-detail*/
+.cover-container {position: relative}
+.cover-container .cover {min-height: 400px; max-height: 400px; overflow: hidden;}
+.cover-container .cover img {width: 100%; height: 400px; object-fit: cover}
+.cover-container .profile img {position: absolute; top: calc(100% - 85px); left: calc(50% - 85px); width: 170px; height: 170px; object-fit: cover; border-radius: 50%; border: solid 8px white}
+.accounts-container.detail .content {max-width: 700px; margin: auto; padding-top: 65px}
+.profile .upper {display: flex; align-items: center; justify-content: center}
+.profile .upper .nickname {font-size: 36px; font-weight: 550}
+.profile .upper .uk-icon {padding-left: 10px}
+.profile .upper .uk-icon svg {width: 27px; height: 27px}
+.account-update {text-align: right; cursor: pointer}
+.account .present .email {color: rgb(127, 140, 141); font-size: 18px}
+.account .present button.user-withdraw {border:unset; padding: 0 10px; color: rgb(127, 140, 141)}
+.account .update {display: flex; justify-content: center}
+.account .update .password button,
+.account .update .email button {width: 200px}
+
+.content .profile-detail-alert,
+#profile-save-modal .profile-alert,
+#password-change-modal .password-alert,
+#email-change-modal .email-alert,
+#vendor-change-modal .vendor-update-alert {display: none}
+
+#profile-save-modal .image .cover label {cursor: pointer}
+#profile-save-modal .image .profile label {cursor: pointer}
+#profile-save-modal .nickname {padding-top: 20px}
+#profile-save-modal .nickname .nickname-input {flex: 1}
+#profile-save-modal .nickname .check-btn {padding-top: 5px; padding-left: 20px}
+#profile-save-modal textarea {height: 5rem; resize: none; padding-top: 6px; padding-bottom: 6px}
+#profile-save-modal .image {position: relative}
+#profile-save-modal .image .cover img {width: 100%; height: 150px; object-fit: cover}
+#profile-save-modal .image .profile img {width: 70px; height: 70px; border-radius: 50%; border: solid 5px white; object-fit: cover; position: absolute; top: calc(100% - 35px); left: calc(50% - 35px)}
+
+#profile-delete-modal .btn {display: flex; justify-content: right; margin-top: 10px}
+
+#vendor-change-modal .vendor .uk-margin {align-items: center}
+button.check-btn {padding: 3px 7px; border: solid 1px #dcdde1;font-size: 14px; color: red; max-width: 100px; height: 38px; cursor: pointer; border-radius: 3px}
+button.check-btn:hover {background: #ecf0f1; color: #eb2f06}
+.corp-img img.img-preview {width: 40px; height: 40px; object-fit: cover}
+#corp-image {padding: 4px}
+
+.my-slider .uk-card {height: 100%; border-radius: 0 0 15px 15px}
+.my-slider .uk-card-media-top img {width: 100%; object-fit: cover; border-radius: 15px 15px 0 0}
+.my-slider .uk-card-body {height: auto; padding: 20px; pointer-events: none;}
+.my-slider .uk-card-body .uk-card-title {font-size: 20px; font-weight: 550}
+.my-slider .uk-card-body p {margin-top: 10px}
+
+
+

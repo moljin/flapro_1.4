@@ -1,0 +1,54 @@
+<p>Hi 최고관리자 {{email.split('@')[0]}}님!</p>
+
+<img src="{{url_for('static', filename='images/khan.jpg')}}" alt="Image관련을 적어라">
+<div>모든 send_mail을 하나의 유틸로 만들고 있다.</div>
+<hr>
+{{ add_if }}<br>
+<hr>
+
+{% if link is not none %}
+    {% if add_if == "auth_permission" %}
+        <h3>회원 {{ req_email }}님이
+            {% if (is_admin == "y") and (is_staff == "y") %}
+                스태프와 관리자 권한 요청을 하였습니다.
+            {% elif (is_staff == "y") and(is_admin == "n") %}
+                스태프 권한 요청을 하였습니다.
+            {% elif (is_admin == "y") and (is_staff == "n") %}
+                관리자 권한 요청을 하였습니다.
+            {% elif (is_admin == "n") and (is_staff == "n") %}
+                스태프와 관리자의 권한 해제를 요청하였습니다.
+            {% endif %}</h3>
+        <h4>확인하시고 인증을 완료하여 주시기 바랍니다.</h4>
+        <div>
+            {% if is_staff == "y" %}스태프: <input type="checkbox" name="is_staff" checked disabled>{% else %}스태프: <input type="checkbox" name="is_staff" disabled>{% endif %}
+        </div>
+        <div>
+            {% if is_admin == "y" %}관리자: <input type="checkbox" name="is_admin" checked disabled>{% else %}관리자: <input type="checkbox" name="is_admin" disabled>{% endif %}
+        </div><br>
+
+        <p>
+            {% if (is_admin == "y") and (is_staff == "y") %}
+                관리자 권한과 스태프 권한을 요청하였습니다.
+            {% elif (is_staff == "y") and(is_admin == "n") %}
+                스태프 권한 요청을 하였습니다.
+            {% elif (is_admin == "y") and (is_staff == "n") %}
+                관리자 권한 요청을 하였습니다.
+            {% elif (is_admin == "n") and (is_staff == "n") %}
+            스태프와 관리자의 권한 해제를 요청하였습니다.
+            {% endif %}</p><br>
+
+        <p><a href="{{ admin }}">최고관리자로 로그인</a> 후에 아래의 링크를 클릭해주세요! 승인 페이지로 이동합니다. </p>
+        <p><a href="{{ confirm }}">여기를</a> 누르면 승인 페이지로 이동합니다. </p>
+        감사합니다.
+    {% elif add_if == "not_admin" %}
+        <h3>회원 {{ req_email }}님이 {% if is_admin == "n" %}관리자{% endif %} 권한을 해제요청 하였습니다.</h3>
+        <h4>확인하시고 인증을 완료하여 주시기 바랍니다.</h4> <br>
+
+        <p><a href="{{ admin }}">최고관리자로 로그인</a> 후에 아래의 링크를 클릭해주세요! 승인 페이지로 이동합니다. </p>
+        <p><a href="{{ confirm }}">여기를</a> 누르면 해제요청 승인 페이지로 이동합니다. </p>
+        감사합니다.
+
+    {% endif %}
+{% else %}
+    여기는 링크가 없이 보내는 메일, 즉 그냥 알림만 하는 거....
+{% endif %}

@@ -1,0 +1,201 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    상품리뷰 수정
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/dropzone/dropzone.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/dropzone/dropzoneCustom.css') }}" rel="stylesheet">
+
+    <link href="{{ url_for('static', filename='statics/suneditor/suneditor.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/custom/customSunEditor.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        editorImagesSaveAjax = '{{ url_for('commons.editor_images_save_ajax') }}';
+        productDeleteAjax = "{{ url_for("products.product_delete_ajax") }}";
+
+        productReviewSave = "{{ url_for("products.product_review_save") }}";
+        productReviewDeleteAjax = "{{ url_for("products.product_review_delete_ajax") }}";
+        productReviewDzImageDeleteAjax = "{{ url_for("products.product_review_dz_image_delete_ajax") }}";
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_ecomms.product_create') }}">상품 등록</a></li>
+            <li><a href="{{ url_for('admin_ecomms.product_list') }}">리스트</a></li>
+            <li><span>변경</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body_section %}
+    <div class="sub-container">
+        <div class="form-container">
+            <div class="site-view mb-20">
+                <a href="{{ url_for("products.product_detail", _id=target_product.id, slug=target_product.slug) }}" target="_blank">
+                    <button class="uk-button">사이트 보기</button>
+                </a>
+            </div>
+            <div class="reviews">
+                <fieldset class="uk-fieldset">
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            회원:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="user_email" class="uk-select" disabled>
+                                {% for user in users %}
+                                    {% if user.id == target_user.id %}
+                                        <option value="{{ user.email }}" selected>{{ user.email }}</option>
+                                    {% else %}
+                                        <option value="{{ user.email }}">{{ user.email }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            닉네임:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="profile_nickname" class="uk-select" disabled>
+                                {% for user in users %}
+                                    {% if user.id == target_user.id %}
+                                        {% if user.profile_user_set %}
+                                            <option value="{{ user.profile_user_set[0].nickname }}" selected>{{ user.profile_user_set[0].nickname }}</option>
+                                        {% else %}
+                                            <option value="" selected>미등록</option>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            상품명:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <input disabled class="uk-input" type="text" value="{{ target_product.title }}">
+                        </div>
+                    </div>
+
+                    <div class="old-related-alert old-alert-{{ target_review.id }}"></div>
+                    <div class="dz-old-image">
+                        {% if target_review.productreview_image_set %}
+                            <div class="old-img-container image-{{ target_review.id }}">
+                                <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slider>
+                                    <ul class="uk-slider-items uk-child-width-1-2 uk-child-width-1-3@s uk-child-width-1-4@m uk-child-width-1-5@l uk-grid-small uk-grid-match uk-grid"
+                                        uk-lightbox="animation: slide">
+                                        {% for image in target_review.productreview_image_set %}
+                                            <li class="old-image-li-{{ image.id }}">
+                                                <div class="old-img uk-panel">
+                                                    <a href="/{{ image.img_path }}">
+                                                        <img src="/{{ image.img_path }}" alt=""></a>
+                                                    <button class="admin old-img-delete-btn uk-button" data-id="{{ image.id }}" type="button"><i class="fas fa-trash-alt"><!--삭제--></i></button>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slider-item="previous"></a>
+                                    <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slider-item="next"></a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="dz-related-form mt-10">
+                        <div class="dz-alert"></div>
+                        <div class="dz-container">
+                            <div class="dropzone">
+                                <div class="dz-message" data-dz-message>
+                                    <span class="placeholder" data-placeholder="클릭"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="related-container mt-10">
+                            <div class="simpleEditor-form">
+                                <div class="simpleEditor-container">
+                                    <textarea id="editorHiddenText" name="content" style="display: none"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-container mt-10">
+                        <input type="hidden" id="product_id" name="product_id" value="{{ target_product.id }}">
+                        <input type="hidden" id="board_id" name="board_id" value="{{ target_review.id }}">
+                        <input type="hidden" id="user_email" name="user_email" value="{{ target_user.email }}">
+                        <input type="hidden" id="user_id" name="user_id" value="{{ target_user.id }}">
+                        <button class="uk-button uk-button-danger" uk-toggle="target: #review-delete-modal" type="button">삭제</button>
+                        <button class="uk-button uk-button-primary uk-align-right" type="submit" id="form-submit">저장</button>
+                    </div>
+
+                    <div id="review-delete-modal" class="uk-flex-top" uk-modal>
+                        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                            <button class="uk-modal-close-default" type="button" uk-close></button>
+                            <div class="change confirm">정말로 "{{ target_review.user.profile_user_set[0].nickname }}"님 상품리뷰을 삭제하시겠어요?</div>
+                            <div class="change btn uk-text-right">
+                                <button id="review-delete-btn" class="uk-button uk-button-primary mt-20" type="button">삭제</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function (event) {
+            update_init()
+            function update_init() {
+                const suneditor_editable = document.querySelector(".se-container .se-wrapper .sun-editor-editable")
+                suneditor_editable.innerHTML = `{{ target_review.content|safe }}`;
+            }
+        })
+    </script>
+    <!-- 필수: main_js -->
+    <script src="{{ url_for('static', filename='statics/suneditor/suneditor.min.js') }}"></script>
+
+    <!--비필수: codeMirror -->
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/htmlmixed.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/xml.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/css.js') }}"></script>
+
+    <!-- 필수: 버튼에 필요-->
+    <script src="{{ url_for('static', filename='statics/suneditor/katex.min.js') }}"></script>
+    <!-- 필수: Language -->
+    <script src="{{ url_for('static', filename='statics/suneditor/ko.js') }}"></script>
+
+    <!-- Custom -->
+    <script src="{{ url_for('static', filename='statics/dropzone/dropzone.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/dropzone/dropzoneCommons.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/dropzone/admin/dropzoneSunEditor.js') }}"></script>
+
+{% endblock %}
+
+
+
+
+
+

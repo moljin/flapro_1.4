@@ -1,0 +1,32 @@
+<div style="padding: 30px;background: lightskyblue">
+    <div style="background: white; padding: 30px">
+        <div style="font-size: 30px; font-weight: 800">Beta-Version</div>
+
+            {% if link is not none %}
+                {% if add_if == "forget_password" %}
+                    <h3>비밀번호 변경하기</h3>
+                    <div style="font-size: 14px; font-weight: 600">
+                        <div>{{ email }}님! </div>
+                        <div> 아래의 버튼을 누르면 비밀번호 변경 화면으로 이동합니다.</div>
+                    </div>
+                    <div style="font-size: 13px; margin-top: 15px">
+                        <a href="{{ link }}">
+                            <button onmouseover="this.style.background='orange';" onmouseout="this.style.background='dodgerblue';" style="padding: 0 15px; height: 35px; background: dodgerblue; border: none; color: white; cursor: pointer">
+                                비밀번호 변경하기
+                            </button>
+                        </a>
+                    </div>
+                {% endif %}
+            {% else %}
+            {% endif %}
+
+        <div style="display: flex; margin-top: 20px">
+            <div style="font-size: 30px; font-weight: 800; margin-right: 20px">Beta-Version</div>
+            <div style="font-size: 13px">
+                <div>서울특별시 강남구 남강구로 256, 12층(구로동) (주)베타버전 코퍼레이션</div>
+                <div>사업자등록번호 : 481-89-02589</div>
+                <div>COPYRIGHT © Beta-Version corp. ALL RIGHTS RESERVED</div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{#{% block header %}#}
+{#    block header 를 한번더 넣으면 오버라이드 된다.#}
+{#    {% include 'includes/header.html' %}#}
+{#{% endblock %}#}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        accountsDeleteAjax = "{{ url_for('accounts.delete_ajax', _id=current_user.id) }}";
+    </script>
+{% endblock %}
+
+{% block above_main %}
+    <section class="above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block content %}
+    <section class="section-container main-width padding10">
+        Index
+        <hr>
+    </section>
+
+    <section class="section-container main-width padding10">
+        <h4>검색관련 자료</h4>
+        <a href="https://codechacha.com/ko/javascript-check-if-var-is-defined/" target="_blank">JavaScript - 변수가 정의되었는지 확인</a> <br>
+        <a href="https://pybo.kr/pybo/question/list/qna/" target="_blank">점프 투 게시판</a> <br>
+        <a href="https://jinja.palletsprojects.com/en/latest/templates/#jinja-filters.truncate" target="_blank">## the Jinja2 truncate() filter docs.  ##</a> <br>
+
+        <br>
+        {{ now }}<br>
+        ############# 데이터 조회(검색)하기 관련 ############# <br>
+        <a href="https://cowimming.tistory.com/120" target="_blank">[Django] 태그 검색🔎기능 만들기</a> <br>
+        <a href="https://wikidocs.net/81067" target="_blank">Flask 점프투플라스트 검색</a> <br>
+        <a href="https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_orm_filter_operators.htm" target="_blank">SQLAlchemy ORM - Filter Operators</a>
+            <div class="pl-40"> 검색기능에 사용가능: session.query(Customers).filter(Customers.name.like('Ra%'))등등</div>
+            <div class="pl-40"> acs_query = ArticleCategory.query.order_by(desc(ArticleCategory.created_at)).filter(ArticleCategory.user_id != current_user.id) 에 사용함</div>
+        <a href="https://docs.sqlalchemy.org/en/13/orm/query.html" target="_blank">데이터를 조회하는 다양한 사용법은 SQLAlchemy공식 문서를 참조</a> <br>
+        <a href="" target="_blank"></a> <br>
+        <a href="" target="_blank"></a> <br><br>
+        <hr>
+        shop 관련 잡다구리 수정 <br>
+        <a href="http://abdulbaqi.io/2017/11/26/flask-form-ajax-sqlalchemy/" target="_blank">SqlAlchemy Object Class Ajax Response Serialize</a> <br>
+        <a href="https://im-developer.tistory.com/47" target="_blank">바닐라 JS select tag and option 동적으로 생성하기</a> <br>
+        <a href=""></a> <br><br>
+        <a href="https://swimfm.tistory.com/entry/%EB%AC%B4%ED%95%9C-%EC%8A%A4%ED%81%AC%EB%A1%A4-Infinite-Scroll-%ED%8E%98%EC%9D%B4%EC%A7%95-%EA%B5%AC%ED%98%84%ED%95%B4%EB%B3%B4%EA%B8%B0-%EC%98%88%EC%A0%9C" target="_blank">무한 스크롤 Infinite Scroll 페이징 구현해보기 예제</a> <br>
+        <a href="https://marshallku.com/work/other/infinite-scroll-%ed%94%8c%eb%9f%ac%ea%b7%b8%ec%9d%b8" target="_blank">[JS] Infinite Scroll 플러그인</a> <br><br>
+        <a href="#" target="_blank"></a> <br><br>
+        <a href="#" target="_blank"></a> <br>
+        <a href="#" target="_blank"></a> <br>
+        <a href="" target="_blank"></a> <br>
+        <a href="" target="_blank"></a> <br>
+
+
+    </section>
+{% endblock %}

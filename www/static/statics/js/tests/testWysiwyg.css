@@ -1,0 +1,36 @@
+@charset "UTF-8";
+@import url(https://fonts.googleapis.com/css?family=Asap:400,700);
+@import url(https://fonts.googleapis.com/css?family=Bree+Serif&subset=latin-ext,latin);
+*, *:before, *:after {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: greyscale;
+}
+
+.simpleEditor {
+  margin: 50px auto;
+  padding: 50px 40px;
+  width: 100%;
+  max-width: 800px;
+  min-width: 480px;
+  background: #FFF;
+  font-family: "Asap", sans-serif;
+}
+.simpleEditor .toolbar {border: solid 1px #C1CFD9; border-bottom: none}
+.simpleEditor .toolbar .uk-button {padding: 0 15px; font-size: 18px; border: unset}
+
+.simpleEditor .contentEditable {
+  min-height: 300px;
+  width: 100%;
+  resize: none;
+  border: 1px solid #C1CFD9;
+  outline: none;
+  padding: 15px;
+  margin-bottom: 20px;
+  position: relative;
+}
+.simpleEditor:after {
+  content: "";
+  display: block;
+  clear: both;
+}

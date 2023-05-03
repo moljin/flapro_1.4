@@ -1,0 +1,173 @@
+<div class="header">
+    <nav class="uk-navbar-container" uk-grid uk-navbar="mode: click">
+        <div class="logo ml-30">
+            <a href="{{ url_for('commons.index') }}">Beta 1.3</a>
+        </div>
+
+        <div class="uk-navbar-right uk-visible@m pr-30">
+            <ul class="uk-navbar-nav">
+                <li>
+                    <a href="#">E-Shop<span uk-navbar-parent-icon></span></a>
+                    <div class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="{{ url_for('products.all_shop_list') }}">모든 SHOP</a></li>
+                            <li><a href="{{ url_for("products.all_product_list") }}">모든 상품</a></li>
+                            <li><a href="#">Item</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="#">게시글<span uk-navbar-parent-icon></span></a>
+                    <div class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="{{ url_for('articles.all_ac_list') }}">모든 카테고리</a></li>
+                            <li><a href="{{ url_for('articles.all_article_list') }}">모든 게시글</a></li>
+                            <li><a href="#">Item</a></li>
+                        </ul>
+                    </div>
+                </li>
+                {% if current_user.is_authenticated %}
+                    <li>
+                        <a href="#">
+                            {% if current_profile.profile_img_path %}
+                                <span class="pr-5 pb-2"><img id="global-profile-img" src="/{{ current_profile.profile_img_path }}" alt="mdo"></span>
+                            {% else %}
+                                <span class="pr-5 pb-2"><img id="global-profile-img" src="{{ url_for('static', filename='statics/images/user-none.png') }}" alt="mdo"></span>
+                            {% endif %}
+                            마이페이지<span uk-navbar-parent-icon></span>
+                        </a>
+                        <div class="uk-navbar-dropdown">
+                            <ul class="uk-nav uk-navbar-dropdown-nav">
+                                {% if current_user.is_admin %}
+                                    <li><a href="{{ url_for("admin_accounts.index") }}">관리 페이지</a></li>
+                                {% endif %}
+                                {% if current_user.profile_user_set %}
+                                    <li><a href="{{ url_for("accounts.account_detail", _id=current_user.id) }}">프로필</a></li>
+                                    {% if current_user_ac_display_true_list %}
+                                        <li><a href="{{ url_for('articles.user_ac_list', _id=current_user.id) }}">마이 게시글카테고리</a></li>
+                                    {% else %}
+                                        <li><a href="{{ url_for('articles.ac_detail', _id="create", slug='category') }}">아티클 카테고리 등록</a></li>
+                                    {% endif %}
+                                    {% if current_user.profile_user_set[0].level == "판매사업자" %}
+                                        {% if current_user_shop_display_true_list %}
+                                            <li><a class="a-item" href="{{ url_for('products.user_shop_list', _id=current_user.id) }}">마이 Shop리스트</a></li>
+                                        {% else %}
+                                            <li><a class="a-item" href="{{ url_for('products.shop_detail', _id="create", slug='shop') }}">Shop 등록</a></li>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if (current_cart != None) and (current_cart.cart_total_price != 0) %}
+                                        <li class="a-item"><a href="{{ url_for('carts.cart_view') }}">카트보기: <span class="cart-items-count">{{ cart_items_total_count }}</span></a></li>
+                                    {% endif %}
+                                    {% if complete_orders %}
+                                        <li class="a-item"><a href="{{ url_for("orders.order_complete_list") }}">주문완료 리스트</a></li>
+                                    {% endif %}
+                                {% else %}
+                                    <li><a href="{{ url_for("accounts.account_detail", _id=current_user.id) }}">프로필 등록</a></li>
+                                {% endif %}
+                                <li><a href="#">Item</a></li>
+                                {% if is_lotto_extract %}
+                                    <li><a href="{{ url_for("lottos.random_lotto") }}">로또번호 생성</a></li>
+                                {% endif %}
+                                <li><a href="{{ url_for("commons.main") }}">MAIN PAGE</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                {% endif %}
+
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for("accounts.logout") }}">로그아웃</a></li>
+                {% else %}
+                <li><a href="{{ url_for("accounts.login") }}">로그인</a></li>
+                <li><a href="{{ url_for("accounts.register") }}">회원가입</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="pr-30 uk-hidden@m">
+            <button class="hamburger">
+                <i class="fas fa-align-justify"></i>
+            </button>
+        </div>
+
+        <div class="mobile uk-hidden@m" uk-drop="mode: click; animation: uk-animation-fade; duration: 300">
+            <div class="navbar-container">
+                <ul class="uk-nav-default" uk-nav>
+                    <li class="uk-parent">
+                        <a href="#">PARENT <span uk-nav-parent-icon></span></a>
+                        <ul class="nav-sub">
+                            <li><a class="a-item" href="#">Sub item</a></li>
+                            <li>
+                                <a class="a-item" href="#">Sub item</a>
+                                <ul>
+                                    <li><a class="a-item" href="#">Sub item</a></li>
+                                    <li><a class="a-item" href="#">Sub item</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="uk-parent">
+                        <a href="#">게시글 <span uk-nav-parent-icon></span></a>
+                        <ul class="nav-sub">
+                            <li><a class="a-item" href="{{ url_for('articles.all_ac_list') }}">모든 카테고리</a></li>
+                            <li>
+                                <a class="a-item" href="#">Sub item</a>
+                                <ul>
+                                    <li><a class="a-item" href="#">Sub item</a></li>
+                                    <li><a class="a-item" href="#">Sub item</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    {% if current_user.is_authenticated %}
+                        <li class="uk-parent">
+                            <a href="#">
+                                {% if current_profile.profile_img_path %}
+                                    <span class="pr-5"><img id="global-profile-img" src="/{{ current_profile.profile_img_path }}" alt="mdo"></span>
+                                {% else %}
+                                    <span class="pr-5"><img id="global-profile-img" src="{{ url_for('static', filename='statics/images/user-none.png') }}" alt="mdo"></span>
+                                {% endif %}
+                                마이페이지 <span uk-nav-parent-icon></span>
+                            </a>
+                            <ul class="nav-sub">
+                                {% if current_user.is_admin %}
+                                    <li><a class="a-item" href="{{ url_for("admin_accounts.index") }}">관리 페이지</a></li>
+                                {% endif %}
+                                {% if current_user.profile_user_set %}
+                                    <li><a class="a-item" href="{{ url_for("accounts.account_detail", _id=current_user.id) }}">프로필</a></li>
+
+                                    {% if current_user.ac_user_set %}
+                                        <li><a class="a-item" href="{{ url_for('articles.user_ac_list', _id=current_user.id) }}">게시글 카테고리</a></li>
+                                    {% else %}
+                                        <li><a class="a-item" href="{{ url_for('articles.ac_detail', _id="create", slug='category') }}">아티클 카테고리 등록</a></li>
+                                    {% endif %}
+
+                                    {% if current_user.shop_user_set %}
+                                        <li><a class="a-item" href="{{ url_for('products.user_shop_list', _id=current_user.id) }}">마이 Shops</a></li>
+                                    {% else %}
+                                        <li><a class="a-item" href="{{ url_for('products.shop_detail', _id="create", slug='shop') }}">Shop 등록</a></li>
+                                    {% endif %}
+                                {% else %}
+                                    <li><a class="a-item" href="{{ url_for("accounts.account_detail", _id=current_user.id) }}">프로필을 등록</a></li>
+                                {% endif %}
+                                <li><a class="a-item" href="#">Sub item</a></li>
+                                <li><a class="a-item" href="{{ url_for("lottos.random_lotto") }}">로또번호 생성</a></li>
+                                <li><a class="a-item" href="{{ url_for("commons.main") }}">MAIN PAGE</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+
+                    {% if current_user.is_authenticated %}
+                        <li class="no-parent"><a class="a-item" href="{{ url_for("accounts.logout") }}">로그아웃</a></li>
+                    {% else %}
+                        <li class="no-parent"><a class="a-item" href="{{ url_for("accounts.login") }}">로그인</a></li>
+                        <li class="no-parent"><a class="a-item" href="{{ url_for("accounts.register") }}">회원가입</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+    </nav>
+
+
+</div>

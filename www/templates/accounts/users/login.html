@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}
+    Login
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/css/accounts.css') }}" rel="stylesheet">
+{% endblock %}
+
+
+{% block body %}
+    <section class="accounts-container">
+        <div class="main-width padding10 mt-20 mb-20">
+            <div class="form-container register">
+                <div class="flashes-container">
+                    {% include 'includes/messages.html' %}
+                </div>
+                <div class="login-alert"></div>
+                    <form action="{{ url_for("accounts.login_post") }}" method="POST">
+                    {{ form.csrf_token }}
+                    <fieldset class="uk-fieldset">
+
+                        <legend class="uk-legend">로그인</legend>
+
+                        <div class="uk-margin">
+                            {{ form.username(class="uk-input mt-5", placeholder="아이디 혹은 이메일") }}
+                        </div>
+
+                        <div class="uk-margin">
+                            {{ form.password(class="uk-input mt-5", placeholder="비밀번호") }}
+                        </div>
+
+                        <p uk-margin>
+                            <button class="uk-button uk-button-primary uk-width-1-1 mt-10">로그인</button>
+                        </p>
+
+                    </fieldset>
+                </form>
+
+                <div class="mt-20">
+                    <a href="{{ url_for('accounts.register') }}">아직 가입을 하지 않으셨나요?</a>
+                </div>
+
+                <div class="mt-10">
+                    <a href="{{ url_for('accounts.forget_password') }}">비밀번호를 잊으셨나요?</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

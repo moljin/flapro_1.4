@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}
+    주문리스트
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/font-awesome-5.15.1/css/all.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/css/cart.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/css/order.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        orderDeleteAjax = "{{ url_for("orders.order_delete_ajax") }}"
+
+        CSRF_TOKEN = "{{ csrf_token() }}"
+    </script>
+
+{% endblock %}
+
+{% block above_main %}
+    <div>
+
+    </div>
+{% endblock %}
+
+{% block main %}
+    <section class="section-main cart-section">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+        <article class="article-container pt-10">
+            <div class="board-container">
+                <div class="pl-10 pr-10">
+                    <div class="main-width above-shop pt-10 pb-10">
+                        <div><input class="uk-checkbox" id="all-check" type="checkbox" name="all_checked"><span class="ml-10">전체선택</span></div>
+                        <div>
+                            <button type="button" class="uk-button uk-button-default" uk-toggle="target: #order-delete-modal">선택 삭제</button>
+                        </div>
+                        <div id="order-delete-modal" class="order-delete-modal uk-flex-top" uk-modal>
+                            <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                <button class="uk-modal-close-default" type="button" uk-close></button>
+                                정말로 주문정보를 삭제하시겠어요?
+                                <div class="btn uk-align-right">
+                                    <div class="product-delete-btn uk-inline ml-15">
+                                        <button id="checked-delete-btn" class="uk-button uk-button-primary uk-modal-close" type="button">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cart-product bg-100 padding10">
+                    {% if orders|length != 0 %}
+                        {% for order in orders %}
+                            <div class="cart-product-container main-width mb-20">
+                                <div class="sub-container">
+                                    <div class="order-lt">
+                                        <div class="pd-check mr-10">
+                                            <input class="uk-checkbox single" id="{{ order.id }}" type="checkbox" name="is_checked">
+                                        </div>
+                                        <div class="day-num padding10">
+                                            {% for trans in order.ordertransaction_order_set %}
+                                                {% if (order.merchant_order_id == trans.merchant_order_id) and (trans.is_success == True) %}
+                                                    <div>주문일: {{ trans.created_at|daytime("small") }}</div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        {% for order_product in order.orderproduct_order_set %}
+                                            <div class="pd-title pr-10">
+                                                <a href="{{ url_for("orders.order_complete_detail")+'?order_id='+ order.id | string +'&merchant_order_id='+ order.merchant_order_id }}">
+                                                    {{ order_product.product.title }}등의 상품 {{ order.orderproduct_order_set|length }}개
+                                                </a>
+                                            </div>
+                                            {% break %}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="order-rt">
+                                        <div class="pay">
+                                            <div class="pay-item pt-10 pr-10 pb-10">
+                                                <div class="total">
+                                                    <div>주문금액: {{ order.total_order_amount|intcomma }}원</div>
+                                                    <div>배송비: {{ order.cart.get_total_delivery_pay()|intcomma }}원</div>
+                                                </div>
+                                            </div>
+                                            <div class="pay-item padding10">
+                                                <div>총 할인금액 : {{ order.total_discount_amount|intcomma }}원</div>
+                                                {% for trans in order.ordertransaction_order_set %}
+                                                    {% if (order.merchant_order_id == trans.merchant_order_id) and (trans.is_success == True) %}
+                                                        <div>결제금액: {{ trans.amount|intcomma }}원</div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="method">
+                                            <div>
+                                                {% for trans in order.ordertransaction_order_set %}
+                                                    {% if (order.merchant_order_id == trans.merchant_order_id) and (trans.is_success == True) %}
+                                                        결제방식: {{ trans.type }} <br>
+                                                        {% if trans.is_cancel == True %}
+                                                            결제취소 완료 <br>
+                                                        {% else %}
+                                                            결제완료 <br>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="main-width mb-20">
+                            주문내역이 없습니다.
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="main-width pl-10 pr-10">
+                    <div class="mt-20 mb-20">
+                        {% if point_obj %}
+                            <div class="text-center">적립 잔여포인트: {{ point_obj.remained_point|intcomma }}원</div>
+                        {% else %}
+                            <div class="text-center">적립 잔여포인트: 0원</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </article>
+    </section>
+    <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/js/ecomm/orders/orders.js') }}"></script>
+{% endblock %}

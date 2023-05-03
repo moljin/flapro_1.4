@@ -1,0 +1,44 @@
+
+<ul class="uk-pagination uk-flex-center pagination-{{ page_obj_3 }}" uk-margin>
+    {% if pagination_3.has_prev %}
+        <li><a class="uk-link link-{{ page_obj_3 }}" href="?{% if target_user %}_id={{ target_user.id }}{% endif %}
+                                                {% if res_tag_3 %}&res_tag_3={{ res_tag_3}}{% endif %}
+                                                {% if kw_3 %}&kw_3={{ kw_3 }}{% endif %}
+                                                {% if pagination %}&page={{ pagination.page }}{% endif %}
+                                                {% if pagination_2 %}&page_2={{ pagination_2.page }}{% endif %}
+                                                {% if pagination_4 %}&page_4={{ pagination_4.page }}{% endif %}
+                                                &page_3={{ pagination_3.prev_num }}">이전</a></li>
+    {% endif %}
+
+    {% for page_num in pagination_3.iter_pages() %}
+        {% if page_num %}
+            {% if page_num != pagination_3.page %}
+                <li><a class="uk-link link-{{ page_obj_3 }}" href="?{% if target_user %}_id={{ target_user.id }}{% endif %}
+                                                        {% if res_tag_3 %}&res_tag_3={{ res_tag_3 }}{% endif %}
+                                                        {% if kw_3 %}&kw_3={{ kw_3 }}{% endif %}
+                                                        {% if pagination %}&page={{ pagination.page }}{% endif %}
+                                                        {% if pagination_2 %}&page_2={{ pagination_2.page }}{% endif %}
+                                                        {% if pagination_4 %}&page_4={{ pagination_4.page }}{% endif %}
+                                                        &page_3={{ page_num }}">{{ page_num }}</a></li>
+            {% else %}
+                <li class="uk-active"><span>{{ page_num }}</span></li>
+            {% endif %}
+        {% else %}
+            <li class="uk-disabled"><span>...</span></li>
+        {% endif %}
+    {% endfor %}
+
+    {% if pagination_3.has_next %}
+        <li><a class="uk-link link-{{ page_obj_3 }}" href="?{% if target_user %}_id={{ target_user.id }}{% endif %}
+                                                {% if res_tag_3 %}&res_tag_3={{ res_tag_3 }}{% endif %}
+                                                {% if kw_3 %}&kw_3={{ kw_3 }}{% endif %}
+                                                {% if pagination %}&page={{ pagination.page }}{% endif %}
+                                                {% if pagination_2 %}&page_2={{ pagination_2.page }}{% endif %}
+                                                {% if pagination_4 %}&page_4={{ pagination_4.page }}{% endif %}
+                                                &page_3={{ pagination_3.next_num }}">다음</a></li>
+    {% endif %}
+</ul>
+{% if pagination_3.items %}
+<input type="hidden" id="top_page_obj_3" value="{{ page_obj_3 }}_{{ pagination_3.items[0].id }}">
+{% endif %}
+

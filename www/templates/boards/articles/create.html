@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}
+    아티클 등록
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/css/articles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/suneditor.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/custom/customSunEditor.css') }}" rel="stylesheet">
+
+    <link href="{{ url_for('static', filename='statics/tagify/tagify.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script src="{{ url_for('static', filename='statics/tagify/tagify.min.js') }}"></script>
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}"
+        editorImagesSaveAjax = '{{ url_for('commons.editor_images_save_ajax') }}';
+    </script>
+{% endblock %}
+
+{% block above_main %}
+    <section class="above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body %}
+    <section class="articles-container article create">
+        <div class="main-width padding10 mt-20 mb-20">
+            <div class="form-container create">
+                <form method="POST" action="{{ url_for("articles.article_save") }}" enctype="multipart/form-data">
+                    {{ form.csrf_token }}
+                    <div class="board-form-container mb-20" uk-grid>
+                        <div class="right">
+                            <div class="board-form">
+                                <div class="uk-margin preview">
+                                    <label for="image">
+                                        <img class="img-preview" id="img-preview" src="{{ url_for('static', filename='statics/images/article/article_thumbnail.jpg') }}">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="board-form">
+                                <div class="uk-margin image">
+                                    <!--최적 업로드 이미지 사이즈 400px*300px-->
+                                    {{ form.image(class="uk-input mt-5", hidden="hidden", alt="Alt Text Here") }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="left">
+                            <div class="board-form mt-10">
+                                <div class="breadcrumb uk-width-expand uk-flex uk-flex-left">
+                                    <ul class="custom uk-breadcrumb uk-flex">
+                                        <li class="profile image nickname uk-text-nowrap"><a href="{{ url_for("accounts.account_detail", _id=current_user.id) }}">
+                                            <img src="/{{ current_user.profile_user_set[0].profile_img_path }}" alt="">
+                                            {{ current_user.profile_user_set[0].nickname }}</a></li>
+                                        <li><a class="custom uk-text-truncate" href="{{ url_for('articles.ac_detail', _id=target_category.id, slug=target_category.slug) }}">{{ target_category.title }}</a></li>
+                                        <li><span class="custom uk-text-nowrap">게시글 등록</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="board-form">
+                                <div class="uk-margin title">
+                                    {{ form.title(class="uk-input mt-5", required="required", value= form.title.data  or "") }}
+                                </div>
+                            </div>
+                            <div class="board-form">
+                                <div class="uk-margin meta_description">
+                                    {{ form.meta_description(class="uk-textarea mt-5", required="required", rows="3", onkeydown="textAreaHeightAuto(this)", onkeyup="textAreaHeightAuto(this)") }}
+                                </div>
+                            </div>
+                            <div class="meta-help mt-10 pl-7">
+                                    <a href="#meta-help" uk-toggle>메타설명이란?</a>
+                                    <div id="meta-help" class="uk-flex-top"  uk-modal>
+                                        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                            <button class="uk-modal-close-default" type="button" uk-close></button>
+                                            <h5 class="uk-modal-title">메타설명이란?</h5>
+                                            <div class="mt-15">메타설명의 목적은 검색자가 검색 결과에서 클릭할지 여부를 결정하는 사용자의 결정에 영향을 미칠 수 있습니다. <br><br>
+                                                "관련성이 높은 설명" 일수록 사용자 혹은 검색자가 인지하기에 쉽기 때문에 클릭 가능성이 높아질수 있습니다.
+                                                작성 길이의 기준은 "구글은 160자 미만, 네이버는 80자 미만"입니다. 둘 다 맞추려면 80자 미만 혹은 80자 내외가 최적입니다.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+
+                    </div>
+
+                    <div class="board-form">
+                        <div class="suneditor-form">
+                            {% include "includes/suneditor.html" %}
+                        </div>
+                    </div>
+                    <div class="board-form">
+                        <div class="uk-margin">
+                            {{ form.site_title(class="uk-input mt-20") }}
+                        </div>
+                    </div>
+                    <div class="board-form">
+                        <div class="uk-margin">
+                            {{ form.site_url(class="uk-textarea", rows="1", onkeydown="textAreaHeightAuto(this)", onkeyup="textAreaHeightAuto(this)") }}
+                        </div>
+                    </div>
+                    <div>
+                        <input id="tagify" name="tagify" placeholder="해시태그 입력">
+                        <script>
+                            var input = document.querySelector('#tagify')
+                            var tagify = new Tagify(input);
+                            // 태그가 추가되면 이벤트 발생
+                            tagify.on('add', function () {
+                                console.log(tagify.value); // 입력된 태그 정보 객체
+                            })
+                        </script>
+                    </div>
+                    <div class="available uk-flex mt-15">
+                        <div>
+                            전시여부:
+                        </div>
+                        <div class="ml-15">
+                        {{ form.available_display(class="uk-checkbox", checked="checked") }}
+{#                            {% if target_article.available_display %}<input type="checkbox" class="uk-checkbox" name="available_display" checked>{% else %}<input type="checkbox" class="uk-checkbox" name="available_display">{% endif %}#}
+                        </div>
+                    </div>
+                    <div class="btn-container">
+                        <input type="hidden" id="sun_init" name="sun_init" value="article_CU">
+                        <input type="hidden" id="sunImage_init" name="sunImage_init" value="">
+                        <input type="hidden" id="article_id" name="article_id" value="">
+                        <input type="hidden" id="user_id" name="user_id" value="{{ current_user.id }}">
+                        <input type="hidden" id="category_id" name="category_id" value="{{ target_category.id }}">
+                        <input type="hidden" id="orm_id" name="orm_id" value="{{ orm_id }}">
+
+                        <button class="uk-button uk-button-primary mt-15" type="submit" id="form-submit">저장</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block end_js %}
+    <!-- 필수: main_js -->
+    <script src="{{ url_for('static', filename='statics/suneditor/suneditor.min.js') }}"></script>
+
+    <!--비필수: codeMirror -->
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/htmlmixed.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/xml.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/css.js') }}"></script>
+
+    <!-- 필수: 버튼에 필요-->
+    <script src="{{ url_for('static', filename='statics/suneditor/katex.min.js') }}"></script>
+    <!-- 필수: Language -->
+    <script src="{{ url_for('static', filename='statics/suneditor/ko.js') }}"></script>
+
+    <!-- Custom -->
+    <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/custom/suneditorInit.js') }}"></script>
+
+    <!--그외-->
+    <script src="{{ url_for('static', filename='statics/js/articles/article.js') }}"></script>
+{% endblock %}

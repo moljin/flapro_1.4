@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block main_css %}
+    <link href="{{ url_for('static', filename='statics/uikit/uikit.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/uikit/custom_uikit.css') }}" rel="stylesheet">
+
+    <link href="{{ url_for('static', filename='statics/css/main.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/css/header.css') }}" rel="stylesheet">
+
+    <link href="{{ url_for('static', filename='statics/font-awesome-5.15.1/css/all.min.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block main_js %}
+    <script src="{{ url_for('static', filename='statics/js/libs/jquery-3.6.0.min.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='statics/uikit/uikit.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/uikit/uikit-icons.min.js') }}"></script>
+{% endblock %}
+
+
+{% block header %}
+    {% include 'includes/header.html' %}
+{% endblock %}
+
+{% block footer %}
+    {% include 'includes/footer.html' %}
+{% endblock %}
+

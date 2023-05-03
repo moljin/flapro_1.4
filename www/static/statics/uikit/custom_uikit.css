@@ -1,0 +1,16 @@
+/* a tag 초기화*/
+.uk-link, a {color: mediumblue; text-decoration: none}
+.uk-link:hover, a:hover {color: brown; text-decoration: none}
+
+.uk-textarea {resize: none}
+
+.uk-pagination li.uk-active span {color: coral;}
+.uk-pagination>*>* {padding: 5px 0.43rem}
+
+.uk-badge {height: 25px; padding: 0.05rem 7px 0}
+
+.breadcrumb.active {color: #999999}
+.breadcrumb ul.uk-breadcrumb {margin-bottom: 10px}
+.breadcrumb .uk-breadcrumb>:nth-child(n+2):not(.uk-first-column)::before {margin: 0 6px 0 calc(5px - 4px)}  /*left margin*/
+.breadcrumb .custom.uk-breadcrumb>:nth-child(n+2):not(.uk-first-column)::before {margin: 0 6px}  /*left margin*/
+.breadcrumb ul.uk-breadcrumb .custom.uk-text-truncate {display:inline-block; width:100px; font-size: 0.875rem; margin-bottom: -6px}

@@ -1,0 +1,106 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    로또추출번호
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        {#accountsDeleteAjax = "{{ url_for('accounts.delete_ajax') }}";#}
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            {% if request.host == "127.0.0.1:5000" %}
+                <li><a target="_blank" href="{{ url_for("lottos.win_extract_lotto") }}">번호 추출하기</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('admin_lottos.lotto_num_create') }}">추출번호 등록</a></li>
+            <li><span>로또추출번호</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block body_section %}
+    <div class="list-container">
+        <div class="objects list">
+
+            <form class="mb-15" id="searchForm" method="get" action="{{ url_for('admin_lottos.lotto_num_list') }}" uk-grid>
+                {% include "includes/search.html" %}
+            </form>
+            {% if kw %}
+                {% if lotto_num %}
+                    <div>"{{ kw }}"에 대한 검색결과</div>
+                    <hr>
+                {% else %}
+                    <div>"{{ kw }}"에 대한 검색결과가 없습니다.</div>
+                    <hr>
+                {% endif %}
+            {% endif %}
+            <script src="{{ url_for('static', filename='statics/js/searches/search.js') }}"></script>
+
+            <table class="uk-table uk-table-middle uk-table-divider">
+                <thead>
+                <tr>
+                    <th scope="col" class="uk-table-shrink"><input class="uk-checkbox" id="all-check" type="checkbox" name="all_checked"></th>
+                    <th scope="col" class="uk-text-nowrap">ID</th>
+                    <th scope="col" class="uk-text-nowrap">타이틀</th>
+                    <th scope="col" class="uk-text-nowrap">Status</th>
+                    <th scope="col" class="uk-text-nowrap">회차</th>
+                    <th scope="col" class="uk-text-nowrap">추출번호</th>
+                    <th scope="col" class="uk-text-nowrap uk-table-shrink">등록일</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for lotto_num in lotto_nums %}
+                    <tr>
+                        <td data-label="체크"><input class="uk-checkbox single" id="{{ lotto_num.id }}" type="checkbox" name="is_checked"></td>
+                        <td data-label="ID" class="">{{ lotto_num.id }}</td>
+                        <td data-label="타이틀">
+                            <a href="{{ url_for('admin_lottos.lotto_num_change', _id=lotto_num.id) }}">{{ lotto_num.title }}</a>
+                        </td>
+                        <td data-label="Status">{{ lotto_num.status }}</td>
+                        <td data-label="회차">{{ lotto_num.latest_round_num }}</td>
+                        <td data-label="추출번호">{{ lotto_num.extract_num }}</td>
+                        <td data-label="등록일" class="uk-text-nowrap">{{ lotto_num.created_at|daytime("small") }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <button class="uk-button uk-button-default" uk-toggle="target: #user-delete-modal">선택 삭제</button>
+        </div>
+    </div>
+
+    <div id="user-delete-modal" class="uk-flex-top" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            정말로 추출번호를 삭제하시겠어요?
+            <div class="btn uk-inline ml-15 uk-align-right">
+                <button id="checked-delete-btn" class="uk-button uk-button-primary" type="button">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    {% if pagination %}
+        {% include 'includes/pagination/pagination.html' %}
+    {% endif %}
+    <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/js/accounts/accounts.js') }}"></script>
+{% endblock %}
+
+
+
+
+
+

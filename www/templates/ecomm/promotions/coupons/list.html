@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}
+    쿠폰리스트
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/font-awesome-5.15.1/css/all.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/css/promotions.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}"
+    </script>
+{% endblock %}
+
+{% block above_main %}
+    <section class="above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block main %}
+    <section class="promotions-container coupon list">
+        <div class="form-container">
+            <div class="board-container main-width padding10 mt-10">
+                <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                    <ul class="uk-breadcrumb">
+                        <li><a href="{{ url_for('products.user_shop_list', _id=current_user.id) }}">마이Shop 리스트</a></li>
+                        <li><a href="{{ url_for('products.shop_detail', _id="create", slug='shop') }}">Shop 등록</a></li>
+                        <li><a href="{{ url_for('coupons.create') }}">쿠폰 등록</a></li>
+                        <li><span>마이쿠폰 리스트</span></li>
+                    </ul>
+                </div>
+                <div class="uk-overflow-auto">
+                    <table class="uk-table uk-table-middle uk-table-divider">
+                        <thead>
+                        <tr>
+                            <th scope="col" class="uk-table-shrink"><input class="uk-checkbox" id="all-check" type="checkbox" name="all_checked"></th>
+                            <th scope="col" class="uk-text-nowrap">ID</th>
+                            <th scope="col" class="uk-table-expand uk-text-nowrap">쿠폰코드</th>
+                            <th scope="col" class="uk-text-nowrap">시작일</th>
+                            <th scope="col" class="uk-text-nowrap">종료일</th>
+                            <th scope="col" class="uk-table-shrink uk-text-nowrap">금액</th>
+                            <th scope="col" class="uk-table-shrink uk-text-nowrap">사용가능</th>
+                            <th scope="col" class="uk-table-shrink uk-text-nowrap">잔여량</th>
+                            <th scope="col" class="uk-table-shrink uk-text-nowrap">사용량</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for coupon in coupons %}
+                            <tr>
+                            <td data-label="체크"><input class="uk-checkbox single" id="{{ coupon.id }}" type="checkbox" name="is_checked"></td>
+                            <td data-label="ID" class="">{{ coupon.id }}</td>
+                            <td data-label="쿠폰코드">
+                                <a href="{{ url_for('coupons.change', _id=coupon.id) }}">{{ coupon.code }}</a>
+                            </td>
+                            <td data-label="시작일" class="">{{ coupon.use_from|daytime("small") }}</td>
+                            <td data-label="종료일" class="">{{ coupon.use_to|daytime("small") }}</td>
+                            <td data-label="금액" class="uk-text-nowrap">{{ coupon.amount|intcomma }}원</td>
+                            <td data-label="사용가능" class="uk-text-nowrap">{% if coupon.is_active %}<input class="uk-checkbox" checked="checked" id="is_active" name="is_active" type="checkbox">{% else %}<input class="uk-checkbox" id="is_active" name="is_active" type="checkbox">{% endif %}</td>
+                            <td data-label="잔여량" class="uk-text-nowrap">{{ coupon.available_count }}</td>
+                            <td data-label="사용량" class="uk-text-nowrap">{{ coupon.used_count }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <button class="uk-button uk-button-default" id="checked-delete-btn">선택 삭제</button>
+                </div>
+                {% include "includes/pagination/pagination.html" %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}
+    Bad Request
+{% endblock %}
+
+<body>
+{% block body %}
+    <div class="flashes-container">
+        {% include "includes/messages.html" %}
+    </div>
+    <h3><b>Bad Request[400]</b></h3>
+    <p>처리가 불가능하거나, 유효하지 않은 접근입니다.</p>
+{% endblock %}
+</body>

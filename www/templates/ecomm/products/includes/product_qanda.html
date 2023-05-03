@@ -1,0 +1,284 @@
+<!--products-container product qna-->
+<!--main-width-->
+<hr class="uk-divider-icon">
+{% if pagination_2.page == 1 %}
+    <div class="question new mt-10">
+        <div class="question-form-container">
+            <div class="question-btn-container">
+                <button class="uk-button uk-button-default question-btn">
+                    <i class="fab fa-quora mr-10" style="font-size: 17px"></i>문의하기
+                </button></div>
+            <!--question form 동적 삽입-->
+        </div>
+    </div>
+{% endif %}
+
+{% if target_questions %}
+    <div class="question old list">
+        <table class="uk-table uk-table-middle uk-table-divider">
+            <thead>
+                <tr>
+                    <th scope="col" class="uk-text-nowrap uk-table-shrink">문의유형</th>
+                    <th scope="col" class="uk-text-nowrap uk-table-shrink">답변여부</th>
+                    <th scope="col" class="uk-text-nowrap uk-table-expand">문의/답변</th>
+                    <th scope="col" class="uk-text-nowrap uk-table-shrink">질문자</th>
+                    <th scope="col" class="uk-text-nowrap uk-table-shrink">등록일</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for question in target_questions %}
+                {% set content_safe = question.content|safe %}
+                <a id="question_{{ question.id }}"></a>
+                <tr>
+                    <td data-label="문의유형" class="uk-text-nowrap">{{ question.type }}</td>
+                    {% if question.is_completed %}
+                        <td data-label="답변여부" class="uk-text-nowrap">완료</td>
+                    {% else %}
+                        <td data-label="답변여부" class="uk-text-nowrap">미완료</td>
+                    {% endif %}
+                    {% if question.is_secret %}
+                        {% if current_user != question.user %}
+                            {% if current_user.is_admin or current_user.is_staff %}
+                                <td data-label="질문">
+                                    <div class="question-link title">
+                                        [비밀글] <a href="javascript:void(0);">{{ question.title|truncate(60) }}</a>
+                                    </div>
+                                    <div class="question-content">
+                                        <div class="question">
+                                            <div class="inner">
+                                                <div class="title mt-10"><h4>문의</h4></div>
+                                                <div class="content mt-10">{{ question.content|safe }}</div>
+                                            </div>
+                                        </div>
+                                        {% if question.productanswer_question_set[0] %}
+                                            <div class="reply">
+                                                <div class="inner">
+                                                    <hr class="mt-10 mb-10">
+                                                    <div class="title"><h4>답변</h4></div>
+                                                    <div class="content mt-10">{{ question.productanswer_question_set[0].content|safe }}</div>
+                                                    <div class="created-at">{{ question.created_at|daytime("medium") }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="reply-update-btn-container">
+                                                <button type="button" class="reply-update-btn uk-button uk-button-default mt-10"
+                                                        data-id="{{ question.productanswer_question_set[0].id }}" data-question-id="{{ question.id }}">
+                                                    <i class="fas fa-edit mr-10"></i>답변 수정하기</button></div>
+                                        {% else %}
+                                            <div class="reply-btn-container"><button class="uk-button uk-button-default mt-10 reply-btn" data-id="{{ question.id }}">
+                                                <i class="fas fa-comment-dots mr-10" style="font-size: 17px"></i>답변달기</button></div>
+                                            <div class="reply-form-container"><!--답변 업데이트 form 동적삽입--></div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            {% else %} <!--관리자도 아니고, 질문자도 아니고..-->
+                                <td data-label="질문" class="uk-text-nowrap">
+                                    <div class="is-secret">비밀글입니다. <i class="fas fa-lock ml-20"></i></div>
+                                </td>
+                            {% endif %}
+                        {% else %} <!--질문자 자신-->
+                            <td data-label="질문">
+                                <div class="question-link title">
+                                    [나의 비밀문의] <a href="javascript:void(0);">{{ question.title|truncate(60) }}</a>
+                                </div>
+                                <div class="question-content">
+                                    <div class="question">
+                                        <div class="inner">
+                                            <div class="title mt-10"><h4>문의</h4></div>
+                                            <div class="content mt-10">{{ question.content|safe }}</div>
+                                        </div>
+                                        {% if question.productanswer_question_set[0] %}
+                                            <div class="delete-container pseudo">
+                                                <!--질문삭제-->
+                                                 <div class="question-delete-btn pseudo"></div>
+                                            </div>
+                                        {% else %}
+                                            <div class="delete-container">
+                                                    <div class="modal-btn-container">
+                                                        <button class="question-delete-modal-btn uk-button uk-button-default"
+                                                                uk-toggle="target: #question-delete-modal-{{ question.id }}" type="button"
+                                                                uk-tooltip="title: 질문삭제; pos: bottom">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                    <!--삭제 modal-->
+                                                    <div id="question-delete-modal-{{ question.id }}" class="uk-flex-top" uk-modal>
+                                                        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                            <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                            정말로 질문을 삭제하시겠어요?
+                                                            <div class="uk-align-right">
+                                                                <div class="question-delete-btn uk-inline mt-40" data-id="{{ question.id }}" data-user-id="{{ current_user.id }}">
+                                                                    <button class="uk-button uk-button-primary uk-modal-close" type="button">삭제</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                        {% endif %}
+                                    </div>
+                                    {% if question.productanswer_question_set[0] %}
+                                        <div class="reply">
+                                            <div class="inner">
+                                                <hr class="mt-10 mb-10">
+                                                <div class="title"><h4>답변</h4></div>
+                                                <div class="content mt-10">{{ question.productanswer_question_set[0].content|safe }}</div>
+                                                <div class="created-at">{{ question.created_at|daytime("medium") }}</div>
+                                            </div>
+                                        </div>
+                                            <div class="question-update-btn-container pseudo">
+                                                <button type="button" class="uk-button uk-button-default mt-10 question-update-btn"
+                                                        data-id="{{ question.id }}" data-secret="{{ question.is_secret }}" data-type="{{ question.type }}" data-title="{{ question.title }}"><!--수정하기 pseudo--></button>
+                                            </div>
+                                    {% else %}
+                                            <div class="question-update-btn-container">
+                                                <button type="button" class="uk-button uk-button-default mt-10 question-update-btn"
+                                                        data-id="{{ question.id }}" data-secret="{{ question.is_secret }}" data-type="{{ question.type }}" data-title="{{ question.title }}">
+                                                    <i class="fas fa-edit mr-10"></i>수정하기</button>
+                                            </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        {% endif %}
+                    {% else %} <!--Not Secret-->
+                        {% if current_user != question.user %}
+                            {% if current_user.is_admin or current_user.is_staff or target_product.user %}
+                                <!--답변달기는 관리자 혹은 스태프 혹은 상품등록 회원(판매사업자)-->
+                                <td data-label="질문">
+                                    <div class="question-link title">
+                                        <a href="javascript:void(0);">{{ question.title|truncate(60) }}</a>
+                                    </div>
+                                    <div class="question-content">
+                                        <div class="question">
+                                            <div class="inner">
+                                                <div class="title mt-10"><h4>문의</h4></div>
+                                                <div class="content mt-10">{{ question.content|safe }}</div>
+                                            </div>
+                                        </div>
+                                        {% if question.productanswer_question_set[0] %}
+                                            <div class="reply">
+                                                <div class="inner">
+                                                    <hr class="mt-10 mb-10">
+                                                    <div class="title"><h4>답변</h4></div>
+                                                    <div class="content mt-10">{{ question.productanswer_question_set[0].content|safe }}</div>
+                                                    <div class="created-at">{{ question.created_at|daytime("medium") }}</div>
+                                                </div>
+                                            </div>
+                                                <div class="reply-update-btn-container">
+                                                    <button type="button" class="reply-update-btn uk-button uk-button-default mt-10" data-id="{{ question.productanswer_question_set[0].id }}"
+                                                            data-question-id="{{ question.id }}"><i class="fas fa-edit mr-10"></i>답변 수정하기
+                                                    </button>
+                                                </div>
+                                        {% else %}
+                                                <div class="reply-btn-container">
+                                                    <button class="uk-button uk-button-default mt-10 reply-btn" data-id="{{ question.id }}">
+                                                        <i class="fas fa-comment-dots mr-10" style="font-size: 17px"></i>답변달기</button>
+                                                </div>
+                                                <div class="reply-form-container"><!--답변 form 동적삽입--></div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            {% else %} <!--질문자도 아니고, 관리자도 아니고, 스태프도아니고,상품등록회원도 아니고 -->
+                                <td data-label="질문">
+                                    <div class="question-link title">
+                                        <a href="javascript:void(0);">{{ question.title|truncate(60) }}</a>
+                                    </div>
+                                    <div class="question-content">
+                                        <div class="question">
+                                            <div class="inner">
+                                                <div class="title mt-10"><h4>문의</h4></div>
+                                                <div class="content mt-10">{{ question.content|safe }}</div>
+                                            </div>
+                                        </div>
+                                        {% if question.productanswer_question_set[0] %}
+                                            <div class="reply">
+                                                <div class="inner">
+                                                    <hr class="mt-10 mb-10">
+                                                    <div class="title"><h4>답변</h4></div>
+                                                    <div class="content mt-10">{{ question.productanswer_question_set[0].content|safe }}</div>
+                                                    <div class="created-at">{{ question.created_at|daytime("medium") }}</div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            {% endif %}
+                        {% else %} <!--질문자 자신-->
+                            <td data-label="질문">
+                                <div class="question-link title">
+                                    <a href="javascript:void(0);">{{ question.title|truncate(60) }}</a>
+                                </div>
+                                <div class="question-content">
+                                    <div class="question">
+                                        <div class="inner">
+                                            <div class="title mt-10"><h4>문의</h4></div>
+                                            <div class="content mt-10">{{ question.content|safe }}</div>
+                                        </div>
+                                            {% if question.productanswer_question_set[0] %}
+                                                <div class="delete-container pseudo">
+                                                    <!--질문삭제-->
+                                                    <div class="question-delete-btn pseudo"></div>
+                                                </div>
+                                            {% else %}
+                                                <div class="delete-container">
+                                                    <div class="modal-btn-container">
+                                                        <button class="question-delete-modal-btn uk-button uk-button-default" uk-toggle="target: #question-delete-modal-{{ question.id }}" type="button"
+                                                                uk-tooltip="title: 질문삭제; pos: bottom">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                    <!--삭제 modal-->
+                                                    <div id="question-delete-modal-{{ question.id }}" class="uk-flex-top" uk-modal>
+                                                        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                            <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                            정말로 질문을 삭제하시겠어요?
+                                                            <div class="uk-align-right">
+                                                                <div class="question-delete-btn uk-inline mt-40" data-id="{{ question.id }}" data-user-id="{{ current_user.id }}">
+                                                                    <button class="uk-button uk-button-primary uk-modal-close" type="button">삭제</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                    </div>
+                                    {% if question.productanswer_question_set[0] %}
+                                        <div class="reply">
+                                            <div class="inner">
+                                                <hr class="mt-10 mb-10">
+                                                <div class="title"><h4>답변</h4></div>
+                                                <div class="content mt-10">{{ question.productanswer_question_set[0].content|safe }}</div>
+                                                <div class="created-at">{{ question.created_at|daytime("medium") }}</div>
+                                            </div>
+                                        </div>
+                                            <div class="question-update-btn-container pseudo">
+                                                <button type="button" class="uk-button uk-button-default mt-10 question-update-btn"
+                                                        data-id="{{ question.id }}" data-secret="{{ question.is_secret }}" data-type="{{ question.type }}" data-title="{{ question.title }}">
+                                                    <!--수정하기 pseudo--></button>
+                                            </div>
+                                    {% else %}
+                                        <div class="question-update-btn-container">
+                                            <button type="button" class="uk-button uk-button-default mt-10 question-update-btn"
+                                                    data-id="{{ question.id }}" data-secret="{{ question.is_secret }}" data-type="{{ question.type }}" data-title="{{ question.title }}">
+                                                <i class="fas fa-edit mr-10"></i>수정하기
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        {% endif %}
+                    {% endif %}
+                    <td data-label="질문자" class="uk-text-nowrap">
+                        {{ question.user.email|truncate(6) }}
+                    </td>
+                    <td data-label="등록일" class="uk-text-nowrap">{{ question.created_at|daytime("small") }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="paging">
+            {% if pagination_2 %}
+                {% include 'includes/pagination/pagination_2.html' %}
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+

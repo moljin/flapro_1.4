@@ -1,0 +1,221 @@
+{% set visible_count = 10 %}
+{% if target_user.profile_user_set %}
+    <section class="each-container">
+        <div class="main-width">
+            {% if target_acs %}
+                <!--게시글 카테고리 관련-->
+                <div class="acs-container padding10 mt-30">
+                    <div class="link">
+                        <a href="{{ url_for("articles.user_ac_list", _id=target_user.id) }}">
+                            {% if current_user == target_user %}
+                                마이 게시글카테고리 더보기
+                            {% else %}
+                                "{{ target_user.profile_user_set[0].nickname }}"님의 게시글카테고리 더보기
+                            {% endif %}
+                        </a>
+                    </div>
+                    <div class="content mt-15">
+                        <div class="acs">
+
+                            <div class="my-slider uk-slider-container-offset" uk-slider="sets: true">
+                                <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1">
+                                    <ul class="uk-slider-items uk-child-width-1-2 uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l uk-grid uk-grid-medium uk-grid-match">
+                                        {% for ac in target_acs %}
+                                            {% if loop.index <= visible_count %}
+                                                <a href="{{ url_for("articles.ac_detail", _id=ac.id, slug=ac.slug) }}">
+                                                    <li>
+                                                        <div class="uk-card uk-card-default">
+                                                            <div class="uk-card-media-top">
+                                                                <img src="/{{ ac.img_path }}" alt="">
+                                                            </div>
+                                                            <div class="uk-card-body">
+                                                                <h3 class="uk-card-title">{{ ac.title }}</h3>
+                                                                <p>{{ ac.content|truncate(50) }}</p>
+                                                            </div>
+                                                        </div>
+
+                                                    </li>
+                                                </a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                    <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous
+                                       uk-slider-item="previous"></a>
+                                    <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next
+                                       uk-slider-item="next"></a>
+                                </div>
+                                <ul class="uk-slider-nav uk-dotnav uk-flex-center uk-margin"></ul>
+                            </div>
+
+                        </div>
+    {#                        {% if pagination %}#}
+    {#                            {% include 'includes/pagination/pagination.html' %}#}
+    {#                        {% endif %}#}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if target_articles %}
+                <!--게시글 관련-->
+                <div class="articles-container padding10 mt-30">
+                    <div class="link">
+                        <a href="{{ url_for("articles.user_article_list", _id=target_user.id) }}">
+                            {% if current_user == target_user %}
+                                마이 게시글 더보기
+                            {% else %}
+                                "{{ target_user.profile_user_set[0].nickname }}"님의 게시글 더보기
+                            {% endif %}
+                        </a>
+                    </div>
+                    <div class="content mt-15">
+                        <div class="articles">
+
+                            <div class="my-slider uk-slider-container-offset" uk-slider="sets: true">
+                                <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1">
+                                    <ul class="uk-slider-items uk-child-width-1-2 uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l uk-grid uk-grid-medium uk-grid-match">
+                                        {% for article in target_articles %}
+                                            {% if loop.index <= visible_count %}
+                                                <a href="{{ url_for("articles.article_detail", _id=article.id, slug=article.slug) }}">
+                                                    <li>
+                                                        <div class="uk-card uk-card-default">
+                                                            <div class="uk-card-media-top">
+                                                                <img src="/{{ article.img_path }}" alt="">
+                                                            </div>
+                                                            <div class="uk-card-body">
+                                                                <h3 class="uk-card-title">{{ article.title }}</h3>
+                                                                <p>{{ article.meta_description|truncate(50) }}</p>
+                                                            </div>
+                                                        </div>
+
+                                                    </li>
+                                                </a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                    <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous
+                                       uk-slider-item="previous"></a>
+                                    <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next
+                                       uk-slider-item="next"></a>
+                                </div>
+                                <ul class="uk-slider-nav uk-dotnav uk-flex-center uk-margin"></ul>
+                            </div>
+
+                        </div>
+    {#                        {% if pagination_2 %}#}
+    {#                            {% include 'includes/pagination/pagination_2.html' %}#}
+    {#                        {% endif %}#}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if target_user.profile_user_set[0].level == "판매사업자" %}
+                {% if target_shops %}
+                    <!--Shop 관련-->
+                    <div class="shops-container padding10 mt-30">
+                        <div class="link">
+                            <a href="{{ url_for("products.user_shop_list", _id=target_user.id) }}">
+                                {% if current_user == target_user %}
+                                    마이 Shop 더보기
+                                {% else %}
+                                    "{{ target_user.profile_user_set[0].nickname }}"님의 Shop 더보기
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="content mt-15">
+                            <div class="shops">
+
+                                <div class="my-slider uk-slider-container-offset" uk-slider="sets: true">
+                                    <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1">
+                                        <ul class="uk-slider-items uk-child-width-1-2 uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l uk-grid uk-grid-medium uk-grid-match">
+                                            {% for shop in target_shops %}
+                                                {% if loop.index <= visible_count %}
+                                                    <a href="{{ url_for("products.shop_detail", _id=shop.id, slug=shop.slug) }}">
+                                                        <li>
+                                                            <div class="uk-card uk-card-default">
+                                                                <div class="uk-card-media-top">
+                                                                    <img src="/{{ shop.img_path_1 }}" alt="">
+                                                                </div>
+                                                                <div class="uk-card-body">
+                                                                    <h3 class="uk-card-title">{{ shop.title }}</h3>
+                                                                    <p>{{ shop.content|truncate(50) }}</p>
+                                                                </div>
+                                                            </div>
+
+                                                        </li>
+                                                    </a>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                        <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous
+                                           uk-slider-item="previous"></a>
+                                        <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next
+                                           uk-slider-item="next"></a>
+                                    </div>
+                                    <ul class="uk-slider-nav uk-dotnav uk-flex-center uk-margin"></ul>
+                                </div>
+
+                            </div>
+    {#                            {% if pagination_3 %}#}
+    {#                                {% include 'includes/pagination/pagination_3.html' %}#}
+    {#                            {% endif %}#}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if target_products %}
+                    <!--상품 관련-->
+                    <div class="products-container padding10 mt-30">
+                        <div class="link">
+                            <a href="{{ url_for("products.user_product_list", _id=target_user.id) }}">
+                                {% if current_user == target_user %}
+                                    마이 상품 더보기
+                                {% else %}
+                                    "{{ target_user.profile_user_set[0].nickname }}"님의 상품 더보기
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="content mt-15">
+                            <div class="products">
+
+                                <div class="my-slider uk-slider-container-offset" uk-slider="sets: true">
+                                    <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1">
+                                        <ul class="uk-slider-items uk-child-width-1-2 uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l uk-grid uk-grid-medium uk-grid-match">
+                                            {% for product in target_products %}
+                                                {% if loop.index <= visible_count %}
+                                                    <a href="{{ url_for("products.product_detail", _id=product.id, slug=product.slug) }}">
+                                                        <li>
+                                                            <div class="uk-card uk-card-default">
+                                                                <div class="uk-card-media-top">
+                                                                    <img src="/{{ product.img_path_1 }}" alt="">
+                                                                </div>
+                                                                <div class="uk-card-body">
+                                                                    <h3 class="uk-card-title">{{ product.title }}</h3>
+                                                                    <p>{{ product.price|intcomma }}원</p>
+                                                                    <p>{{ product.meta_description|truncate(50) }}</p>
+                                                                </div>
+                                                            </div>
+
+                                                        </li>
+                                                    </a>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                        <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous
+                                           uk-slider-item="previous"></a>
+                                        <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next
+                                           uk-slider-item="next"></a>
+                                    </div>
+                                    <ul class="uk-slider-nav uk-dotnav uk-flex-center uk-margin"></ul>
+                                </div>
+
+                            </div>
+    {#                            {% if pagination_4 %}#}
+    {#                                {% include 'includes/pagination/pagination_4.html' %}#}
+    {#                            {% endif %}#}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </section>
+{% endif %}

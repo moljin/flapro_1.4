@@ -1,0 +1,47 @@
+/*list*/
+.order-lt {width: 55%}
+.order-rt {width: 45%}
+.order-lt, .order-rt {display: flex; align-items: center}
+.order-rt .pay {display: flex; flex: 1}
+.order-rt .pay-item {width: 50%}
+.order-rt .pay-item .total {border-left: solid 1px lightgrey; padding-left: 10px}
+.order-rt .method {border-left: solid 1px lightgrey; padding-left: 10px}
+.order-lt .day-num {flex: 1}
+.order-lt .pd-title {width: 65%}
+
+/*detail*/
+.cancel-pay-alert {display: none}
+.shop-info.upper {display: block}
+.shop-info.upper .title-del{display: flex; justify-content: space-between}
+.shop-info.upper .title-del .title {font-size: 18px; cursor: pointer}
+.shop-info.upper .title-del .del {cursor: pointer}
+.cont-pay.upper {display: flex; justify-content: center!important; margin-bottom: 10px!important;}
+.cont-pay.lower {margin-top: 20px}
+.cont-pay.lower .cont-cancel .cancel-btn, .cont-pay.lower .cont-cancel .cancel-input {padding-left: 10px}
+.decision.cont-cancel .shop-cont, .decision.cont-cancel .shop-cont-single, .decision.cont-cancel .shop-cont-false {padding-left: 15px}
+
+.main-width.receiver-buyer {margin-top: 20px; justify-content: space-between}
+.main-width.receiver-buyer .receiver-info .item {margin-top: 0}
+.main-width.receiver-buyer .receiver-info .item .uk-grid-margin {margin-top: 0; margin-left: 20px}
+.main-width.receiver-buyer .buyer-info {padding-right: 40px}
+
+@media screen and (max-width: 392px) {
+    .decision.cont-cancel .cancel-btn {margin-top: 15px}
+}
+
+@media screen and (max-width: 400px) {
+    .decision.cont-cancel .shop-cont {margin-top: 15px}
+    .cancel-input-btn {justify-content: right}
+}
+
+@media screen and (max-width: 503px) {
+    .decision.cont-cancel .shop-cont {margin-top: 15px}
+}
+
+@media screen and (max-width: 750px) {
+    .main-width.receiver-buyer {display: block!important;}
+}
+
+@media screen and (max-width: 860px) {
+    .main-width.mb-20.cont-pay .decision {margin-top: 0;}
+}

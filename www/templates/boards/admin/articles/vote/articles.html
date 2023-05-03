@@ -1,0 +1,78 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    아티클 추천
+{% endblock %}
+
+{% block head_css %}
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><span>아티클 추천리스트</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+        <div class="category-alert mt-15"></div>
+    </section>
+
+{% endblock %}
+
+{% block body_section %}
+    <div class="list-container">
+        <div class="objects list">
+            <table class="uk-table uk-table-middle uk-table-divider">
+                <thead>
+                <tr>
+                    <th scope="col" class="uk-text-nowrap">ID</th>
+                    <th scope="col" class="uk-table-expand uk-text-nowrap">타이틀</th>
+                    <th scope="col" class="uk-text-nowrap">추천수</th>
+                    <th scope="col" class="uk-text-nowrap">작성자</th>
+                    <th scope="col" class="uk-text-nowrap">커버 이미지</th>
+                    <th scope="col" class="uk-text-nowrap">메타설명</th>
+                    <th scope="col" class="uk-table-shrink uk-text-nowrap">등록일</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for article in articles %}
+                    <tr>
+                        <td data-label="ID" class="">{{ article.id }}</td>
+                        <td data-label="타이틀" class="table-link">
+                            <a href="{{ url_for('admin_articles.article_voter_list', _id=article.id) }}">{{ article.title }}</a>
+                        </td>
+                        <td data-label="구독자 수" class="text-center">{{ article.voters|length }}</td>
+                        <td data-label="작성자" class="">{{ article.user.email }}</td>
+                        <td data-label="커버 이미지" class="cover-img">
+                            {% if article.img_path %}
+                                <img class="img-preview" id="img-preview" src="/{{ article.img_path }}" style="margin: 0 auto;">
+                            {% else %}
+                                없슴
+                            {% endif %}
+                        </td>
+                        <td data-label="메타설명" class="">{{ article.meta_description|truncate(20) }}</td>
+                        <td data-label="등록일" class="uk-text-nowrap">{{ article.created_at|daytime("small") }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if pagination %}
+        {% include 'includes/pagination/pagination.html' %}
+    {% endif %}
+
+{% endblock %}

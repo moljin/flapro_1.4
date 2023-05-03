@@ -1,0 +1,80 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    Shop 구독
+{% endblock %}
+
+{% block head_css %}
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><span>Shop 구독리스트</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+        <div class="shop-alert mt-15"></div>
+    </section>
+
+{% endblock %}
+
+{% block body_section %}
+    <div class="list-container">
+        <div class="objects list">
+            <table class="uk-table uk-table-middle uk-table-divider">
+                <thead>
+                <tr>
+                    <th scope="col" class="uk-text-nowrap">ID</th>
+                    <th scope="col" class="uk-table-expand uk-text-nowrap">상점이름</th>
+                    <th scope="col" class="uk-text-nowrap">구독자 수</th>
+                    <th scope="col" class="uk-text-nowrap">이메일</th>
+                    <th scope="col" class="uk-table-shrink uk-text-nowrap">심볼 이미지</th>
+                    <th scope="col" class="uk-text-nowrap">간단 소개글</th>
+                    <th scope="col" class="uk-table-shrink uk-text-nowrap">등록일</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for shop in shops %}
+{#                    {% if shops.subscribers %}<!--구독되는 shops이외의 것도 표시하고 싶으면 분기를 없애자!-->#}
+                        <tr>
+                            <td data-label="ID" class="">{{ shop.id }}</td>
+                            <td data-label="상점이름" class="table-link">
+                                <a href="{{ url_for('admin_ecomms.shop_subscriber_list', _id=shop.id) }}">{{ shop.title }}</a>
+                            </td>
+                            <td data-label="구독자 수" class="text-center">{{ shop.subscribers|length }}</td>
+                            <td data-label="이메일" class="">{{ shop.user.email }}</td>
+                            <td data-label="심볼 이미지" class="cover-img">
+                                {% if shop.img_path %}
+                                    <img class="img-preview" id="img-preview" src="/{{ shop.img_path }}" style="margin: 0 auto;">
+                                {% else %}
+                                    없슴
+                                {% endif %}
+                            </td>
+                            <td data-label="간단 소개글" class="">{{ shop.content|truncate(20) }}</td>
+                            <td data-label="등록일" class="uk-text-nowrap">{{ shop.created_at|daytime("small") }}</td>
+                        </tr>
+{#                    {% endif %}#}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if pagination %}
+        {% include 'includes/pagination/pagination.html' %}
+    {% endif %}
+
+{% endblock %}

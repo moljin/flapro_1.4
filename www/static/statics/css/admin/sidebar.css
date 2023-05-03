@@ -1,0 +1,27 @@
+/*sidebar header*/
+.admin-section .sidebar .uk-offcanvas-bar {width: 300px;
+    /*margin-top: 55px;*/
+    padding: 0; background: #1B1464}
+.admin-section .sidebar .uk-offcanvas-bar .sidebar-header {width:100%; height:55px; background: #130f40; display: flex; justify-content: space-between; align-items: center}
+.admin-section .sidebar .uk-offcanvas-bar .sidebar-header .sidebar-logo {padding-left: 30px; display: flex; font-size: 18px; font-weight: 600; color: #ededef; justify-content: space-between; align-items: center}
+.admin-section .sidebar .uk-offcanvas-bar .sidebar-header .sidebar-logo .profile-img {width: 2rem; height: 2rem; border-radius: 50%; object-fit: cover; margin-right: 1rem}
+.admin-section .sidebar .uk-offcanvas-bar .sidebar-header .sidebar-email {font-size: 14px; color: #b2b2b2; margin-top: -4px}
+.admin-section .sidebar .uk-offcanvas-bar .sidebar-header .uk-offcanvas-close{position: relative; top: -1px}
+.admin-section .sidebar .uk-offcanvas-bar .sidebar-content {padding-top:10px; padding-bottom: 10px}
+
+/*sidebar menu*/
+.sidebar-content .uk-nav-default {font-size: 16px}
+.sidebar-content .uk-nav-default .uk-parent a,
+.sidebar-content .uk-nav-default .single a {color: white}
+.uk-nav-default .uk-parent a,
+.sidebar-content .uk-nav-default .single a{height: 40px;}
+.sidebar-content .uk-parent>a,
+.sidebar-content .uk-parent .nav-sub .a-item,
+.sidebar-content .single .a-item {padding: 5px 30px}
+
+.uk-nav-default>li>a:hover {color: white; background: #0652DD}
+.uk-nav-default .nav-sub a {color: white}
+.uk-nav-default .nav-sub>li>a {padding-left: 50px!important;}
+.uk-nav-default .nav-sub>li>ul>li>a {padding-left: 70px!important;}
+.uk-nav-default .nav-sub>li>a:hover,
+.uk-nav-default .nav-sub>li>ul>li>a:hover {background: #0652DD}

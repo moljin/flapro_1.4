@@ -1,0 +1,424 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    Shop 수정
+{% endblock %}
+
+{% block head_css %}
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        existingShopTitleCheckAjax = "{{ url_for("products.existing_shop_title_check_ajax") }}";
+        productCategoryChangeSaveAjax = "{{ url_for("products.product_category_change_save_ajax") }}";
+        productCategoryDeleteAjax = "{{ url_for("products.product_category_delete_ajax") }}";
+        shopDeleteAjax = "{{ url_for("products.shop_delete_ajax") }}";
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_ecomms.shop_create') }}">Shop 등록</a></li>
+            <li><a href="{{ url_for('admin_ecomms.shop_list') }}">리스트</a></li>
+            <li><span>변경</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body_section %}
+    <div class="sub-container">
+        <div class="form-container">
+            <div class="site-view mb-20">
+                <a href="{{ url_for("products.shop_detail", _id=target_shop.id, slug=target_shop.slug) }}" target="_blank">
+                    <button class="uk-button">사이트 보기</button>
+                </a>
+            </div>
+            <form class="shops" method="POST" action="{{ url_for("products.shop_save_ajax") }}" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <fieldset class="uk-fieldset">
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            회원:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="user_email" class="uk-select" disabled>
+                                {% for user in users %}
+                                    {% if user.id == target_user.id %}
+                                        <option value="{{ user.email }}" selected>{{ user.email }}</option>
+                                    {% else %}
+                                        <option value="{{ user.email }}">{{ user.email }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            닉네임:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="profile_nickname" class="uk-select" disabled>
+                                {% for user in users %}
+                                    {% if user.id == target_user.id %}
+                                        {% if user.profile_user_set %}
+                                            <option value="{{ user.profile_user_set[0].nickname }}" selected>{{ user.profile_user_set[0].nickname }}</option>
+                                        {% else %}
+                                            <option value="" selected>미등록</option>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="modal-alert"></div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            상점 이름:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.title(class="uk-input mt-5", required="required", value=target_shop.title) }}
+                        </div>
+                        <div class="check-btn-div">
+                            <button type="button" class="check-btn"  id="title-check-btn">중복확인</button>
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            간단 소개글:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <textarea class="uk-textarea mt-5" id="content" rows="2" maxlength="100" minlength="2" name="content" required="required" onkeydown="textAreaHeightAuto(this)" onkeyup="textAreaHeightAuto(this)">{{ target_shop.content }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            커버이미지1:
+                        </div>
+                        {% if target_shop.img_path_1 %}
+                            <div class="cover-img pl-10 pt-5">
+                                <a href="#target-cover-image-1" uk-toggle>
+                                    <img class="cover-preview" id="cover-preview-1" src="/{{ target_shop.img_path_1 }}" style="margin: 0 auto;">
+                                </a>
+                            </div>
+                            <div id="target-cover-image-1" class="uk-flex-top" uk-modal>
+                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                    <img src="/{{ target_shop.img_path_1 }}" style="margin: 0 auto;">
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="cover-img pl-10 pt-5">
+                                <img class="cover-preview" id="cover-preview-1" src="{{ url_for('static', filename='statics/images/shop/shop_cover_image_1.jpg') }}" style="margin: 0 auto;">
+                            </div>
+                        {% endif %}
+
+                        <div class="uk-width-expand pl-10">
+                            {{ form.cover_image_1(class="cover-image uk-input mt-5") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            커버이미지2:
+                        </div>
+                        {% if target_shop.img_path_2 %}
+                            <div class="cover-img pl-10 pt-5">
+                                <a href="#target-cover-image-2" uk-toggle>
+                                    <img class="cover-preview" id="cover-preview-2" src="/{{ target_shop.img_path_2 }}" style="margin: 0 auto;">
+                                </a>
+                            </div>
+                            <div id="target-cover-image-2" class="uk-flex-top" uk-modal>
+                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                    <img src="/{{ target_shop.img_path_2 }}" style="margin: 0 auto;">
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="cover-img pl-10 pt-5">
+                                <img class="cover-preview" id="cover-preview-2" src="{{ url_for('static', filename='statics/images/shop/shop_cover_image_2.jpg') }}" style="margin: 0 auto;">
+                            </div>
+                        {% endif %}
+
+                        <div class="uk-width-expand pl-10">
+                            {{ form.cover_image_2(class="cover-image uk-input mt-5") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                            <div>
+                                커버이미지3:
+                            </div>
+                            {% if target_shop.img_path_3 %}
+                                <div class="cover-img pl-10 pt-5">
+                                    <a href="#target-cover-image-3" uk-toggle>
+                                        <img class="cover-preview" id="cover-preview-3" src="/{{ target_shop.img_path_3 }}" style="margin: 0 auto;">
+                                    </a>
+                                </div>
+                                <div id="target-cover-image-3" class="uk-flex-top" uk-modal>
+                                    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                        <button class="uk-modal-close-default" type="button" uk-close></button>
+                                        <img src="/{{ target_shop.img_path_3 }}" style="margin: 0 auto;">
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="cover-img pl-10 pt-5">
+                                    <img class="cover-preview" id="cover-preview-3" src="{{ url_for('static', filename='statics/images/shop/shop_cover_image_3.jpg') }}" style="margin: 0 auto;">
+                                </div>
+                            {% endif %}
+
+                            <div class="uk-width-expand pl-10">
+                                {{ form.cover_image_3(class="cover-image uk-input mt-5") }}
+                            </div>
+                        </div>
+                    <div class="uk-margin" uk-grid>
+                            <div>
+                                커버이미지4:
+                            </div>
+                            {% if target_shop.img_path_4 %}
+                                <div class="cover-img pl-10 pt-5">
+                                    <a href="#target-cover-image-4" uk-toggle>
+                                        <img class="cover-preview" id="cover-preview-4" src="/{{ target_shop.img_path_4 }}" style="margin: 0 auto;">
+                                    </a>
+                                </div>
+                                <div id="target-cover-image-4" class="uk-flex-top" uk-modal>
+                                    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                        <button class="uk-modal-close-default" type="button" uk-close></button>
+                                        <img src="/{{ target_shop.img_path_4 }}" style="margin: 0 auto;">
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="cover-img pl-10 pt-5">
+                                    <img class="cover-preview" id="cover-preview-4" src="{{ url_for('static', filename='statics/images/shop/shop_cover_image_4.jpg') }}" style="margin: 0 auto;">
+                                </div>
+                            {% endif %}
+
+                            <div class="uk-width-expand pl-10">
+                                {{ form.cover_image_4(class="cover-image uk-input mt-5") }}
+                            </div>
+                        </div>
+                    <div class="uk-margin" uk-grid>
+                            <div>
+                                커버이미지5:
+                            </div>
+                            {% if target_shop.img_path_5 %}
+                                <div class="cover-img pl-10 pt-5">
+                                    <a href="#target-cover-image-5" uk-toggle>
+                                        <img class="cover-preview" id="cover-preview-5" src="/{{ target_shop.img_path_5 }}" style="margin: 0 auto;">
+                                    </a>
+                                </div>
+                                <div id="target-cover-image-5" class="uk-flex-top" uk-modal>
+                                    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                        <button class="uk-modal-close-default" type="button" uk-close></button>
+                                        <img src="/{{ target_shop.img_path_5 }}" style="margin: 0 auto;">
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="cover-img pl-10 pt-5">
+                                    <img class="cover-preview" id="cover-preview-5" src="{{ url_for('static', filename='statics/images/shop/shop_cover_image_5.jpg') }}" style="margin: 0 auto;">
+                                </div>
+                            {% endif %}
+
+                            <div class="uk-width-expand pl-10">
+                                {{ form.cover_image_5(class="cover-image uk-input mt-5") }}
+                            </div>
+                        </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            커버이미지6:
+                        </div>
+                        {% if target_shop.img_path_6 %}
+                            <div class="cover-img pl-10 pt-5">
+                                <a href="#target-cover-image-6" uk-toggle>
+                                    <img class="cover-preview" id="cover-preview-6" src="/{{ target_shop.img_path_6 }}" style="margin: 0 auto;">
+                                </a>
+                            </div>
+                            <div id="target-cover-image-6" class="uk-flex-top" uk-modal>
+                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                    <img src="/{{ target_shop.img_path_6 }}" style="margin: 0 auto;">
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="cover-img pl-10 pt-5">
+                                <img class="cover-preview" id="cover-preview-6" src="{{ url_for('static', filename='statics/images/shop/shop_cover_image_6.jpg') }}" style="margin: 0 auto;">
+                            </div>
+                        {% endif %}
+
+                        <div class="uk-width-expand pl-10">
+                            {{ form.cover_image_6(class="cover-image uk-input mt-5") }}
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            심볼 이미지:
+                        </div>
+                        {% if target_shop.img_path %}
+                            <div class="symbol-img pl-10 pt-5">
+                                <a href="#target-symbol-image" uk-toggle>
+                                    <img class="symbol-preview" id="symbol-preview" src="/{{ target_shop.img_path }}" style="margin: 0 auto;">
+                                </a>
+                            </div>
+                            <div id="target-symbol-image" class="uk-flex-top" uk-modal>
+                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                    <img src="/{{ target_shop.img_path }}" style="margin: 0 auto;">
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="symbol-img pl-10 pt-5">
+                                <img class="symbol-preview" id="symbol-preview" src="{{ url_for('static', filename='statics/images/sample_logo.png') }}" style="margin: 0 auto;">
+                            </div>
+                        {% endif %}
+
+                        <div class="uk-width-expand pl-10">
+                            {{ form.symbol_image(class="image file uk-input mt-5", id="symbol-image") }}
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            전시여부:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {% if target_shop.available_display %}<input type="checkbox" class="uk-checkbox mt-5" name="available_display" checked>{% else %}<input type="checkbox" class="uk-checkbox mt-5" name="available_display">{% endif %}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="inlines title mb-10">상품 카테고리 리스트</div>
+                    <div class="inlines container mb-15">
+                        <div class="inlines list">
+                            <div class="category-add mt-10 mb-15">
+                                <a href="javascript:void(0);">
+                                    <button class="add-btn uk-button" type="button">카테고리 추가
+                                        <i class="fas fa-folder-plus ml-7"></i>
+                                    </button>
+                                </a>
+                            </div>
+                            {% if target_categories %}
+                                <div class="existing-category">
+                                    <div class="existing-alert"></div>
+                                    {% for category in target_categories %}
+                                        <div class="loop-inner old old-{{ category.id }} mt-10" uk-alert>
+                                            <a class="alert-close" href="#admin-category-delete-modal-{{ category.id }}" uk-tooltip="title: 삭제; pos: bottom" uk-toggle uk-close></a>
+                                            <div id="admin-category-delete-modal-{{ category.id }}" class="uk-flex-top" uk-modal>
+                                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                    정말로 카테고리를 삭제하시겠어요?
+                                                    <div class="btn uk-text-right">
+                                                        <button class="admin-category-delete-btn uk-button uk-button-primary mt-20" data-id="{{ category.id }}" type="button">삭제</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="content">
+                                                <div class="title uk-width-expand">
+                                                    <input class="uk-input mt-5" id="existing-title-{{ category.id }}" maxlength="200" minlength="1" placeholder="상품 카테고리" required="required" type="text" value="{{ category.title }}">
+                                                </div>
+                                                <div class="content-inner">
+                                                    <div class="available ml-15">
+                                                        노출 여부:
+                                                        {% if category.available_display %}
+                                                            <input type="checkbox" class="uk-checkbox ml-10" id="existing-available-{{ category.id }}" checked>
+                                                        {% else %}
+                                                            <input type="checkbox" class="uk-checkbox ml-10" id="existing-available-{{ category.id }}">
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="ml-20"><button class="admin-change-btn uk-button uk-button-default" data-id={{ category.id }} type="button">수정</button></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="category-container mt-15">
+                                <!--category add form insert by js-->
+                            </div>
+                       </div>
+                    </div>
+
+                    <input type="hidden" id="shop_id" name="shop_id" value="{{ target_shop.id }}">
+                    <input type="hidden" id="user_id" name="user_id" value="{{ target_user.id }}">
+                    <button class="uk-button uk-button-danger" uk-toggle="target: #shop-delete-modal" type="button">삭제</button>
+                    <button class="uk-button uk-button-primary uk-align-right" type="submit">저장</button>
+
+                    <div id="shop-delete-modal" class="uk-flex-top" uk-modal>
+                        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                            <button class="uk-modal-close-default" type="button" uk-close></button>
+                            <div class="change confirm">정말로 "{{ target_profile.nickname }}"님 Shop을 삭제하시겠어요?</div>
+                            <div class="uk-text-left all-data">
+                                상품등 관련 모든기록 삭제: <input type="checkbox" class="uk-checkbox ml-10" id="related-all-delete">
+                            </div>
+                            <div class="change btn">
+                                <button class="uk-button uk-button-primary mt-20" type="button">삭제</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </form>
+            <!--product list-->
+            <hr class="mt-30">
+            <div class="inlines list-title mb-10">상품 리스트</div>
+            <div class="inlines list-container">
+                <div class="inlines list">
+                    <table class="uk-table uk-table-middle uk-table-divider">
+                        <thead>
+                        <tr>
+                            <th scope="col" class="uk-text-nowrap">ID</th>
+                            <th scope="col" class="uk-table-expand uk-text-nowrap">타이틀</th>
+                            <th scope="col" class="uk-text-nowrap">작성자</th>
+                            <th scope="col" class="uk-table-expand uk-text-nowrap">닉네임</th>
+                            <th scope="col" class="uk-text-nowrap">메타 설명</th>
+                            <th scope="col" class="uk-table-shrink uk-text-nowrap">등록일</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for product in target_products %}
+                            <tr>
+                                <td data-label="ID" class="">{{ product.id }}</td>
+                                <td data-label="타이틀" class="table-link">
+                                    <a href="{{ url_for('admin_ecomms.product_change', _id=product.id) }}">{{ product.title }}</a>
+                                </td>
+                                <td data-label="작성자" class="uk-text-nowrap">
+                                    {{ product.user.email }}
+                                </td>
+                                <td data-label="닉네임" class="uk-text-nowrap">
+                                    {{ product.user.profile_user_set[0].nickname }}
+                                </td>
+                                <td data-label="메타 설명" class="">{{ product.meta_description|truncate(20) }}</td>
+                                <td data-label="등록일" class="uk-text-nowrap">{{ product.created_at|daytime("small") }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% if pagination %}
+                {% include 'includes/pagination/pagination.html' %}
+            {% endif %}
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='statics/js/ecomm/products/shops.js') }}"></script>
+
+
+{% endblock %}
+
+
+
+
+
+

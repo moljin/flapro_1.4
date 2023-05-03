@@ -1,0 +1,138 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    아티클 카테고리
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/tagify/tagify.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script src="{{ url_for('static', filename='statics/tagify/tagify.min.js') }}"></script>
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        existingCategoryTitleCheckAjax = '{{ url_for('articles.existing_category_title_check_ajax') }}';
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_articles.ac_list') }}">아티클카테고리 리스트</a></li>
+            <li><span>등록</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body_section %}
+    <div class="sub-container">
+        <div class="form-container">
+            <form class="articles" method="POST" action="{{ url_for("articles.ac_save_ajax") }}" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <fieldset class="uk-fieldset">
+{#                        {% include "includes/messages.html" %}#}
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            회원:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="user_email" class="uk-select user">
+                                <option value="" selected>&nbsp;&nbsp;--- &nbsp;선택&nbsp; ---</option>
+                                {% for user in users %}
+                                    {% if user.profile_user_set %}
+                                        <option value="{{ user.email }}">{{ user.email }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="category-alert"></div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            제목:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.title(class="uk-input mt-5", id="ac-title", required="required") }}
+                        </div>
+                        <div class="check-btn-div">
+                            <button type="button" class="check-btn"  id="title-check-btn">중복확인</button>
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            간단 소개글:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.content(class="uk-textarea mt-5",  id="ac-content", rows="2", maxlength="100", required="required", onkeydown="textAreaHeightAuto(this)", onkeyup="textAreaHeightAuto(this)") }}
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            커버 이미지:
+                        </div>
+                        <div class="profile-img pl-10 pt-5">
+                            <img class="img-preview" id="cover-preview" src="{{ url_for('static', filename='statics/images/cover-img.jpg') }}" style="margin: 0 auto;">
+                        </div>
+
+                        <div class="uk-width-expand pl-10">
+                            {{ form.image(class="image file uk-input mt-5", id="cover-image") }}
+                        </div>
+                    </div>
+
+                    <div class="mt-25">
+                        <input id="tagify" name="tagify" placeholder="해시태그 입력">
+                        <script>
+                            var input = document.querySelector('#tagify')
+                            var tagify = new Tagify(input);
+                            // 태그가 추가되면 이벤트 발생
+                            tagify.on('add', function () {
+                                console.log(tagify.value); // 입력된 태그 정보 객체
+                            })
+                        </script>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            전시여부:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {{ form.available_display(class="uk-checkbox mt-5", checked="checked") }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <input type="hidden" id="category-id" name="category_id" value="create">
+                    <input type="hidden" id="orm_id" name="orm_id" value="{{ orm_id }}">
+                    <input type="hidden" id="user-id" value="">
+                    <button class="uk-button uk-button-primary uk-align-right" type="submit">저장</button>
+
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <script>
+        <!--js 파일들보다 앞으로 배치해야 한다.-->
+        adminCoverImagePath = document.getElementById("cover-preview").getAttribute("src");
+    </script>
+    <script src="{{ url_for('static', filename='statics/js/articles/category.js') }}"></script>
+
+{% endblock %}
+
+
+
+
+
+

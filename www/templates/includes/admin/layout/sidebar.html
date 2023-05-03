@@ -1,0 +1,150 @@
+<div id="sidebar" class="sidebar" uk-offcanvas="overlay: true;">
+    <div class="uk-offcanvas-bar">
+        <div class="sidebar-header">
+            <a href="#">
+                <div class="sidebar-logo">
+                    <div class="profile-img-div">
+                        {% if current_profile.image_path %}
+                            <img class="profile-img" src="/{{ current_profile.image_path }}" alt="">
+                        {% else %}
+                            <img class="profile-img" src="{{ url_for('static', filename='statics/images/user-none.png') }}" alt="">
+                        {% endif %}
+                    </div>
+                    <div class="sidebar-title-div">
+                        <div class="sidebar-title">
+                            관리자
+                        </div>
+                        <div class="sidebar-email">
+                            {{ current_user.email }}
+                        </div>
+                    </div>
+                </div>
+            </a>
+            <button class="uk-offcanvas-close" type="button" uk-close></button>
+        </div>
+
+        <div class="sidebar-content">
+            <ul class="uk-nav-default" uk-nav>
+                <li class="uk-parent">
+                    <a href="#">멤버십 <span uk-nav-parent-icon></span></a>
+                    <ul class="nav-sub">
+                        <li><a class="a-item" href="{{ url_for("admin_accounts.user_list") }}">회원</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_accounts.profile_list") }}">프로필</a></li>
+                    </ul>
+                </li>
+                <li class="uk-parent">
+                    <a href="#">게시글 파트<span uk-nav-parent-icon></span></a>
+                    <ul class="nav-sub">
+                        <li><a class="a-item" href="{{ url_for("admin_articles.ac_list") }}">모든 카테고리</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_articles.subscription_ac_list") }}">카테고리 구독</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_articles.article_list") }}">모든 게시글</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_articles.vote_article_list") }}">게시글 추천</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_articles.comment_list") }}">댓글</a></li>
+                    </ul>
+                </li>
+                <li class="uk-parent">
+                    <a href="#">SHOP & 상품 <span uk-nav-parent-icon></span></a>
+                    <ul class="nav-sub">
+                        <li><a class="a-item" href="{{ url_for("admin_ecomms.shop_list") }}">모든 SHOP</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_ecomms.subscription_shop_list") }}">SHOP 구독</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_ecomms.product_list") }}">모든 상품</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_ecomms.vote_product_list") }}">상품 추천</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_ecomms.product_review_list") }}">상품리뷰</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_ecomms.product_question_list") }}">상품 Q&A</a></li>
+                    </ul>
+                </li>
+                <li class="uk-parent">
+                    <a href="#">장바구니 & 주문 <span uk-nav-parent-icon></span></a>
+                    <ul class="nav-sub">
+                        <li><a class="a-item" href="{{ url_for("admin_ecomms.cart_list") }}">모든 장바구니</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_ecomms.order_list") }}">모든 주문</a></li>
+                        <li><a class="a-item" href="#">Sub item</a></li>
+                        <li>
+                            <a class="a-item" href="#">Sub item</a>
+                            <ul>
+                                <li><a class="a-item" href="#">Sub item</a></li>
+                                <li><a class="a-item" href="#">Sub item</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="uk-parent">
+                    <a href="#">결제 <span uk-nav-parent-icon></span></a>
+                    <ul class="nav-sub">
+                        <li><a class="a-item" href="{{ url_for("admin_commons.pay_ratio_amount_list") }}">기본 설정</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_ecomms.order_transaction_list") }}">모든 결제정보</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_ecomms.order_cancel_pay_list") }}">모든 결제취소</a></li>
+                        <li><a class="a-item" href="#">Sub item</a></li>
+                        <li>
+                            <a class="a-item" href="#">Sub item</a>
+                            <ul>
+                                <li><a class="a-item" href="#">Sub item</a></li>
+                                <li><a class="a-item" href="#">Sub item</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="uk-parent">
+                    <a href="#">프로모션 <span uk-nav-parent-icon></span></a>
+                    <ul class="nav-sub">
+                        <li><a class="a-item" href="{{ url_for("admin_ecomms.coupon_list") }}">모든 쿠폰</a></li>
+                        <li><a class="a-item" href="{{ url_for("admin_ecomms.point_list") }}">모든 포인트</a></li>
+                        <li><a class="a-item" href="#">Sub item</a></li>
+                        <li>
+                            <a class="a-item" href="#">Sub item</a>
+                            <ul>
+                                <li><a class="a-item" href="#">Sub item</a></li>
+                                <li><a class="a-item" href="#">Sub item</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="uk-parent">
+                    <a href="#">PARENT <span uk-nav-parent-icon></span></a>
+                    <ul class="nav-sub">
+                        <li><a class="a-item" href="#">Sub item</a></li>
+                        <li>
+                            <a class="a-item" href="#">Sub item</a>
+                            <ul>
+                                <li><a class="a-item" href="#">Sub item</a></li>
+                                <li><a class="a-item" href="#">Sub item</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="uk-parent">
+                    <a href="#">PARENT <span uk-nav-parent-icon></span></a>
+                    <ul class="nav-sub">
+                        <li><a class="a-item" href="#">Sub item</a></li>
+                        <li>
+                            <a class="a-item" href="#">Sub item</a>
+                            <ul>
+                                <li><a class="a-item" href="#">Sub item</a></li>
+                                <li><a class="a-item" href="#">Sub item</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="uk-parent">
+                    <a href="#">PARENT <span uk-nav-parent-icon></span></a>
+                    <ul class="nav-sub">
+                        <li><a class="a-item" href="#">Sub item</a></li>
+                        <li>
+                            <a class="a-item" href="#">Sub item</a>
+                            <ul>
+                                <li><a class="a-item" href="#">Sub item</a></li>
+                                <li><a class="a-item" href="#">Sub item</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="single"><a class="a-item" href="#">싱글</a></li>
+                <li class="single"><a class="a-item" href="{{ url_for("admin_lottos.lotto_num_list") }}">로또번호 관리</a></li>
+            </ul>
+
+
+        </div>
+
+    </div>
+</div>

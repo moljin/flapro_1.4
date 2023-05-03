@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}
+    이메일 수정
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/css/accounts.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}"
+        tokenCreateAjax = "{{ url_for("accounts.token_create_ajax") }}"
+        tokenConfirmAjax = "{{ url_for("accounts.token_confirm_ajax") }}"
+        emailUpdateAjax = "{{ url_for("accounts.email_update_ajax", _id=current_user.id) }}"
+        indexUrl = "{{ url_for("commons.index") }}"
+        accountDetailUrl = "{{ url_for("accounts.profile_detail", _id=current_user.id) }}"
+    </script>
+{% endblock %}
+
+
+{% block body %}
+    <section class="accounts-container">
+        <div class="main-width padding10 mt-20 mb-20">
+            <div class="form-container email">
+                <div class="flashes-container">
+                    {% include 'includes/messages.html' %}
+                </div>
+                <div class="email-alert"></div>
+                    <h2>이메일 변경하기</h2>
+                    <hr class="bold">
+
+                    <div class="tab-container upper uk-margin">
+                        <div class="email">
+                            <div>
+                                <div><h3>이메일 변경</h3></div>
+                                <p>변경하고자 하는 새로운 이메일을 정확히 입력하고, 이메일 인증을 진행해주세요. (인증번호 유효기간은 12시간) <br>
+                                새로운 이메일로 받은 인증번호를 기입하고 수정완료하시면, 이메일 변경이 이루어집니다. 기존 이메일은 로그인이 불가능해집니다. 스팸편지함도 확인바랍니다.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-container lower uk-margin">
+                        <div class="email">
+                            <div uk-grid>
+                                <div class="email-div">
+                                    {{ form.email(class="uk-input mt-5", placeholder="이메일", required="required") }}
+                                </div>
+                                <div class="email-btn">
+                                    <button class="v-btn uk-button uk-button-primary mt-5" type="button" id="email-token-btn">인증번호받기</button>
+                                </div>
+                            </div>
+
+                            <div class="uk-margin">
+                                <input class="uk-input mt-5" type="text" id="token" placeholder="인증번호입력" required>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="add_if" name="add_if" value="email">
+                    <input type="hidden" id="_id" name="_id" value="{{ current_user.id }}">
+                    <div class="btn email uk-margin"><button class="uk-button uk-button-primary uk-width-1-1" type="button">수정 완료</button></div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block script %}
+    <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/js/accounts/email.js') }}"></script>
+{% endblock %}

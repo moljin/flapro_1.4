@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}
+    관리자인증
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/css/accounts.css') }}" rel="stylesheet">
+{% endblock %}
+
+
+{% block body %}
+
+    <section class="accounts-container">
+        <div class="main-width padding10 mt-20 mb-20">
+            <div class="form-container auth">
+            {% if add_if == "auth_permission" %}
+                <h4>
+                    {% if (is_admin == "y") and (is_staff == "y") %}
+                        관리자 권한과 스태프 권한 요청
+                    {% elif (is_staff == "y") and(is_admin == "n") %}
+                        스태프 권한 요청
+                    {% elif (is_admin == "y") and (is_staff == "n") %}
+                        관리자 권한 요청
+                    {% elif (is_admin == "n") and (is_staff == "n") %}
+                    스태프와 관리자의 권한 해제 요청
+                    {% endif %}
+                </h4>
+                <div class="mt-20">회원 {{ req_email }}님이
+                    {% if (is_admin == "y") and (is_staff == "y") %}
+                        스태프와 관리자 권한 요청을 하였습니다.
+                    {% elif (is_staff == "y") and(is_admin == "n") %}
+                        스태프 권한 요청을 하였습니다.
+                    {% elif (is_admin == "y") and (is_staff == "n") %}
+                        관리자 권한 요청을 하였습니다.
+                    {% elif (is_admin == "n") and (is_staff == "n") %}
+                        스태프와 관리자의 권한 해제를 요청하였습니다.
+                    {% endif %}
+                    확인하시고 인증을 완료하여 주시기 바랍니다.
+                </div>
+                <div class="mt-20 pl-40">
+                    <div>
+                        {% if is_staff == "y" %}스태프: <input type="checkbox" name="is_staff" checked disabled>{% else %}스태프: <input type="checkbox" name="is_staff" disabled>{% endif %}
+                    </div>
+                    <div>
+                        {% if is_admin == "y" %}관리자: <input type="checkbox" name="is_admin" checked disabled>{% else %}관리자: <input type="checkbox" name="is_admin" disabled>{% endif %}
+                    </div>
+                </div>
+
+                <div class="mt-20 mb-20">
+                    <a href="{{ url_for('admin_accounts.auth_confirm', token=token, add_if=add_if, req_email=req_email, is_staff=is_staff, is_admin=is_admin) }}">
+                        <button class="uk-button uk-button-primary width-100">관리자 권한 승인</button></a>
+                </div>
+                <div class="mb-20">
+                관리자 권한을 승인하려면 버튼을 클릭해주세요!
+                </div>
+            {% elif add_if == "not_admin" %}
+                <h4>{% if is_admin == "n" %}관리자{% endif %} 권한 해제요청</h4>
+                <div class="mt-20">
+                    회원 {{ req_email }}님이 {% if is_admin == "n" %}관리자{% endif %} 권한을 해제요청 하였습니다.
+                    확인하시고 인증을 완료하여 주시기 바랍니다.
+                </div>
+                <div class="mt-20 mb-20">
+                    <a href="{{ url_for('admin_accounts.auth_confirm', token=token, add_if=add_if, req_email=req_email, is_staff=is_staff, is_admin=is_admin) }}">
+                        <button class="uk-button uk-button-primary width-100">관리자권한 해제 승인</button></a>
+                </div>
+
+            {% endif %}
+        </div>
+        </div>
+    </section>
+{% endblock %}

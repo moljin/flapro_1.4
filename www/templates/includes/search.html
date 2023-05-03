@@ -1,0 +1,16 @@
+<div id="search-div" class="uk-search uk-search-default uk-width-expand">
+    <!--Clickable Icon-->
+    <span class="uk-search-icon-flip" uk-search-icon></span>
+    <input type="text" id="search_kw" class="uk-input" placeholder="검색어" value="{{ kw or '' }}">
+</div>
+
+<div class="btn-div pl-5">
+    {% if target_user %}
+        <!--이용자 단에서 검색할 때 user.id가 필요한 경우있다.-->
+        <input type="hidden" id="_id" name="_id" value="{{ target_user.id }}">
+    {% endif %}
+    <input type="hidden" id="kw" name="kw" value="{{ kw or '' }}">
+    <input type="hidden" id="page" name="page" value="{{ page }}">
+    <!--엔터가 작동하려면 display: none 으로 라도 놔둬야한다.-->
+    <button class="uk-button uk-button-default pl-15 pr-15" type="submit" id="btn_search"><span uk-icon="search"></span></button>
+</div>

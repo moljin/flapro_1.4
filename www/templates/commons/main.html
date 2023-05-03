@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{#{% block header %}#}
+{#    block header 를 한번더 넣으면 오버라이드 된다.#}
+{#    {% include 'includes/header.html' %}#}
+{#{% endblock %}#}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        accountsDeleteAjax = "{{ url_for('accounts.delete_ajax', _id=current_user.id) }}";
+    </script>
+{% endblock %}
+
+{% block above_main %}
+    <section class="above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block content %}
+    <section class="section-container main-width padding10">
+        {{ now }} <br><br>
+
+        header(메뉴)없이 작성(로또를 넣을까 고려중) <br><br>
+        {% if current_user.is_authenticated %}
+            current_profile: {{ current_profile }} <br>
+            로그인 중이다.::: {{ current_user.email }}<br><br>
+        {% else %}
+            로그인 안했다.<br><br>
+        {% endif %}
+        <a href="{{ url_for("lottos.win_extract_lotto") }}">최다빈도 번호 추출 (리스트)</a> <br>
+        <a href="{{ url_for("lottos.random_lotto") }}">로또 추첨하기</a> <br>
+        <br>
+        <a href="{{ url_for("lottos.lotto_create_test") }}">로또 테스트</a> <br><br>
+        {% if not current_user.is_authenticated %}
+            <a href="{{ url_for("accounts.register") }}">회원 가입</a><br>
+            <a href="{{ url_for("accounts.login") }}">로그인</a><br><br>
+        {% endif %}
+        <a href="{{ url_for("admin_accounts.index") }}">어드민</a><br>
+        <a href="{{ url_for("admin_accounts.login") }}">어드민 로그인</a><br><br>
+
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for("admin_accounts.auth_permit_request", email=current_user.email) }}">
+                {% if current_user.is_admin %}
+                    어드민해제 신청하기
+                {% else %}
+                    어드민 신청하기
+                {% endif %}
+            </a><br><br>
+
+            <a href="{{ url_for("accounts.account_detail", _id=current_user.id) }}">(accounts)프로필 디테일</a><br>
+            <a href="{{ url_for("accounts.logout") }}">로그아웃</a><br>
+            <br>
+            === 로그인상태 비밀번호 및 이메일 변경은 디테일 페이지로 옮겼다. == <br>
+            === 로그인상태 아이디변경은 정책상 안하기로 햇다. === <br>
+            <a href="{{ url_for("accounts.password_update", _id=current_user.id) }}">[로그인상태] 비빌번호 변경하기</a> <br>
+            <a href="{{ url_for("accounts.username_email_update", _id=current_user.id, add_if="username") }}">[로그인상태] 아이디 변경하기</a> <br>
+            <a href="{{ url_for("accounts.username_email_update", _id=current_user.id, add_if="email") }}">[로그인상태] 이메일 변경하기</a> <br>
+            <br> <br>
+            <a href="{{ url_for("coupons.create") }}">쿠폰등록</a>
+
+            <!--user self delete-->
+            {% if current_user.is_admin %}
+                탈퇴버튼은 일반 user 만 보인다. 어드민은 안보인다.(지금은 어드민)
+            {% else %}
+                <div class="delete-div">
+                    <a href="#account_delete_modal-container" uk-toggle>
+                        <div class="accordion-item">user 탈퇴</div>
+                    </a>
+                </div>
+                <div id="account_delete_modal-container" class="uk-modal-container" uk-modal>
+                    <form method="POST" class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                        <button class="uk-modal-close-default" type="button" uk-close></button>
+                        정말로 탈퇴를 진행하시겠어요?
+                        <div style="float: right">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" id="user_id" value="{{ current_user.id }}">
+                            <div class="delete-btn-div mt-15 uk-inline">
+                                <button id="accounts-delete-btn" class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">삭제</button>
+                            </div>
+                            <div class="cancel-btn-div mt-15 uk-inline">
+                                <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
+
+        {% endif %}
+    </section>
+    <hr>
+    <section class="section-container main-width">
+    {% if current_user.is_authenticated %}
+        {% if current_user.profile_user_set %}
+            <a href="{{ url_for('articles.ac_detail', _id="create", slug='category') }}">아티클 카테고리 등록</a><br>
+            <a href="{{ url_for('articles.user_ac_list', _id=current_user.id) }}">"{{ current_user.profile_user_set[0].nickname }}" 아티클 카테고리 리스트</a><br> <br>
+        {% else %}
+            <a href="{{ url_for("accounts.account_detail", _id=current_user.id) }}">프로필을 등록하면 아티클 카테고리 등록이 가능해요!</a><br>
+        {% endif %}
+    {% endif %}
+    <a href="{{ url_for('articles.all_ac_list') }}">모든 카테고리 리스트</a><br> <br>
+    <a href="{{ url_for('articles.no_display_article_list') }}">전시 안되는 모든 아티클</a><br> <br>
+    </section>
+
+<!--테스트용으로 넣은거다...-->
+<script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+<script src="{{ url_for('static', filename='statics/js/accounts/accounts.js') }}"></script>
+{% endblock %}

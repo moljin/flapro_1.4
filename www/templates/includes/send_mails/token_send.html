@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}
+    가입인증 안내
+{% endblock %}
+
+{% block head_account %}
+    <link href="{{ url_for('static', filename='statics/css/accounts.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <section class="sign-section">
+        <div class="form-container">
+        token-send했어요...
+        <!--
+            <div class="flashes-container">
+                {% include 'includes/messages.html' %}
+            </div>
+            {% if add_if == "register" %}
+                {{ email }}님! <br>
+                <h4 class="mt-10">가입을 환영합니다.</h4>
+            {% elif add_if == "forget_password" %}
+                {% if user.is_verified == True %}
+                    <h4>비밀번호 재설정 신청</h4>
+                    <div class="mt-20">
+                        {{ email }}님! <br>
+                        비밀번호 재설정을 신청하셨습니다.
+                    </div>
+                {% else %}
+                    <h4>비밀번호 재설정을 통한 가입인증완료 신청</h4>
+                    <div class="mt-20">
+                        {{ email }}님! <br>
+                        비밀번호 재설정 과정을 통해 인증을 완료해 주세요. . .
+                    </div>
+                {% endif %}
+            {% elif add_if == "not_verified" %}
+                <h4>가입인증 재신청</h4>
+                <div class="mt-20">
+                    {{ email }}님! <br>
+                    가입인증 절차를 다시 신청하셨습니다.
+                </div>
+            {% elif add_if == "email_update" %}
+                <h4>로그인 등록이메일 변경신청</h4>
+                <div class="mt-20">
+                    {{ email }}님! <br>
+                    등록이메일 변경신청하셨습니다.
+                </div>
+            {% elif add_if == "auth_permission" %}
+                <h4>권한 요청</h4>
+                <div class="mt-20">
+                    {{ email }}님! <br>
+                    권한(관리자 혹은 스태프) 요청을 하셨습니다.
+                </div>
+            {% elif add_if == "not_admin" %}
+                <h4>권한 해제요청</h4>
+                <div class="mt-20">
+                    {{ email }}님! <br>
+                    권한(관리자 혹은 스태프) 해제요청을 하셨습니다.
+                </div>
+            {% endif %}
+            <div>
+                <div class="mt-20">
+                    {% if add_if == "register" %}
+                        가입에 등록한 이메일 {% if email %}{{ email }}{% endif %}을 확인하고, 24시간 이내에 인증 절차를 완료해 주세요.
+                    {% elif add_if == "forget_password" %}
+                        보내주신 등록 이메일 {% if email %}{{ email }}{% endif %}을 확인하고, 24시간 이내에 비밀번호 변경을 완료해 주세요.
+                    {% elif add_if == "not_verified" %}
+                        등록 이메일 {% if email %}{{ email }}{% endif %}을 확인하고, 24시간 이내에 인증 절차를 완료해 주세요.
+                    {% elif add_if == "email_update" %}
+                        변경한 이메일 {% if email %}{{ email }}{% endif %}을 확인하고, 24시간 이내에 인증 절차를 완료해 주세요.
+                    {% elif add_if == "auth_permission" %}
+                        최고 관리자가 권한 요청을 진행하신 등록 이메일 {% if email %}{{ email }}{% endif %}을 확인하고, 24시간 이내에 인증 절차를 완료할 예정입니다.
+                    {% elif add_if == "not_admin" %}
+                        최고 관리자가 권한 해제요청을 진행하신 등록 이메일 {% if email %}{{ email }}{% endif %}을 확인하고, 24시간 이내에 인증 절차를 완료할 예정입니다.
+                    {% endif %}
+                </div>
+                <div class="mt-20">
+                {% if (add_if == "register") or (add_if == "forget_password") or (add_if == "email_update") %}
+                    인증메일이 오지 않았다면, 스팸편지함을 확인해보세요. 거기에도 없다면
+                    {% if add_if == "register" %}
+                        가입에 사용한
+                    {% elif add_if == "forget_password" %}
+                        보내주신 등록
+                    {% elif add_if == "email_update" %}
+                        변경한
+                    {% endif %}
+                    이메일이 정확한지 확인해보세요!
+                {% elif (add_if == "auth_permission") or (add_if == "not_admin") %}
+                    {% if add_if == "auth_permission" %}
+                        권한요청이 24시간 이내에 완료되지 않았다면,
+                    {% elif add_if == "not_admin" %}
+                        권한해제요청이 24시간 이내에 완료되지 않았다면,
+                    {% endif %}
+                    이메일이 정확한지 확인해주세요!
+                {% endif %}
+
+                </div>
+                <div class="mt-20">
+                    {% if (add_if == "register") or (add_if == "not_verified") or (add_if == "email_update") %}
+                        24시간내에 이메일 인증 절차를 완료하지 않으면, 정상적인 로그인이 불가능해요 . . .
+                    {% elif add_if == "forget_password" %}
+                        24시간내에 비밀번호 변경을 완료하지 않으면, 다시 비밀번호 변경신청을 하셔야 해요 . . .
+                    {% elif add_if == "auth_permission" %}
+                        권한 요청을 진행한 등록이메일이 24시간내에 인증되지 않았다면, 권한요청을 다시 진행해주세요 . . .
+                    {% elif add_if == "not_admin" %}
+                        권한 해제요청을 진행한 등록이메일이 24시간내에 인증되지 않았다면, 권한 해제요청을 다시 진행해주세요 . . .
+                    {% endif %}
+                </div>
+                <div class="mt-20">
+                    {% if (add_if == "register") or (add_if == "not_verified") or (add_if == "email_update") %}
+                        24시간내에 인증절차를 완료하지 못하셨다면,
+                        로그인 화면의 <a class="uk-link-reset" href="{{ url_for('accounts.forget_password_email') }}">비밀번호를 잊으셨나요?</a>를 클릭하여 등록한 이메일을 보내주세요. 인증메일이 재발송됩니다.
+                    {% endif %}
+                </div>
+            </div>
+            -->
+        </div>
+</section>
+
+{% endblock %}

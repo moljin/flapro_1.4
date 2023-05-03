@@ -1,0 +1,237 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    아티클 카테고리
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/tagify/tagify.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script src="{{ url_for('static', filename='statics/tagify/tagify.min.js') }}"></script>
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+
+        existingCategoryTitleCheckAjax = '{{ url_for('articles.existing_category_title_check_ajax') }}';
+
+        acDeleteAjax = '{{ url_for('articles.ac_delete_ajax') }}';
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_articles.ac_create') }}">아티클카테고리 등록</a></li>
+            <li><a href="{{ url_for('admin_articles.ac_list') }}">리스트</a></li>
+            <li><span>변경</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body_section %}
+    <div class="sub-container">
+        <div class="form-container">
+            <div class="site-view mb-20">
+                <a href="{{ url_for("articles.ac_detail", _id=target_category.id, slug=target_category.slug) }}" target="_blank">
+                    <button class="uk-button">사이트 보기</button>
+                </a>
+            </div>
+            <form class="articles" method="POST" action="{{ url_for("articles.ac_save_ajax") }}" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <fieldset class="uk-fieldset">
+{#                        {% include "includes/messages.html" %}#}
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            회원:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="user_email" class="uk-select" disabled>
+                                {% for user in users %}
+                                    {% if user.id == target_user.id %}
+                                        <option value="{{ user.email }}" selected>{{ user.email }}</option>
+                                    {% else %}
+                                        <option value="{{ user.email }}">{{ user.email }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            닉네임:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="profile_nickname" class="uk-select" disabled>
+                                {% for user in users %}
+                                    {% if user.id == target_user.id %}
+                                        {% if user.profile_user_set %}
+                                            <option value="{{ user.profile_user_set[0].nickname }}" selected>{{ user.profile_user_set[0].nickname }}</option>
+                                        {% else %}
+                                            <option value="" selected>미등록</option>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="category-alert"></div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            제목:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <input class="uk-input mt-5" type="text" id="ac-title" name="title" value="{{ target_category.title }}"/>
+                        </div>
+                        <div class="check-btn-div">
+                            <button type="button" class="check-btn"  id="title-check-btn">중복확인</button>
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            간단 소개글:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <textarea class="uk-textarea mt-5" id="ac-content" rows="2" maxlength="100" minlength="2" name="content" required="required" onkeydown="textAreaHeightAuto(this)" onkeyup="textAreaHeightAuto(this)">{{ target_category.content }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            커버 이미지:
+                        </div>
+                        {% if target_category.img_path %}
+                            <div class="cover-img pl-10 pt-5">
+                                <a href="#target-cover-image" uk-toggle>
+                                    <img class="img-preview" id="cover-preview" src="/{{ target_category.img_path }}" style="margin: 0 auto;">
+                                </a>
+                            </div>
+                            <div id="target-cover-image" class="uk-flex-top" uk-modal>
+                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                    <img src="/{{ target_category.img_path }}" style="margin: 0 auto;">
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="cover-img pl-10 pt-5">
+                                <img class="img-preview" id="cover-preview" src="{{ url_for('static', filename='statics/images/uikit_sample/sample3.png') }}" style="margin: 0 auto;">
+                            </div>
+                        {% endif %}
+
+                        <div class="uk-width-expand pl-10">
+                            {{ form.image(class="image file uk-input mt-5", id="cover-image") }}
+                        </div>
+                    </div>
+
+                    <div class="mt-25">
+                        <input id="tagify" name="tagify" placeholder="해시태그 입력" value="{% if tags_str %}{{ tags_str }}{% endif %}">
+                        <script>
+                            var input = document.querySelector('#tagify')
+                            var tagify = new Tagify(input);
+                            // 태그가 추가되면 이벤트 발생
+                            tagify.on('add', function () {
+                                console.log(tagify.value); // 입력된 태그 정보 객체
+                            })
+                        </script>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            전시여부:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {% if target_category.available_display %}<input type="checkbox" class="uk-checkbox mt-5" name="available_display" checked>{% else %}<input type="checkbox" class="uk-checkbox mt-5" name="available_display">{% endif %}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <input type="hidden" id="category-id" name="category_id" value="{{ target_category.id }}">
+                    <input type="hidden" id="user-id" name="user_id" value="{{ target_user.id }}">
+                    <input type="hidden" id="orm_id" name="orm_id" value="{{ orm_id }}">
+                    <button class="uk-button uk-button-danger" uk-toggle="target: #category-delete-modal" type="button">삭제</button>
+                    <button class="uk-button uk-button-primary uk-align-right" type="submit">저장</button>
+
+                    <div id="category-delete-modal" class="uk-flex-top" uk-modal>
+                        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                            <button class="uk-modal-close-default" type="button" uk-close></button>
+                            <div class="confirm">정말로 "{{ target_profile.nickname }}"님 아티클 카테고리를 삭제하시겠어요?</div>
+                            <div class="uk-text-left all-data">
+                                카테고리등 관련 모든기록 삭제: <input type="checkbox" class="uk-checkbox ml-10" id="related-all-delete">
+                            </div>
+                            <div class="btn uk-align-right">
+                                <div class="category-delete-btn uk-inline ml-15">
+                                    <button id="category-delete-btn" class="uk-button uk-button-primary" type="button">삭제</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </form>
+            <!--article list-->
+            <hr class="mt-30">
+            <div class="inlines list-title mb-10">아티클 리스트</div>
+            <div class="inlines list-container">
+                <div class="inlines list">
+                    <table class="uk-table uk-table-middle uk-table-divider">
+                        <thead>
+                        <tr>
+                            <th scope="col" class="uk-text-nowrap">ID</th>
+                            <th scope="col" class="uk-table-expand uk-text-nowrap">타이틀</th>
+                            <th scope="col" class="uk-text-nowrap">작성자</th>
+                            <th scope="col" class="uk-table-expand uk-text-nowrap">닉네임</th>
+                            <th scope="col" class="uk-text-nowrap">메타 설명</th>
+                            <th scope="col" class="uk-table-shrink uk-text-nowrap">등록일</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for article in articles %}
+                            <tr>
+                                <td data-label="ID" class="">{{ article.id }}</td>
+                                <td data-label="타이틀" class="table-link">
+                                    <a href="{{ url_for('admin_articles.article_change', _id=article.id) }}">{{ article.title }}</a>
+                                </td>
+                                <td data-label="작성자" class="uk-text-nowrap">
+                                    {{ article.user.email }}
+                                </td>
+                                <td data-label="닉네임" class="uk-text-nowrap">
+                                    {{ article.user.profile_user_set[0].nickname }}
+                                </td>
+                                <td data-label="메타 설명" class="">{{ article.meta_description|truncate(20) }}</td>
+                                <td data-label="등록일" class="uk-text-nowrap">{{ article.created_at|daytime("small") }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% if pagination %}
+                {% include 'includes/pagination/pagination.html' %}
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        <!--js 파일들보다 앞으로 배치해야 한다.-->
+        adminCoverImagePath = document.getElementById("cover-preview").getAttribute("src");
+    </script>
+    <script src="{{ url_for('static', filename='statics/js/articles/category.js') }}"></script>
+
+{% endblock %}
+
+
+
+
+
+

@@ -1,0 +1,132 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    멤버십
+{% endblock %}
+
+{% block head_css %}
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_accounts.user_list') }}">회원리스트</a></li>
+            <li><span>회원등록</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body_section %}
+    <div class="sub-container">
+        <div class="form-container">
+            <form class="accounts" method="POST" action="{{ url_for('admin_accounts.user_save') }}" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <fieldset class="uk-fieldset">
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            아이디:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.username(class="uk-input mt-5", required="required") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            E-mail:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.email(class="uk-input mt-5", required="required") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            비밀번호:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.password(class="uk-input mt-5", required="required") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            비밀번호 확인:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.repassword(class="uk-input mt-5", required="required") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            인증토큰:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.auth_token(class="uk-input mt-5") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            비밀번호 토큰:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.password_token(class="uk-input mt-5") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            관리자 토큰:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.admin_token(class="uk-input mt-5") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            인&nbsp;&nbsp;&nbsp;&nbsp;증:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {{ form.is_verified(class="uk-checkbox mt-5", checked="checked") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            스태프:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {{ form.is_staff(class="uk-checkbox mt-5") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            판매사업자 신청가능:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {{ form.is_vendor(class="uk-checkbox mt-5") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            관리자:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {{ form.is_admin(class="uk-checkbox mt-5") }}
+                        </div>
+                    </div>
+                    <button class="uk-button uk-button-primary uk-align-right">저장</button>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+
+

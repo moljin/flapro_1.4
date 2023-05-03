@@ -1,0 +1,113 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    멤버십
+{% endblock %}
+
+{% block head_css %}
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        profileDeleteAjax = "{{ url_for("accounts.profile_delete_ajax") }}"
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_accounts.profile_create') }}">프로필등록</a></li>
+            <li><span>프로필리스트</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block body_section %}
+    <div class="list-container">
+        <div class="objects list">
+
+            <form class="mb-15" id="searchForm" method="get" action="{{ url_for('admin_accounts.profile_list') }}" uk-grid>
+                {% include "includes/search.html" %}
+            </form>
+            {% if kw %}
+                {% if profiles %}
+                    <div>"{{ kw }}"에 대한 검색결과</div>
+                    <hr>
+                {% else %}
+                    <div>"{{ kw }}"에 대한 검색결과가 없습니다.</div>
+                    <hr>
+                {% endif %}
+            {% endif %}
+            <script src="{{ url_for('static', filename='statics/js/searches/search.js') }}"></script>
+
+            <table class="uk-table uk-table-middle uk-table-divider">
+                <thead>
+                <tr>
+                    <th scope="col" class="uk-table-shrink"><input class="uk-checkbox" id="all-check" type="checkbox" name="all_checked"></th>
+                    <th scope="col" class="uk-text-nowrap">ID</th>
+                    <th scope="col" class="uk-text-nowrap uk-table-expand">닉네임</th>
+                    <th scope="col" class="uk-text-nowrap">프로필 사진</th>
+                    <th scope="col" class="uk-text-nowrap">아이디</th>
+                    <th scope="col" class="uk-text-nowrap">이메일</th>
+                    <th scope="col" class="uk-text-nowrap">Level</th>
+                    <th scope="col" class="uk-text-nowrap uk-table-shrink">등록일</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for profile in profiles %}
+                    <tr>
+                        <td data-label="체크"><input class="uk-checkbox single" id="{{ profile.id }}" type="checkbox" name="is_checked"></td>
+                        <td data-label="ID" class="">{{ profile.id }}</td>
+                        <td data-label="닉네임" class="table-link">
+                            <a href="{{ url_for('admin_accounts.profile_change', _id=profile.id) }}">{{ profile.nickname }}</a>
+                        </td>
+                        <td data-label="프로필 사진" class="profile-img">
+                            {% if profile.profile_img_path %}
+                                <img class="img-preview" id="img-preview" src="/{{ profile.profile_img_path }}" style="margin: 0 auto;">
+                            {% else %}
+                                없슴
+                            {% endif %}
+                        </td>
+                        <td data-label="아이디" class="uk-text-nowrap">{{ profile.user.username }}</td>
+                        <td data-label="이메일" class="uk-text-nowrap">{{ profile.user.email }}</td>
+                        <td data-label="Level" class="uk-text-nowrap">{{ profile.level }}</td>
+                        <td data-label="등록일" class="uk-text-nowrap">{{ profile.created_at|daytime("small") }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <button class="uk-button uk-button-default" uk-toggle="target: #profile-delete-modal">선택 삭제</button>
+        </div>
+    </div>
+
+    <div id="profile-delete-modal" class="uk-flex-top" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            정말로 프로필을 삭제하시겠어요?
+            <div class="btn uk-inline ml-15 uk-align-right">
+                <button id="checked-delete-btn" class="uk-button uk-button-primary" type="button">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    {% if pagination %}
+        {% include 'includes/pagination/pagination.html' %}
+    {% endif %}
+    <script src="{{ url_for('static', filename='statics/js/accounts/profiles.js') }}"></script>
+{% endblock %}
+
+
+
+
+
+

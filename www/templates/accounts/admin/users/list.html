@@ -1,0 +1,136 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    멤버십
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        accountsDeleteAjax = "{{ url_for('accounts.delete_ajax') }}";
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_accounts.user_create') }}">회원등록</a></li>
+            <li><span>회원리스트</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block body_section %}
+    <div class="list-container">
+        <div class="objects list">
+
+            <form class="mb-15" id="searchForm" method="get" action="{{ url_for('admin_accounts.user_list') }}" uk-grid>
+                {% include "includes/search.html" %}
+            </form>
+            {% if kw %}
+                {% if users %}
+                    <div>"{{ kw }}"에 대한 검색결과</div>
+                    <hr>
+                {% else %}
+                    <div>"{{ kw }}"에 대한 검색결과가 없습니다.</div>
+                    <hr>
+                {% endif %}
+            {% endif %}
+            <script src="{{ url_for('static', filename='statics/js/searches/search.js') }}"></script>
+
+            <table class="uk-table uk-table-middle uk-table-divider">
+                <thead>
+                <tr>
+                    <th scope="col" class="uk-table-shrink"><input class="uk-checkbox" id="all-check" type="checkbox" name="all_checked"></th>
+                    <th scope="col" class="uk-text-nowrap">ID</th>
+                    <th scope="col" class="uk-text-nowrap">E-mail</th>
+                    <th scope="col" class="uk-text-nowrap">인증토큰</th>
+                    <th scope="col" class="uk-text-nowrap">비밀번호토큰</th>
+                    <th scope="col" class="uk-text-nowrap uk-table-shrink">인증</th>
+                    <th scope="col" class="uk-text-nowrap uk-table-shrink">스태프</th>
+                    <th scope="col" class="uk-text-nowrap uk-table-shrink">관리자</th>
+                    <th scope="col" class="uk-text-nowrap uk-table-shrink">등록일</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td data-label="체크"><input class="uk-checkbox single" id="{{ user.id }}" type="checkbox" name="is_checked"></td>
+                        <td data-label="ID" class="">{{ user.id }}</td>
+                        <td data-label="E-mail">
+                            <a href="{{ url_for('admin_accounts.user_change', _id=user.id) }}">{{ user.email }}</a>
+                        </td>
+                        <td data-label="인증토큰" class="uk-text-truncate">
+                            {% if not user.auth_token %}
+                                없슴
+                            {% else %}
+                                {{ user.auth_token }}
+                            {% endif %}
+                        </td>
+                        <td data-label="비밀번호토큰" class="uk-text-truncate">
+                            {% if not user.password_token %}
+                                없슴
+                            {% else %}
+                                {{ user.password_token }}
+                            {% endif %}
+                        </td>
+                        <td data-label="인증" class="uk-text-nowrap">
+                            {% if user.is_verified %}
+                                <input class="uk-checkbox" checked="checked" id="is_verified" name="is_verified" type="checkbox">
+                            {% else %}
+                                <input class="uk-checkbox" id="is_verified" name="is_verified" type="checkbox">
+                            {% endif %}
+                        </td>
+                        <td data-label="스태프" class="uk-text-nowrap">
+                            {% if user.is_staff %}
+                                <input class="uk-checkbox" checked="checked" id="is_staff" name="is_staff" type="checkbox">
+                            {% else %}
+                                <input class="uk-checkbox" id="is_staff" name="is_staff" type="checkbox">
+                            {% endif %}
+                        </td>
+                        <td data-label="관리자" class="uk-text-nowrap">
+                            {% if user.is_admin %}
+                                <input class="uk-checkbox" checked="checked" id="is_admin" name="is_admin" type="checkbox">
+                            {% else %}
+                                <input class="uk-checkbox" id="is_admin" name="is_admin" type="checkbox">
+                            {% endif %}
+                        </td>
+                        <td data-label="등록일" class="uk-text-nowrap">{{ user.created_at|daytime("small") }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <button class="uk-button uk-button-default" uk-toggle="target: #user-delete-modal">선택 삭제</button>
+        </div>
+    </div>
+
+    <div id="user-delete-modal" class="uk-flex-top" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            정말로 회원을 삭제하시겠어요?
+            <div class="btn uk-inline ml-15 uk-align-right">
+                <button id="checked-delete-btn" class="uk-button uk-button-primary" type="button">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    {% if pagination %}
+        {% include 'includes/pagination/pagination.html' %}
+    {% endif %}
+    <script src="{{ url_for('static', filename='statics/js/accounts/accounts.js') }}"></script>
+{% endblock %}
+
+
+
+
+
+

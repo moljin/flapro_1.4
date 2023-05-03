@@ -1,0 +1,90 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    상품리뷰 리스트
+{% endblock %}
+
+{% block head_css %}
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        shopDeleteAjax = "{{ url_for("products.shop_delete_ajax") }}";
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_ecomms.shop_create') }}">Shop 등록</a></li>
+            <li><span>리스트</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+        <div class="shop-alert mt-15"></div>
+    </section>
+
+{% endblock %}
+
+{% block body_section %}
+    <div class="list-container">
+        <div class="objects list">
+            <table class="uk-table uk-table-middle uk-table-divider shop">
+                <thead>
+                <tr>
+                    <th scope="col" class="uk-table-shrink"><input class="uk-checkbox" id="all-check" type="checkbox" name="all_checked"></th>
+                    <th scope="col" class="uk-table-shrink uk-text-nowrap">ID</th>
+                    <th scope="col" class="uk-text-nowrap">리뷰</th>
+                    <th scope="col" class="uk-table-shrink uk-text-nowrap">글쓴이 이메일</th>
+                    <th scope="col" class="uk-table-shrink uk-text-nowrap">이미지</th>
+                    <th scope="col" class="uk-table-shrink uk-text-nowrap">닉네임</th>
+                    <th scope="col" class="uk-table-shrink uk-text-nowrap">등록일</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for review in reviews %}
+                    {% set content = review.content|safe %}
+                    <tr>
+                        <td data-label="체크"><input class="uk-checkbox single" id="{{ review.id }}" data-user-id="{{ review.user.id }}" type="checkbox" name="is_checked"></td>
+                        <td data-label="ID" class="uk-text-nowrap">{{ review.id }}</td>
+                        <td data-label="리뷰" class="table-link">
+                            <a href="{{ url_for('admin_ecomms.product_review_change', _id=review.id) }}"><div>{{ review.content|cleanhtml|truncate(30) }}</div></a>
+                        </td>
+                        <td data-label="글쓴이 이메일" class="uk-text-nowrap">{{ review.user.email }}</td>
+                        <td data-label="이미지" class="review-img">
+                            {% if review.productreview_image_set %}
+                                <img class="img-preview" id="img-preview" src="/{{ review.productreview_image_set[0].img_path }}" style="margin: 0 auto;">
+                            {% else %}
+                                없슴
+                            {% endif %}
+                        </td>
+                        <td data-label="닉네임" class="uk-text-nowrap">{{ review.user.profile_user_set[0].nickname }}</td>
+                        <td data-label="등록일" class="uk-text-nowrap">{{ review.created_at|daytime("small") }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <button class="uk-button uk-button-default" uk-toggle="target: #review-delete-modal">선택 삭제</button>
+        </div>
+    </div>
+    <div id="review-delete-modal" class="uk-flex-top" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            정말로 리뷰를 삭제시겠어요?
+            <div class="list btn uk-inline ml-15 uk-align-right">
+                <button id="checked-delete-btn" class="uk-button uk-button-primary" type="button">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    {% if pagination %}
+        {% include 'includes/pagination/pagination.html' %}
+    {% endif %}
+{% endblock %}

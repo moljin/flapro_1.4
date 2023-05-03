@@ -1,0 +1,41 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    기본비율수정
+{% endblock %}
+
+{% block head_css %}
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_commons.pay_ratio_amount_list') }}">기본등록 리스트</a></li>
+            <li><a href="{{ url_for('admin_commons.common_create', _type="amount") }}">기본금액 등록</a></li>
+            <li><span>기본비율 수정</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body_section %}
+        <div class="sub-container">
+            <div class="form-container">
+                <form action="{{ url_for("admin_commons.ratio_save") }}" method="POST" enctype="multipart/form-data">
+                    {{ form.csrf_token }}
+                    <div>{{ form.title(class="uk-input", disabled="disabled", value=target_ratio.title) }}</div>
+                    <div>{{ form.ratio(class="uk-input mt-10", value=target_ratio.ratio) }}</div>
+                    <input type="hidden" name="ratio_id" value="{{ target_ratio.id }}">
+                    <div class="uk-text-right"><button class="uk-button uk-button-default mt-10">저장</button></div>
+                </form>
+            </div>
+        </div>
+
+{% endblock %}

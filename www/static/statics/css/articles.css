@@ -1,0 +1,79 @@
+.subscribe-alert, .category-alert {display: none}
+
+/*ac_list*/
+.card-container .uk-card {border-radius: 0 0 15px 15px}
+.card-container .uk-card img {border-radius: 15px 15px 0 0}
+.articles-container.list .card-container .uk-card-body .title {font-size: 20px; font-weight: 550}
+.articles-container.list .card-container .uk-card-body .profile img {width: 1.5rem; height: 1.5rem!important; border-radius: 50%; object-fit: cover; margin-right: 10px}
+.articles-container.list .card-container .uk-card-body {padding: 20px}
+
+/*ac_detail and article_detail : 공통*/
+.viewcount-vote-container .vote-container button,
+.viewcount-subscribe-container .subscribe-container button {cursor: pointer; max-width: 100px; height: 30px; border-radius: 5px; background: #d539ff; color: white; padding: 0 10px}
+
+/*ac_detail*/
+.category .viewcount-subscribe-container {justify-content: right; margin-left: 0}
+.category .viewcount-subscribe-container .subscribe-container,
+.category .viewcount-subscribe-container .count-container{margin-top: 5px}
+.category .viewcount-subscribe-container .count-container .count {padding-left: 0}
+.category .viewcount-subscribe-container .subscribe-container {padding-left: 10px}
+.subscribe-alert {display: none}
+.cover-container .category {max-width: 700px}
+.cover-container .category .writer {display: flex; justify-content: flex-end}
+.cover-container .category .writer a {display: flex; align-items: center}
+.cover-container .category .writer a:hover {color: yellow}
+.cover-container .category .writer a img {width: 1.5rem; height: 1.5rem!important; border-radius: 50%; object-fit: cover; margin-right: 10px}
+.cover-container .category svg {width: 25px; height: 25px}
+.cover-container .category svg:hover {color: yellow}
+
+.articles-container .category-nav .breadcrumb span.custom.not.uk-text-truncate {width: auto}
+
+#category-save-modal .cover img {cursor: pointer; width: 100%; height: 180px; object-fit: cover}
+#category-save-modal .title .title-input {flex: 1}
+#category-save-modal .title .check-btn {padding-left: 20px}
+#category-delete-modal .btn {display: flex; justify-content: end}
+
+/*article_create and update*/
+.articles-container.article.create .form-container.create .uk-grid>.uk-grid-margin,
+.articles-container.article.update .form-container.update .uk-grid>.uk-grid-margin {margin-top: 0}
+
+.articles-container.article.create .form-container.create .board-form-container .right img,
+.articles-container.article.update .form-container.update .board-form-container .right img {width: 300px; cursor: pointer}
+@media screen and (max-width: 670px) {.articles-container.article.create .form-container.create .board-form-container .right img,
+.articles-container.article.update .form-container.update .board-form-container .right img {width: 100%}}
+
+.articles-container.article.create .form-container.create .board-form-container .left,
+.articles-container.article.update .form-container.update .board-form-container .left {flex: 1}
+
+.articles-container.article.create .form-container.create .board-form-container .left .profile.image.nickname,
+.articles-container.article.update .form-container.update .board-form-container .left .profile.image.nickname {display: flex; align-items: center}
+
+.articles-container.article.create .form-container.create .board-form-container .left .profile.image.nickname a,
+.articles-container.article.update .form-container.update .board-form-container .left .profile.image.nickname a {display: flex}
+
+.articles-container.article.create .form-container.create .board-form-container .left .profile.image.nickname img,
+.articles-container.article.update .form-container.update .board-form-container .left .profile.image.nickname img {width: 1.5rem; height: 1.5rem!important; border-radius: 50%; object-fit: cover; margin-right: 10px}
+
+.articles-container.article.create .form-container.create .btn-container,
+.articles-container.article.update .form-container.update .btn-container{display: flex; justify-content: right}
+.articles-container.article.create .sun-editor-editable,
+.articles-container.article.update .sun-editor-editable{font-size: 16px!important;} /*font 기본값 설정*/
+
+/*article_detail*/
+.articles-container.article.detail .profile a {display: flex; align-items: center}
+.articles-container.article.detail .profile div {display: flex; align-items: center}
+.articles-container.article.detail .update-delete {margin-bottom: 0}
+.articles-container.article.detail .update-delete span {font-size: 20px}
+.articles-container.article.detail .form-container.detail .upper .board-form.title-others.uk-width-expand {min-width: 350px}
+.articles-container.article.detail .form-container.detail .sun-editor-editable {padding: 16px 0!important; font-size: 16px; font-family: sans-serif;} /*font 기본값 설정*/
+.articles-container.article.detail .form-container.detail .upper .board-form.image .image img{width: 300px; object-fit: cover}
+@media screen and (max-width: 680px) {.articles-container.article.detail .form-container.detail .upper .board-form.image .image img{width: 100%}}
+.articles-container.article.detail .form-container.detail .upper .board-form.title .title {font-weight: bold; font-size: 1.8rem}
+.articles-container.article.detail .form-container.detail .upper .board-form .profile img {width: 1.5rem; height: 1.5rem!important; border-radius: 50%; object-fit: cover; margin-right: 10px}
+.viewcount-vote-container .count-container .count {padding-left: 0}
+.viewcount-vote-container .vote-container.uk-align-right {margin-bottom: 0!important;}
+.vote-alert {display: none}
+
+
+
+

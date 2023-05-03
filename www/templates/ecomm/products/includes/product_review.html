@@ -1,0 +1,101 @@
+<!--products-container product review-->
+<!--main-width-->
+
+{% if pagination.page == 1 %}
+    <article>
+        <div hidden class="dz-detail pseudo"><!--forEach 짝을 맞추기 위해...--></div>
+        <div class="dz-related-container" id=""></div>
+        <div class="dz-open-container new">
+            {% if current_user.is_authenticated %}
+                {% if current_user.profile_user_set %}
+                    <button class="dz-btn new uk-button uk-button-default">
+                        <i class="fas fa-edit"><!--리뷰작성--></i>
+                        <span class="ml-10">리뷰 쓰기</span>
+                    </button>
+                {% else %}
+                    <a href="{{ url_for('accounts.account_detail', _id=current_user.id) }}">
+                        <button class="no-dz-btn uk-button">
+                            <i class="fas fa-comments" uk-tooltip="title: 프로필 등록; pos: bottom"></i>
+                            <span>프로필 등록후 댓글가능해요!</span><!--댓글 달기-->
+                        </button>
+                    </a>
+                {% endif %}
+            {% endif %}
+            <div class="edit-buttons">
+                <button class="dz-edit-cancel-btn new uk-button ml-10" uk-tooltip="title: 작성취소; pos: bottom">
+                    <i class="fas fa-sync-alt"><!--작성 취소--></i>
+                </button>
+                <button hidden class="dz-delete-modal-btn pseudo"><!--forEach 짝을 맞추기 위해...--></button>
+                <button hidden class="dz-delete-btn pseudo"><!--forEach 짝을 맞추기 위해...--></button>
+            </div>
+        </div>
+    </article>
+{% endif %}
+
+{% if target_product_reviews %}
+    <article class="dz-related-detail-container" id="container">
+        {% for review in target_product_reviews %}
+            <div class="item dz-relate-loop mt-5">
+                <div class="old-dz-related padding10">
+                    <a id="review_{{ review.id }}"></a>
+                    <div class="old-related-alert old-alert-{{ review.id }}"></div>
+                    <div class="dz-old-image">
+                        {% if review.productreview_image_set %}
+                            <div class="old-img-container image-{{ review.id }}">
+                                <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slider>
+                                    <ul class="uk-slider-items uk-child-width-1-2 uk-child-width-1-3@s uk-child-width-1-4@m uk-child-width-1-5@l uk-grid-small uk-grid-match uk-grid"
+                                        uk-lightbox="animation: slide">
+                                        {% for image in review.productreview_image_set %}
+                                            <li class="old-image-li-{{ image.id }}">
+                                                <div class="old-img uk-panel">
+                                                    <a href="/{{ image.img_path }}">
+                                                        <img src="/{{ image.img_path }}" alt=""></a>
+                                                    {% if current_user == review.user %}
+                                                        <button class="old-img-delete-btn uk-button" data-id="{{ image.id }}" type="button"><i class="fas fa-trash-alt"><!--삭제--></i></button>
+                                                    {% endif %}
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slider-item="previous"></a>
+                                    <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slider-item="next"></a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="dz-old-content content-detail-{{ review.id }} mt-10">{{ review.content|safe }}</div>
+                    {% if current_user == review.user %}
+                        <div class="dz-edit-related mt-10">
+                            <div class="dz-related-container" id="{{ review.id }}"><!--dropzone 관련 동적삽입--></div>
+                            <div class="edit-buttons">
+                                <button class="dz-btn old uk-button uk-button-default" type="button" uk-tooltip="title: 수정하기; pos: bottom"><i class="fas fa-edit"></i></button>
+                                <button class="dz-edit-cancel-btn uk-button uk-button-default ml-10" type="button" uk-tooltip="title: 작성취소; pos: bottom">
+                                    <i class="fas fa-sync-alt"><!--작성 취소--></i>
+                                </button>
+                                <button class="dz-delete-modal-btn uk-button uk-button-default" uk-toggle="target: #dz-delete-modal-{{ review.id }}" type="button" uk-tooltip="title: 리뷰삭제; pos: bottom">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <!--삭제 modal-->
+                            <div id="dz-delete-modal-{{ review.id }}" class="uk-flex-top" uk-modal>
+                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                    정말로 리뷰를 삭제하시겠어요?
+                                    <div class="uk-align-right">
+                                        <div class="dz-delete-btn uk-inline mt-40">
+                                            <button id="dz-delete-btn" class="uk-button uk-button-primary uk-modal-close" type="button">삭제</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+
+    </article>
+    {% if pagination %}
+        {% include 'includes/pagination/pagination.html' %}
+    {% endif %}
+{% endif %}

@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+
+{% block title %}
+    상품수정등록
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/css/products.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/suneditor.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/custom/customSunEditor.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        {% if current_user.is_authenticated %}
+            CSRF_TOKEN = "{{ csrf_token() }}";
+            {% if current_user == target_user %}
+                editorImagesSaveAjax = '{{ url_for('commons.editor_images_save_ajax') }}';
+            {% endif %}
+        {% endif %}
+    </script>
+{% endblock %}
+
+{% block body %}
+    <section class="products-container product create mt-20 mb-10">
+        <div class="main-width padding10">
+            <div class="form-container">
+                <form action="{{ url_for("products.product_save") }}" method="POST" enctype="multipart/form-data">
+                    {{ form.csrf_token }}
+                    <fieldset class="uk-fieldset">
+                        <div class="form-group summary uk-child-width-1-2@s" uk-grid>
+                            <div class="thumbnail">
+                                <div class="uk-card-media-top uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow="ratio: 4:3; autoplay: true; autoplay-interval: 7000">
+                                    <ul class="uk-slideshow-items">
+                                        <li>
+                                            <input hidden class="thumbnail" id="image1" name="image1" type="file" accept="image/*" value=""/>
+                                            <label for="image1">
+                                                {% if target_product.img_path_1 %}
+                                                    <img class="preview-thumbnail" src="/{{ target_product.img_path_1 }}" uk-cover>
+                                                {% else %}
+                                                    <img class="preview-thumbnail" src="{{ url_for('static', filename='statics/images/product/product_image_1.jpg') }}" uk-cover>
+                                                {% endif %}
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <input hidden class="thumbnail" id="image2" name="image2" type="file" accept="image/*" value=""/>
+                                            <label for="image2">
+                                                {% if target_product.img_path_2 %}
+                                                    <img class="preview-thumbnail" src="/{{ target_product.img_path_2 }}" uk-cover>
+                                                {% else %}
+                                                    <img class="preview-thumbnail" src="{{ url_for('static', filename='statics/images/product/product_image_2.jpg') }}" uk-cover>
+                                                {% endif %}
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <input hidden class="thumbnail" id="image3" name="image3" type="file" accept="image/*" value=""/>
+                                            <label for="image3">
+                                                {% if target_product.img_path_3 %}
+                                                    <img class="preview-thumbnail" src="/{{ target_product.img_path_3 }}" uk-cover>
+                                                {% else %}
+                                                    <img class="preview-thumbnail" src="{{ url_for('static', filename='statics/images/product/product_image_3.jpg') }}" uk-cover>
+                                                {% endif %}
+                                            </label>
+                                        </li>
+                                    </ul>
+                                    <button class="a uk-button uk-button-default help" type="button" uk-toggle="target: #upload-tip"><span uk-icon="question"></span></button>
+                                    <div id="upload-tip" class="uk-flex-top" uk-modal>
+                                        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                            <button class="uk-modal-close-default" type="button" uk-close></button>
+                                            <h5 class="uk-modal-title">업로드 팁</h5>
+                                            <div class="mt-15">이미지 해상도는 다른 비율도 가능하지만, 400*300으로 4:3 비율(스마트폰 가로촬영)이 최적이에요. 이미지를 클릭하고, 선택하면 슬라이드에 적용됩니다.
+                                                대표이미지는 3개 모두 업로드해주세요. <br><br>
+                                                <div>(업로드 되지않은 경우, 샘플이미지가 이용자에게 노출됩니다.)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info">
+                                <div class="breadcrumb">
+                                    <ul class="uk-breadcrumb  mt-5">
+                                        <li><a href="{{ url_for("accounts.account_detail", _id=target_user.id) }}">
+                                            <div class="uk-inline"><img class="profile-img" src="/{{ target_profile.profile_img_path }}" alt="mdo">
+                                                <div class="uk-inline">{{ target_profile.nickname }}</div>
+                                            </div>
+                                        </a></li>
+                                        <li><a href="{{ url_for("products.shop_detail", _id=target_shop.id, slug=target_shop.slug) }}">
+                                            <div class="uk-inline"><img class="symbol-img" src="/{{ target_shop.img_path }}" alt="mdo">
+                                                <div class="uk-inline">{{ target_shop.title }}</div>
+                                            </div>
+                                        </a></li>
+                                    </ul>
+                                </div>
+
+                                <div class="category-select" uk-grid>
+                                    <div>
+                                        카테고리:
+                                    </div>
+                                    <div class="uk-width-expand pl-10">
+                                        <select name="category_id" class="uk-select category">
+                                            <option value="">&nbsp;&nbsp;--- &nbsp;선택&nbsp; ---</option>
+                                            {% if target_categories %}
+                                                {% for category in target_categories %}
+                                                    {% if category.available_display == true %}
+                                                        {% if category.shop_id == target_product.shop_id %}
+                                                            <option value="{{ category.id }}" selected>{{ category.title }}</option>
+                                                        {% else %}
+                                                            <option value="{{ category.id }}">{{ category.title }}</option>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="info-content">
+                                    <div class="form-input mb-5">{{ form.title(class="uk-input", placeholder="상품명", value=target_product.title) }}</div>
+                                    <div class="pl-7 pr-7 mt-5">{{ form.price(class="uk-input mr-5", value=target_product.price) }} 원</div>
+                                    <div class="pl-7 pr-7 mt-10">{{ form.stock(class="uk-input mr-5", value=target_product.stock) }} 개</div>
+                                    <div class="pl-7 pr-7 mt-15" uk-grid>
+                                        <div>기본 할인금액:</div>
+                                        <div class="mt-5 mb-5 uk-width-expand pl-7">{{ form.base_dc_amount(class="uk-input mr-5", value=target_product.base_dc_amount) }} 원</div>
+                                    </div>
+                                    <div class="pl-7 pr-7 mt-7" uk-grid>
+                                        <div>배송비:</div>
+                                        <div class="mt-5 mb-5 uk-width-expand pl-7">{{ form.delivery_pay(class="uk-input mr-5", value=target_product.delivery_pay) }} 원</div>
+                                    </div>
+                                    <div class="available pl-7 pr-7 mt-7">
+                                        전시여부 {% if target_product.available_display %}
+                                                <input type="checkbox" class="uk-checkbox" name="available_display" checked>
+                                            {% else %}
+                                                <input type="checkbox" class="uk-checkbox" name="available_display">
+                                            {% endif %}&nbsp;
+                                        /&nbsp; 주문가능
+                                            {% if target_product.available_order %}
+                                                <input type="checkbox" class="uk-checkbox" name="available_order" checked>
+                                            {% else %}
+                                                <input type="checkbox" class="uk-checkbox" name="available_order">
+                                            {% endif %}
+                                    </div>
+                                </div>
+                                <div class="meta-description mt-15">
+                                    <div class="pl-7 pr-7">
+                                        <textarea class="uk-textarea pl-10 pr-10 pt-10 pb-10 mt-7" id="meta_description" maxlength="100" minlength="2" name="meta_description"
+                                                  style="overscroll-behavior: contain;" onkeydown="textAreaHeightAuto(this)" onkeyup="textAreaHeightAuto(this)"
+                                                  required>{{ target_product.meta_description }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="meta-help mt-10 pl-7">
+                                    <a href="#meta-help" uk-toggle>메타설명이란?</a>
+                                    <div id="meta-help" class="uk-flex-top"  uk-modal>
+                                        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                            <button class="uk-modal-close-default" type="button" uk-close></button>
+                                            <h5 class="uk-modal-title">메타설명이란?</h5>
+                                            <div class="mt-15">메타설명의 목적은 검색자가 검색 결과에서 클릭할지 여부를 결정하는 사용자의 결정에 영향을 미칠 수 있습니다. <br><br>
+                                                "관련성이 높은 설명" 일수록 사용자 혹은 검색자가 인지하기에 쉽기 때문에 클릭 가능성이 높아질수 있습니다.
+                                                작성 길이의 기준은 "구글은 160자 미만, 네이버는 80자 미만"입니다. 둘 다 맞추려면 80자 미만 혹은 80자 내외가 최적입니다.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group editor mt-10">
+                            <div class="suneditor-form">
+                                {% include "includes/suneditor.html" %}
+                            </div>
+                        </div>
+
+                        <div class="form-group option mt-10">
+                            <div class="option-add">
+                                <a href="javascript:void(0);">
+                                    <button class="add-input-btn" type="button">
+                                        옵션추가<i class="fas fa-folder-plus ml-7"></i>
+                                    </button></a>
+                            </div>
+
+                            <div class="option-form-wrapper uk-child-width-1-2@s uk-child-width-1-3@m uk-grid-small" uk-grid>
+                                {% for option in target_options %}
+                                    <div class="option-form" uk-alert>
+                                        <div class="board-form mt-10">
+                                            <div class="form-group">
+                                                <label class="op-num">{{ loop.index }}번째 옵션</label>
+                                                <input type="hidden" name="op_id" value="{{ option.id }}">
+                                            </div>
+                                        </div>
+                                        <div class="board-form mt-10">
+                                            <div class="form-group">
+                                                <input class="uk-input op-title-input mt-5" maxlength="100" minlength="2" name="op_title" placeholder="옵션이름" required="" type="text"
+                                                       value="{{ option.title }}">
+                                            </div>
+                                        </div>
+                                        <div class="board-form mt-10">
+                                            <div class="form-group">
+                                                <input class="uk-input op-price-input mt-5" name="op_price" placeholder="옵션가격" required="" type="number" value="{{ option.price }}">
+                                            </div>
+                                        </div>
+                                        <div class="board-form mt-10">
+                                            <div class="form-group">
+                                                <input class="uk-input op-stock-input mt-5" name="op_stock" placeholder="옵션재고" required="" type="number" value="{{ option.stock }}">
+                                            </div>
+                                        </div>
+                                        <div class="board-form mt-10">
+                                            <div class="form-group">
+                                                <label>전시여부</label>
+                                                {# <input type="checkbox" class="uk-checkbox op-display-input mt-2 ml-5" id="op-display-{{ loop.index }}" name="op_available_display" {{ "checked" if option.available_display == True }}>#}
+                                                {% if option.available_display %}
+                                                    <input type="checkbox" class="uk-checkbox op-display-input mt-2 ml-5" id="op-display-{{ loop.index - 1 }}" value="{{ loop.index - 1 }}"
+                                                           name="op_available_display" checked>
+                                                {% else %}
+                                                    <input type="checkbox" class="uk-checkbox op-display-input mt-2 ml-5" id="op-display-{{ loop.index - 1 }}" value="{{ loop.index - 1 }}"
+                                                           name="op_available_display">
+                                                {% endif %}
+
+                                                &nbsp;/&nbsp;<label>주문가능</label>
+                                                {# <input type="checkbox" class="uk-checkbox op-order-input mt-2 ml-5" id="op-order-{{ loop.index }}" name="op_available_order" {{ "checked" if option.available_order == True }}>#}
+                                                {% if option.available_order %}
+                                                    <input type="checkbox" class="uk-checkbox op-order-input mt-2 ml-5" id="op-order-{{ loop.index - 1 }}" value="{{ loop.index - 1 }}"
+                                                           name="op_available_order" checked>
+                                                {% else %}
+                                                    <input type="checkbox" class="uk-checkbox op-order-input mt-2 ml-2 ml-5" id="op-order-{{ loop.index - 1 }}" value="{{ loop.index - 1 }}"
+                                                           name="op_available_order">
+                                                {% endif %}
+
+                                                <button class="cancel-input-btn remove-input ml-7 uk-alert-close uk-close" id="cancel-btn-{{ loop.index - 1 }}">옵션취소 <i
+                                                        class="fas fa-folder-minus ml-7"></i></button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </div>
+                                {% endfor %}
+                            <!--동적 삽입-->
+                            </div>
+                        </div>
+
+                        <div class="form-group btn">
+                            <input type="hidden" id="sun_init" name="sun_init" value="product_CU">
+                            <input type="hidden" id="sunImage_init" name="sunImage_init" value="">
+                            <input type="hidden" id="product_id" name="product_id" value="{{ target_product.id }}">
+                            <input type="hidden" id="user_id" name="user_id" value="{{ target_user.id }}">
+                            <input type="hidden" id="shop_id" name="shop_id" value="{{ target_shop.id }}">
+                            <input type="hidden" id="orm_id" name="orm_id" value="{{ orm_id }}">
+                            <button class="uk-button uk-button-primary mt-15" type="submit" id="form-submit">저장</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+        <script>
+            // 내용 수정 업데이트 할때 추가한다.
+            window.addEventListener('DOMContentLoaded', function (event) {
+                update_init()
+                function update_init() {
+                    const suneditor_editable = document.querySelector(".se-container .se-wrapper .sun-editor-editable")
+                    suneditor_editable.innerHTML = `{{ target_product.content|safe }}`;
+                    {#suneditor_editable.innerHTML =  {% autoescape true %}{{article.content}}{% endautoescape %};#}
+                }
+            })
+        </script>
+    </section>
+{% endblock %}
+
+{% block end_js %}
+    <!-- 필수: main_js -->
+    <script src="{{ url_for('static', filename='statics/suneditor/suneditor.min.js') }}"></script>
+
+    <!--비필수: codeMirror -->
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/htmlmixed.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/xml.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/css.js') }}"></script>
+
+    <!-- 필수: 버튼에 필요-->
+    <script src="{{ url_for('static', filename='statics/suneditor/katex.min.js') }}"></script>
+    <!-- 필수: Language -->
+    <script src="{{ url_for('static', filename='statics/suneditor/ko.js') }}"></script>
+
+    <!-- Custom -->
+    <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/suneditor/custom/suneditorInit.js') }}"></script>
+
+    <!--그외-->
+    <script src="{{ url_for('static', filename='statics/js/ecomm/products/products.js') }}"></script>
+{% endblock %}

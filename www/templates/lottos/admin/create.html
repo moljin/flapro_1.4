@@ -1,0 +1,79 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    로또추출번호 등록
+{% endblock %}
+
+{% block head_css %}
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            {% if request.host == "127.0.0.1:5000" %}
+                <li><a target="_blank" href="{{ url_for("lottos.win_extract_lotto") }}">번호 추출하기</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('admin_lottos.lotto_num_list') }}">추출번호리스트</a></li>
+            <li><span>추출번호 등록</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body_section %}
+    <div class="sub-container">
+        <div class="form-container">
+            <form class="lottos" method="POST" action="{{ url_for('admin_lottos.lotto_num_save') }}" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <fieldset class="uk-fieldset">
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            타이틀:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.title(class="uk-input mt-5", required="required", placeholder="0000회차") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            Status:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.status(class="uk-input mt-5", required="required", placeholder="latest") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            회차:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.latest_round_num(class="uk-input mt-5", required="required", placeholder="숫자만") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            추출번호:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.extract_num(class="uk-input mt-5", required="required") }}
+                        </div>
+                    </div>
+                    <button class="uk-button uk-button-primary uk-align-right">저장</button>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+
+

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}
+    main
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/js/tests/testWysiwyg.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/suneditor.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/custom/customSunEditor.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/simpleEditor/simpleEditor.css') }}" rel="stylesheet">
+    <style>
+        body {
+            font: 16px "Open Sans";
+            color: darkSlateGrey;
+        }
+    </style>
+{% endblock %}
+
+{% block head_js %}
+
+    <script>
+
+    </script>
+{% endblock %}
+
+{% block content %}
+    <!--section-- class="section-container main-width padding10">
+        <div class="simpleEditor">
+            <div class="toolbar">
+                <button class="bold uk-button uk-button-default" type="button"><i class="fa fa-bold"></i></button>
+                <button class="italic uk-button uk-button-default" type="button"><i class="fa fa-italic"></i></button>
+                <button hidden class="underline uk-button uk-button-default" type="button"><i class="fa fa-underline"></i></button>
+
+                <button hidden class="align-justify uk-button uk-button-default" type="button"><i class="fa fa-align-justify"></i></button>
+                <button class="align-left uk-button uk-button-default" type="button"><i class="fa fa-align-left"></i></button>
+                <button class="align-center uk-button uk-button-default" type="button"><i class="fa fa-align-center"></i></button>
+                <button hidden class="align-right uk-button uk-button-default" type="button"><i class="fa fa-align-right"></i></button>
+
+                <button class="ul-list uk-button uk-button-default" type="button"><i class="fa fa-list-ul"></i></button>
+                <button hidden class="ol-list uk-button uk-button-default" type="button"><i class="fa fa-list-ol"></i></button>
+            </div>
+            <div class="contentEditable" contenteditable></div>
+            <textarea hidden id="hiddenTextarea"></textarea>
+        </div>
+
+        <script src="{{ url_for('static', filename='statics/js/tests/testWysiwyg.js') }}"></script>
+    </section-->
+
+    <section class="section-container main-width padding10">
+        <div class="simpleEditor-form">
+            <div class="simpleEditor-container">
+                <textarea id="editorHiddenText" name="content" style="display: none"></textarea>
+            </div>
+        </div>
+
+        <!-- 필수: main_js -->
+        <script src="{{ url_for('static', filename='statics/suneditor/suneditor.min.js') }}"></script>
+
+        <!--비필수: codeMirror -->
+        <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/htmlmixed.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/xml.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/css.js') }}"></script>
+
+        <!-- 필수: 버튼에 필요-->
+        <script src="{{ url_for('static', filename='statics/suneditor/katex.min.js') }}"></script>
+        <!-- 필수: Language -->
+        <script src="{{ url_for('static', filename='statics/suneditor/ko.js') }}"></script>
+
+        <!-- Custom -->
+        <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/simpleEditor/simpleEditor.js') }}"></script>
+    </section>
+{% endblock %}

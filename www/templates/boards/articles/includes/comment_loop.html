@@ -1,0 +1,105 @@
+<a id="comment_{{ target_comment.id }}"></a>
+<div class="comment-writer">
+    <div class="profile mt-15 mb-15">
+        {% if target_article.user %}
+            {% if target_comment.user.profile_user_set[0] and not target_comment.user.is_admin %}
+                <a href="{{ url_for("accounts.account_detail", _id=target_comment.user.id) }}">
+                    <img src="/{{ target_comment.user.profile_user_set[0].profile_img_path }}" alt="">
+                    {{ target_comment.user.profile_user_set[0].nickname }}
+                </a>
+            {% else %}
+                {% if target_comment.user.is_admin %}
+                    <a href="{{ url_for("accounts.account_detail", _id=target_comment.user.id) }}">
+                        <img src="{{ url_for('static', filename='statics/images/user-none.png') }}">
+                        관리자 <br>
+                    </a>
+                {% else %}
+                    {% if target_article.available_display == True %}
+                        <a href="{{ url_for("accounts.account_detail", _id=target_comment.user.id) }}">
+                            <img src="{{ url_for('static', filename='statics/images/user-none.png') }}">
+                            프로필 미등록
+                        </a>
+                    {% else %}
+                        <img src="{{ url_for('static', filename='statics/images/user-none.png') }}">
+                        카테고리 삭제
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% else %}
+            <div>
+                <img src="{{ url_for('static', filename='statics/images/user-none.png') }}">
+                탈퇴한 이용자
+            </div>
+        {% endif %}
+
+        <span class="ml-40">
+            {{ target_comment.created_at | daytime("medium") }}
+            {% if target_comment.is_secret == True %}
+                (비밀글)
+            {% endif %}
+        </span>
+    </div>
+</div>
+{% if target_comment.is_secret == True %}
+    {% if (current_user == target_comment.user) or current_user.is_admin %}
+        <div class="comment-content mb-10">
+            <div class="comment-detail detail-{{ target_comment.id }}" data-detail="{{ target_comment.id }}">
+                {{ target_comment.content|safe }}
+            </div>
+        </div>
+        {% if current_user == target_comment.user %}
+            <div class="comment comment-old">
+                <!--여기에 동적으로 javascript 이용해서 update sunEditor 삽입-->
+            </div>
+
+            <div class="comment-open-container mb-10">
+                <button class="comment-btn old uk-button" data-comment-id="{{ target_comment.id }}" data-paired-id="" data-orm-id="{{ target_comment.orm_id }}">
+                    <i class="fas fa-edit" title="댓글수정"><span>댓글수정</span><!--수정--></i>
+                </button>
+            </div>
+        {% else %}
+            {% if current_user.profile_user_set %}
+                <button class="comment-btn reply uk-button" data-comment-id="" data-paired-id="{{ target_comment.id }}" data-orm-id="">
+                    <i class="fas fa-comments"></i><span>이글에 댓글달기</span><!--댓글 달기-->
+                </button>
+            {% else %}
+                <a href="{{ url_for('accounts.account_detail', _id=current_user.id) }}">
+                    <button class="no-comment-btn uk-button">
+                        <i class="fas fa-comments"></i><span>프로필 등록후 댓글가능해요!</span>
+                    </button>
+                </a>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% else %}
+    <div class="comment-content mb-10">
+        <div class="comment-detail detail-{{ target_comment.id }}" data-detail="{{ target_comment.id }}">
+            {{ target_comment.content|safe }}
+        </div>
+    </div>
+    {% if current_user == target_comment.user %}
+        <div class="comment comment-old">
+            <!--여기에 동적으로 javascript 이용해서 update sunEditor 삽입-->
+        </div>
+
+        <div class="comment-open-container mb-10">
+            <button class="comment-btn old uk-button" data-comment-id="{{ target_comment.id }}" data-paired-id="" data-orm-id="{{ target_comment.orm_id }}">
+                <i class="fas fa-edit" title="댓글수정"><span>댓글수정</span><!--수정--></i>
+            </button>
+        </div>
+    {% else %}
+        <div class="comment-open-container mb-10">
+            {% if current_user.profile_user_set %}
+                <button class="comment-btn reply uk-button" data-comment-id="" data-paired-id="{{ target_comment.id }}" data-orm-id="">
+                    <i class="fas fa-comments"></i><span>이글에 댓글달기</span><!--댓글 달기-->
+                </button>
+            {% else %}
+                <a href="{{ url_for('accounts.account_detail', _id=current_user.id) }}">
+                    <button class="no-comment-btn uk-button">
+                        <i class="fas fa-comments"></i><span>프로필 등록후 댓글가능해요!</span>
+                    </button>
+                </a>
+        {% endif %}
+        </div>
+    {% endif %}
+{% endif %}

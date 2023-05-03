@@ -1,0 +1,209 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    멤버십
+{% endblock %}
+
+{% block head_css %}
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        existingNicknameCheckAjax = "{{ url_for("accounts.existing_nickname_check_ajax") }}"
+        existingCorpBrandCheckAjax = "{{ url_for("accounts.existing_corp_brand_check_ajax") }}"
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_accounts.profile_list') }}">프로필리스트</a></li>
+            <li><span>프로필등록</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body_section %}
+    <div class="sub-container">
+        <div class="form-container">
+            <form class="profiles" method="POST" action="{{ url_for("accounts.profile_save_ajax") }}" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <fieldset class="uk-fieldset">
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            회원:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="user_email" class="uk-select user">
+                                <option value="" selected>&nbsp;&nbsp;--- &nbsp;선택&nbsp; ---</option>
+                                {% for user in users %}
+                                    {% if not user.profile_user_set %}
+                                        <option value="{{ user.email }}">{{ user.email }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="profile-update-alert"></div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            닉네임:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.nickname(class="uk-input mt-5", id="nickname", required="required") }}
+                        </div>
+                        <div class="check-btn-div">
+                            <button type="button" class="check-btn" id="nickname-check-btn">중복 체크</button>
+                        </div>
+                        <input type="hidden" id="user_id" name="user_id" value="None">
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            간단메시지:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.message(class="uk-textarea mt-5",rows="2", required="required", onkeydown="textAreaHeightAuto(this)", onkeyup="textAreaHeightAuto(this)") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            Level:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="level" class="uk-select level">
+                                <option value="" selected>&nbsp;&nbsp;--- &nbsp;선택&nbsp; ---</option>
+                                {% for level in levels %}
+                                    <option value="{{ level }}">{{ level }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            커버 이미지:
+                        </div>
+                        <div class="profile-img pl-10 pt-5">
+                            <img class="img-preview" id="cover-img-preview" src="{{ url_for('static', filename='statics/images/cover-img.jpg') }}" style="margin: 0 auto;">
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.cover_image(class="image file uk-input mt-5", id="cover-image") }}
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            프로필이미지:
+                        </div>
+                        <div class="profile-img pl-10 pt-5">
+                            <img class="img-preview" id="profile-img-preview" src="{{ url_for('static', filename='statics/images/user-none.png') }}" style="margin: 0 auto;">
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.profile_image(class="image file uk-input mt-5", id="profile-image") }}
+                        </div>
+                    </div>
+                    <div class="vendor-update-alert"></div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            회사명:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.corp_brand(class="uk-input mt-5") }}
+                        </div>
+                        <div class="check-btn-div">
+                            <button type="button" class="check-btn" id="corp-brand-check-btn">중복 체크</button>
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            사업자&nbsp;이메일:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.corp_email(class="uk-input mt-5", type="email") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            통신판매업번호:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.corp_online_marketing_number(class="uk-input mt-5") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            사업자등록번호:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.corp_number(class="uk-input mt-5") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            사업자&nbsp;등록증:
+                        </div>
+                        <div class="corp-img pl-10 pt-5">
+                            <img class="img-preview" id="corp-img-preview" src="{{ url_for('static', filename='statics/images/no-image.jpg') }}">
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7 mt-7">
+                            {{ form.corp_image(class="image file uk-input mt-5", id="corp-image") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            사업자주소:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {{ form.corp_address(class="uk-input mt-5") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            대표전화번호:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {{ form.main_phonenumber(class="uk-input mt-5") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            사업자휴대폰:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {{ form.main_cellphone(class="uk-input mt-5") }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <input type="hidden" id="profile_id" name="profile_id" value="None">
+                    <button class="uk-button uk-button-primary uk-align-right" type="submit">저장</button>
+
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <script>
+        <!--js 파일들보다 앞으로 배치해야 한다.-->
+        adminCoverImagePath = document.getElementById("cover-img-preview").getAttribute("src");
+        adminProfileImagePath = document.getElementById("profile-img-preview").getAttribute("src");
+        adminCorpImagePath = document.getElementById("corp-img-preview").getAttribute("src");
+    </script>
+    <script src="{{ url_for('static', filename='statics/js/accounts/profiles.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/js/accounts/vendor.js') }}"></script>
+{% endblock %}
+
+
+
+
+
+

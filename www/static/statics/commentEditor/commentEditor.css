@@ -1,0 +1,32 @@
+.comment-container {position: relative}
+.comment {display: none}
+.comment-loop, .reply-loop {width: 90%;}
+.comment-loop {border: solid 1px #D0DCE1; padding: 15px; background: #EEF4F6; border-radius: 10px}
+.reply-loop {border: solid 1px lightgray; padding: 15px; background: #FAF8F8; border-radius: 10px}
+.reply-loop .comment-writer {display: flex; justify-content: right}
+.reply-loop .comment-writer .profile a {display: flex; justify-content: right}
+.reply-loop .comment-writer .profile div.admin {display: flex; justify-content: right}
+
+.reply-create-container, .reply-loop-container {display: flex; justify-content: right}
+.reply-create {width: 90%}
+
+.comment-writer .profile img {width: 1.5rem; height: 1.5rem!important; border-radius: 50%; object-fit: cover; margin-right: 10px}
+button.new.comment-btn, button.reply.comment-btn, button.no-comment-btn {padding-left: 0!important; background: transparent; height: 35px; margin-left: 2px; font-size: 25px}
+button.new.comment-btn span, button.reply.comment-btn span, button.no-comment-btn span {font-size: 16px; margin-left: 15px}
+
+button.old.comment-btn, button.old.cancel-btn, button.comment-delete-modal-btn {background: transparent}
+button.old.comment-btn {font-size: 20px; padding-left: 0!important;}
+button.old.comment-btn span {font-size: 16px; font-weight: normal; margin-left: 12px}
+button.old.cancel-btn {display: none; padding: 0 20px}
+
+/*동적 commentEditor 내의 버튼*/
+.btn-container {display: flex; justify-content: space-between; background: #fafafa; border: 1px solid #cecece; border-top: none;  margin-left: 0; padding-right: 15px; align-items: center}
+.btn-container .left-btn {padding-left: 0}
+.btn-container .right-btn {display: flex; align-items: center; padding-left: 0}
+.btn-container .right-btn.uk-grid-margin {margin-top: 0}
+.btn-container .secret-lock {display: none; height: 38px}
+.btn-container .secret-lock span {font-size: 0.68rem}
+.btn-container button.uk-button {border: none; background: transparent; padding: 0 10px}
+.btn-container button.uk-button.submit {font-size: 25px;}
+
+

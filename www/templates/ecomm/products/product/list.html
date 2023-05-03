@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block title %}
+    상품 리스트
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/css/products.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+
+    <section class="products-container product list mt-20 mb-10">
+        <div class="main-width padding10">
+            {% if current_user.is_authenticated %}
+                {% if current_user.profile_user_set %}
+                    {% if current_user.profile_user_set[0].level == "판매사업자" %}
+                        {% if current_user == target_user %}
+                            {% if "all" in request.full_path %}
+                                <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                                    <ul class="uk-breadcrumb">
+                                        <li><a href="{{ url_for('products.shop_detail', _id="create", slug='shop') }}">Shop 등록</a></li>
+                                        <li><a href="{{ url_for('products.all_shop_list') }}">모든 Shop</a></li>
+                                        {% if current_user_shop_display_true_list %}
+                                            <li><a href="{{ url_for('products.user_shop_list', _id=current_user.id) }}">마이 Shop</a></li>
+                                            {% if current_user_product_display_true_list %}
+                                                <li><a href="{{ url_for('products.user_product_list', _id=current_user.id) }}">마이 상품</a></li>
+                                            {% endif %}
+                                        {% endif %}
+                                        <li><span>모든 상품</span></li>
+                                    </ul>
+                                </div>
+                            {% else %}
+                                <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                                    <ul class="uk-breadcrumb">
+                                        <li><a href="{{ url_for('products.shop_detail', _id="create", slug='shop') }}">Shop 등록</a></li>
+                                        <li><a href="{{ url_for('products.all_shop_list') }}">모든 Shop</a></li>
+                                        {% if current_user_shop_display_true_list %}
+                                            <li><a href="{{ url_for('products.user_shop_list', _id=current_user.id) }}">마이 Shop</a></li>
+                                        {% endif %}
+                                        <li><a href="{{ url_for('products.all_product_list') }}">모든 상품</a></li>
+                                        <li><span>마이 상품</span></li>
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            {% if "all" in request.full_path %}
+                                <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                                    <ul class="uk-breadcrumb">
+                                        <li><a href="{{ url_for('products.shop_detail', _id="create", slug='shop') }}">Shop 등록</a></li>
+                                        <li><a href="{{ url_for('products.all_shop_list') }}">모든 Shop</a></li>
+                                        {% if current_user_shop_display_true_list %}
+                                            <li><a href="{{ url_for('products.user_shop_list', _id=current_user.id) }}">마이 Shop</a></li>
+                                            {% if current_user_product_display_true_list %}
+                                                <li><a href="{{ url_for('products.user_product_list', _id=current_user.id) }}">마이 상품</a></li>
+                                            {% endif %}
+                                        {% endif %}
+                                        <li><span>모든 상품</span></li>
+                                    </ul>
+                                </div>
+                            {% else %}
+                                <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                                    <ul class="uk-breadcrumb">
+                                        <li><a href="{{ url_for('products.shop_detail', _id="create", slug='shop') }}">Shop 등록</a></li>
+                                        <li><a href="{{ url_for('products.all_shop_list') }}">모든 Shop</a></li>
+                                        {% if current_user_shop_display_true_list %}
+                                            <li><a href="{{ url_for('products.user_shop_list', _id=current_user.id) }}">마이 Shop</a></li>
+                                        {% endif %}
+                                        <li><a href="{{ url_for('products.all_product_list') }}">모든 상품</a></li>
+                                        {% if current_user_product_display_true_list %}
+                                            <li><a href="{{ url_for('products.user_product_list', _id=current_user.id) }}">마이 상품</a></li>
+                                        {% endif %}
+                                        <li><span>"{{ target_user.profile_user_set[0].nickname }}님"의 상품</span></li>
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% else %}
+                        {% if "all" in request.full_path %}
+                            <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                                <ul class="uk-breadcrumb">
+                                    <li><a href="{{ url_for('products.all_shop_list') }}">모든 Shop</a></li>
+                                    <li><span>모든 상품</span></li>
+                                </ul>
+                            </div>
+                        {% else %}
+                            <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                                <ul class="uk-breadcrumb">
+                                    <li><a href="{{ url_for('products.all_shop_list') }}">모든 Shop</a></li>
+                                    <li><a href="{{ url_for('products.all_product_list') }}">모든 상품</a></li>
+                                    <li><span>{{ target_user.profile_user_set[0].nickname }}"의 상품</span></li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    {% if "all" in request.full_path %}
+                        <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                            <ul class="uk-breadcrumb">
+                                <li><a href="{{ url_for('products.all_shop_list') }}">모든 Shop</a></li>
+                                <li><span>모든 상품</span></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                            <ul class="uk-breadcrumb">
+                                <li><a href="{{ url_for('products.all_shop_list') }}">모든 Shop</a></li>
+                                <li><a href="{{ url_for('products.all_product_list') }}">모든 상품</a></li>
+                                <li><span>{{ target_user.profile_user_set[0].nickname }}"의 상품</span></li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                {% if "all" in request.full_path %}
+                    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                        <ul class="uk-breadcrumb">
+                            <li><a href="{{ url_for('products.all_shop_list') }}">모든 Shop</a></li>
+                            <li><span>모든 상품</span></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                        <ul class="uk-breadcrumb">
+                            <li><a href="{{ url_for('products.all_shop_list') }}">모든 Shop</a></li>
+                            <li><a href="{{ url_for('products.all_product_list') }}">모든 상품</a></li>
+                            <li><span>{{ target_user.profile_user_set[0].nickname }}"의 상품</span></li>
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <div class="content">
+                {% if products %}
+                    <div class="products-alert"></div>
+                    {% if "all" in request.full_path %}
+                        <form class="mb-15" id="searchForm" method="get" action="{{ url_for('products.all_product_list') }}" uk-grid>
+                            {% include "includes/search.html" %}
+                        </form>
+                    {% else %}
+                        <form class="mb-15" id="searchForm" method="get" action="{{ url_for('products.user_product_list', _id=target_user.id) }}" uk-grid>
+                            {% include "includes/search.html" %}
+                        </form>
+                    {% endif %}
+
+                    {% if kw %}
+                        {% if products %}
+                            <div>"{{ kw }}"에 대한 검색결과</div>
+                            <hr>
+                        {% else %}
+                            <div>"{{ kw }}"에 대한 검색결과가 없습니다.</div>
+                            <hr>
+                        {% endif %}
+                    {% endif %}
+                    <script src="{{ url_for('static', filename='statics/js/searches/search.js') }}"></script>
+
+                    <div class="uk-grid-small uk-grid-match uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l" uk-grid="masonry: true">
+                        {% for product in products %}
+                            <a href="{{ url_for("products.product_detail", _id=product.id, slug=product.slug) }}">
+                                <div class="card-container ml-5">
+                                    <div class="uk-card uk-card-default">
+                                        <div class="img-container uk-card-media-top">
+                                            {% if product.img_path_1 %}
+                                                <img src="/{{ product.img_path_1 }}">
+                                            {% else %}
+                                                <img src="{{ url_for('static', filename='statics/images/uikit_sample/sample2.jpg') }}">
+                                            {% endif %}
+                                        </div>
+                                        <div class="uk-card-body">
+                                            <div class="title mb-10">{{ product.title }}</div>
+                                            <div class="inner">
+                                                <div class="price uk-text-right">{{ product.price|intcomma }}원</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                    {% if pagination %}
+                        {% include 'includes/pagination/pagination.html' %}
+                    {% endif %}
+                {% else %}
+                    {% if "all" in request.full_path %}
+                        <div>다른 회원님의 상품이 아직 없습니다.</div>
+                    {% else %}
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.profile_user_set %}
+                                {% if current_user.profile_user_set[0].level == "판매사업자" %}
+                                    {% if current_user == target_user %}
+                                        <div>회원님은 아직 등록된 상품이 없습니다.</div>
+                                    {% else %}
+                                        <div>{{ target_user.profile_user_set[0].nickname }}님은 아직 등록된 상품이 없습니다.</div>
+                                    {% endif %}
+                                {% else %}
+                                    <div>{{ target_user.profile_user_set[0].nickname }}님은 아직 등록된 상품이 없습니다.</div>
+                                {% endif %}
+                            {% else %}
+                                <div>{{ target_user.profile_user_set[0].nickname }}님은 아직 등록된 상품이 없습니다.</div>
+                            {% endif %}
+                        {% else %}
+                            <div>{{ target_user.profile_user_set[0].nickname }}님은 아직 등록된 상품이 없습니다.</div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}

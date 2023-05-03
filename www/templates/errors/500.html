@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}
+    Not Found
+{% endblock %}
+
+<body>
+{% block body %}
+    <div class="flashes-container">
+        {% include "includes/messages.html" %}
+    </div>
+    <h3><b>Internal Server Error [500]</b></h3>
+    <p>웹 사이트에서 페이지를 표시할 수 없습니다.</p>
+    가능성이 높은 원인: <br>
+    - 웹사이트 유지 관리중입니다. <br>
+    - 웹사이트에 프로그래밍 오류가 있습니다. <br> <br>
+    가능한 해결 방법: <br>
+    - 페이지를 새로고침합니다. <br>
+    - 이전 페이지로 돌아갑니다. <br><br>
+    추가정보
+    - 이 오류(HTTP 500 내부 서버 오류)는 방문한 웹사이트의 서버에 문제가 있어 웹페이지가 표시되지 않음을 의미합니다. <br>
+    - 자세한 질문은 웹사이트 관리자에게 문의하세요.
+
+{% endblock %}
+</body>

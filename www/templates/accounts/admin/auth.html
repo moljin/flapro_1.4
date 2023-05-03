@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Auth Permit
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/css/accounts.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body %}
+{#    <section class="admin-section">#}
+    <section class="accounts-container">
+        <div class="main-width padding10 mt-20 mb-20">
+            <div class="form-container auth">
+                <form method="POST" action="{{ url_for("admin_accounts.auth_permit_request", email=target_user.email) }}">
+                 {{ form.csrf_token }}
+                    <div class="mt-20" uk-grid style="align-items: center">
+                        <div>이메일: </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.email(class="uk-input", value=target_user.email, disabled="disabled") }}
+                        </div>
+                    </div>
+                    {% if admin == "관리자 자신" %}
+                        <br>
+                        {{ target_user.email }}님! <br> <br>
+                        {{ target_user.email }}님은 관리자 권한을 가지고 있습니다. <br>
+                        관리자 권한을 해제하고자 하는 경우, <br>
+                        관리자 해제요청을 클릭하면 최고 관리자(SUPER ADMIN)에게 해제요청 메일이 발송됩니다.<br> <br>
+                        관리자 권한을 유지하고자 하는 경우에는 취소 버튼을 클릭하세요! <br>
+                        <input class="uk-checkbox" id="is_admin" name="is_admin" type="checkbox" style="display: none">
+                        {{ form.email(class="uk-input", value=target_user.email, id="req_email", type="hidden") }}
+                        <input type="hidden" name="admin" value="관리자 자신">
+                        <hr>
+                        <div>
+                        <a href="{{ url_for("admin_accounts.index") }}"><button class="uk-button uk-button-danger" type="button">취소</button></a>
+                        <button class="uk-button uk-button-primary ml-10" type="submit">관리자 해제요청</button>
+                        </div>
+                    {% elif admin == "not admin" %}
+                        <br>
+                        {{ target_user.email }}님! <br>
+                        관리자 권한 요청을 원하면, 관리자 권한요청을 체크하고 인증요청을 클릭하세요! <br>
+                        <hr>
+                        관리자 권한요청: {% if target_user.is_admin %}{{ form.is_admin(class="uk-checkbox", checked="checked") }}{% else %}{{ form.is_admin(class="uk-checkbox") }}{% endif %}
+                        <br>
+                        스태프 권한요청: {% if target_user.is_staff %}{{ form.is_staff(class="uk-checkbox", checked="checked") }}{% else %}{{ form.is_staff(class="uk-checkbox") }}{% endif %}
+                        <br><br>
+                        {{ form.email(class="uk-input", value=target_user.email, id="req_email", type="hidden") }}
+                        <button class="uk-button uk-button-primary" type="submit">인증 요청</button>
+                    {% endif %}
+                </form>
+
+            </div>
+        </div>
+    </section>
+{#    </section>#}
+{% endblock %}
+
+{% block footer %}
+    {% include 'includes/footer.html' %}
+{% endblock %}
+

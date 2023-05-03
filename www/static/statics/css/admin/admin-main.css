@@ -1,0 +1,113 @@
+.body-main .body-top div > a > i {font-size: 25px; color: #1B1456}
+
+header .header {display:flex; justify-content: space-between; align-items: center; height: 55px; background: #1B1464; color: white}
+header .header div.logo a {color: white; font-weight: 700; font-size: 25px}
+header .header div.nav-wrapper a {color: white}
+
+.no-margin-top-hr {margin-top: 0!important;}
+
+.admin-section {max-width: 1440px; margin: 10px auto 0 auto}
+.admin-section .body-main {padding: 10px 15px}
+.admin-section .body-main .body-section {padding-top: 1rem; height: auto !important;}
+
+.adm-index-above-main .flashes {border-radius: 0}
+button.check-btn {padding: 3px 7px; border: solid 1px #dcdde1;font-size: 14px; color: red; max-width: 100px; cursor: pointer; border-radius: 3px}
+button.check-btn:hover {background: #ecf0f1; color: #eb2f06}
+table .table-link {color: maroon}
+table .table-link:hover {cursor: pointer; color: #1e3799}
+.site-view {text-align: right}
+.site-view button {border: solid 1px #dcdde1; color: #0652DD}
+.site-view button:hover {background: #ecf0f1; color: maroon}
+
+div.caution {font-size: 15px; color: #1B1464}
+span.caution{color: red}
+
+.form-container .inlines.list-title {background: cornflowerblue; color: white; margin-bottom: 10px; padding: 7px 10px}
+.form-container .inlines.title {background: #555555; color: white; margin-bottom: 10px; padding: 7px 10px}
+
+.sub-container .form-container {max-width: 1280px; border: solid 1px #ced6e0; border-radius: 5px; padding: 1.5rem 1.5rem 1rem; margin: 0 auto 1rem auto}
+.sub-container .form-container form > fieldset > button {margin-bottom: 0}
+.body-section .list-container .list table img.img-preview {width: 35px; height: 35px; border-radius: 50%; object-fit: cover}
+input.image.file {padding: 4px}
+
+/*accounts*/
+.form-container form.accounts .uk-fieldset .uk-margin {align-items: center}
+#user-delete-modal > div > div {margin-top: 40px}
+@media screen and (max-width: 1170px) {
+    .list-container .objects.list table td.uk-text-truncate {max-width: unset}
+    .list-container .objects.list table td.text-center {text-align: right}
+}
+
+/*profiles*/
+.form-container form.profiles .check-btn-div {padding-left: 10px; margin-top: 0.21875rem}
+.form-container form.profiles .check-btn {height: 38px}
+.form-container form.profiles .uk-fieldset .uk-margin {align-items: center}
+.form-container form.profiles .uk-textarea {resize: none; height: auto}
+.form-container form.profiles .img-preview {width: 40px; height: 40px; object-fit: cover}
+.form-container form.profiles > fieldset > button {margin-bottom: 0}
+#profile-delete-modal > div > div {margin-top: 40px}
+
+/*articles*/
+.category-alert {display: none}
+.form-container form.articles .check-btn-div {padding-left: 10px; margin-top: 0.21875rem}
+.form-container form.articles .check-btn {height: 38px}
+.form-container form.articles .uk-fieldset .uk-margin {align-items: center}
+.form-container form.articles .uk-textarea {resize: none; height: auto}
+.form-container form.articles .img-preview {width: 40px; height: 40px; object-fit: cover}
+.form-container form.articles > fieldset > button {margin-bottom: 0}
+#category-delete-modal div.confirm, #article-delete-modal div.confirm {width: 90%}
+#category-delete-modal div.all-data, #article-delete-modal div.all-data {margin-top: 10px}
+#category-delete-modal div.btn, #article-delete-modal div.btn {margin-top: 20px}
+
+/*shop*/
+.list-container .objects.list table.shop {margin-top: unset}
+.form-container form.shops .check-btn-div {padding-left: 10px; margin-top: 0.21875rem}
+.form-container form.shops .check-btn {height: 38px}
+.form-container .inlines.list .category-add {display: flex; justify-content: right}
+.form-container .inlines.list .loop-inner .content, .form-container .inlines.list .loop-inner .content .content-inner {display: flex; align-items: center}
+@media screen and (max-width: 640px) {.form-container .inlines.list .loop-inner .content {display: block}
+.form-container .inlines.list .loop-inner .content .content-inner {margin-top: 10px; justify-content: space-between}}
+.form-container .inlines.list .loop-inner .content {width: 85%}
+.form-container .inlines.list .loop-inner a.alert-close {position: absolute; top: 20px; right: 15px; color: inherit; opacity: .4}
+.form-container .inlines.list .loop-inner .admin-change-btn {background: #b2b2b2; color: white; padding: 0 10px; border-radius: 5px; line-height: 30px; width: 55px}
+.form-container .inlines.list .loop-inner .admin-change-btn:hover {background: #bbbbbb}
+.form-container form.shops .uk-fieldset .uk-margin {align-items: center}
+.form-container form.shops .uk-textarea {resize: none; height: auto}
+.form-container form.shops .cover-preview,
+.form-container form.shops .symbol-preview {width: 40px; height: 40px; object-fit: cover}
+.form-container form.shops > fieldset > button {margin-bottom: 0}
+#shop-delete-modal div.list.btn { margin-top: 30px}
+#shop-delete-modal div.change.confirm {width: 90%}
+#shop-delete-modal div.all-data {margin-top: 10px}
+#shop-delete-modal div.change.btn {display: flex; justify-content: right;}
+
+
+/*products*/
+#product-delete-modal div.list.btn {margin-top: 30px}
+#product-delete-modal div.change.confirm {width: 90%}
+.form-container form.products .uk-fieldset .uk-margin {align-items: center}
+.form-container form.products .check-btn-div {padding-left: 10px; margin-top: 0.21875rem}
+.form-container form.products .check-btn {height: 38px}
+.form-container form.products .preview-thumbnail {width: 40px; height: 40px; object-fit: cover}
+
+.form-group.option .option-add {position: sticky; top: 10px; z-index: 1}
+.form-group.option div.option-add {display: flex; justify-content: flex-end;}
+.form-group.option .option-add button.add-input-btn {width: 6rem; background: #aa1111; opacity: 0.7; font-size: 14px; color: white; cursor: pointer;height: 35px; display: flex; align-items: center;border-radius: 5px}
+.form-group.option .option-add button.add-input-btn:hover {background: maroon; opacity: 0.7}
+
+.form-group.option .option-form-wrapper {margin-left: 1px}
+.form-group.option .option-form-wrapper .option-form .form-group {display: flex; align-items: center}
+.form-group.option .option-form-wrapper  .option-form.uk-alert {padding-right: 15px}
+.form-group.option div.option-add i.fa-folder-plus {font-size: 20px}
+.form-group.option .option-form-wrapper .cancel-input-btn.remove-input {width: 6rem; background: #faa05a; font-size: 14px; color: white; cursor: pointer;height: 35px; display: flex; align-items: center;border-radius: 5px}
+.form-group.option .option-form-wrapper .cancel-input-btn.remove-input:hover {background: coral}
+.form-group.option .option-form-wrapper i.fa-folder-minus {font-size: 20px}
+.cancel-input-btn.remove-input.uk-alert-close.uk-close {right: 20px; opacity: 1}
+
+/*product review*/
+.dz-old-image .old-img .admin.old-img-delete-btn {display: block}
+.admin-body .reviews .flashes .alert-danger {width: 100%}
+.admin-body .reviews .flashes .alert-danger .delete-confirm-btn {background: blue; opacity: 0.6; border-radius: 3px; padding: 0 10px;}
+
+/*lotto create*/
+.form-container form.lottos .uk-fieldset .uk-margin {align-items: center}

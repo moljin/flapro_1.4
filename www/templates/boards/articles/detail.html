@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block meta_description %}
+    <meta name="description" content="{{ target_article.meta_description }}">
+{% endblock %}
+
+{% block title %}
+    아티클
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/css/articles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/suneditor.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/custom/customSunEditor.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/commentEditor/commentEditor.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        {% if current_user.is_authenticated %}
+            CSRF_TOKEN = "{{ csrf_token() }}";
+            currentUserId = "{{ current_user.id }}";
+            currentUsername = "{{ current_user.username }}";
+            {% if target_category %}
+                acDetail = '{{ url_for('articles.ac_detail', _id=target_category.id, slug=target_category.slug) }}';
+            {% endif %}
+            {% if target_user == current_user %}
+                articleDeleteAjax = '{{ url_for('articles.article_delete_ajax') }}';
+            {% else %}
+                articleVoteAjax = '{{ url_for('articles.article_vote_ajax', _id=target_article.id) }}';
+                articleVoteCancelAjax = '{{ url_for('articles.article_vote_cancel_ajax', _id=target_article.id) }}';
+            {% endif %}
+            {% for target_comment in target_article.comment_article_set %}
+                {% if target_comment.user == current_user %}
+                    articleCommentDeleteAjax = '{{ url_for('articles.article_comment_delete_ajax') }}';
+                {% endif %}
+            {% endfor %}
+
+            editorImagesSaveAjax = '{{ url_for('commons.editor_images_save_ajax') }}';
+            <!--comment-->
+            articleCommentIsSecretCheckAjax = '{{ url_for("articles.article_comment_is_secret_check_ajax") }}';
+            articleCommentSave = '{{ url_for("articles.article_comment_save") }}';
+            articleId = '{{ target_article.id }}';
+        {% endif %}
+    </script>
+{% endblock %}
+
+
+{% block body %}
+    <div class="flashes-container">
+        {% include 'includes/messages.html' %}
+    </div>
+    <section class="articles-container article detail pt-10 pb-10">
+        <div class="main-width padding10">
+
+            <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                <ul class="uk-breadcrumb">
+                    <li><a href="{{ url_for("articles.article_create") }}?category_id={{ target_category.id }}&category_title={{ target_category.title }}&&category_slug={{ target_category.slug }}">게시글 등록</a></li>
+                    <li><a href="{{ url_for("articles.user_article_list", _id=current_user.id) }}">마이게시글</a></li>
+                    <li><a class="custom uk-text-truncate" href="{{ url_for('articles.ac_detail', _id=target_category.id, slug=target_category.slug) }}">{{ target_category.title }}</a></li>
+                    <li><span class="custom uk-text-truncate">{{ target_article.title }}</span></li>
+                </ul>
+            </div>
+
+            <div class="form-container detail">
+                <div class="upper mb-10" uk-grid>
+                    <div class="board-form image">
+                        <div class="image">
+                            {% if target_article.img_path %}
+                                <img class="img-path" id="img-path" src="/{{ target_article.img_path }}">
+                            {% else %}
+                                <img class="img-path" id="img-path" src="{{ url_for('static', filename='statics/images/4-3-sample.jpg') }}">
+                            {% endif %}
+                        </div>
+                    </div>
+
+                     <div class="board-form title-others uk-width-expand">
+                        <div class="board-form title">
+                            <div class="title">
+                                {{ target_article.title }}
+                            </div>
+                        </div>
+                        <div uk-grid>
+                            <div class="profile mt-5">
+                            {% if target_article.user %}
+                                {% if target_article.user.profile_user_set %}
+                                        <a href="{{ url_for("accounts.account_detail", _id=target_article.user.id) }}">
+                                            {% if target_article.user.profile_user_set[0].profile_img_path %}
+                                                <img src="/{{ target_article.user.profile_user_set[0].profile_img_path }}" alt="">
+                                            {% else %}
+                                                <img src="{{ url_for('static', filename='statics/images/user-none.png') }}">
+                                            {% endif %}
+                                            {% if target_article.available_display == True %}
+                                                {{ target_article.user.profile_user_set[0].nickname }}
+                                            {% else %}
+                                                {{ target_article.user.profile_user_set[0].nickname }}(카테고리 삭제)
+                                            {% endif %}
+                                        </a>
+
+                                {% else %}
+                                    <div>
+                                        {% if target_article.available_display == True %}
+                                            <img src="{{ url_for('static', filename='statics/images/user-none.png') }}">
+                                            프로필 미등록
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='statics/images/user-none.png') }}">
+                                            카테고리 삭제(와 프로필 삭제)
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div>
+                                    <img src="{{ url_for('static', filename='statics/images/user-none.png') }}">
+                                    탈퇴한 이용자
+                                </div>
+                            {% endif %}
+                            </div>
+                            <div class="mt-5">
+                                {{ target_article.created_at|daytime("medium") }}
+                            </div>
+                        </div>
+
+                        <!--오너는 추천/추천중이 안보이고, 비로그인시도 추천/추천중 안보임. 로그인한 다른 유저는 추천/추천중이 보인다. -->
+                        <!--조회수와 구독수는 로그인하면 볼수 있다.(오너이든 그외 이용자든)-->
+                        {% set view_count = target_article.view_count + 7528 %}
+                        {% set vote_count = target_article.voters|length + 2653 %}
+                        <div class="viewcount-vote-container uk-align-right">
+
+                                <div class="count-container mt-5" uk-grid>
+                                    <div class="count"><span class="view-count">조회: {{ view_count|intcomma }}회</span></div>
+                                    <div class="count ml-15">추천: <span class="vote-count">{{ vote_count|intcomma }}</span>명</div>
+                                </div>
+                            {% if current_user.is_authenticated %}
+                                {% if current_user != target_user %}
+                                    {% if current_user.profile_user_set %}
+                                        <div class="vote-container uk-align-right mt-5">
+                                            <div class="btn">
+                                                <input type="hidden" id="article-id" value="{{ target_article.id }}">
+                                                <button class="voted" id="cancel-btn" uk-toggle="target: #vote-cancel-modal" type="button">추천중</button>
+                                                <button class="vote" id="vote-btn" type="button">추천</button>
+
+                                                {% if current_user in target_article.voters %}
+                                                    <script>document.querySelector("#vote-btn").style.display = "none"; </script>
+                                                    <div id="vote-cancel-modal" class="uk-flex-top" uk-modal>
+                                                        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                            <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                            정말로 추천을 취소하시겠어요?
+                                                            <div class="vote-cancel-btn uk-align-right uk-inline">
+                                                                <button id="vote-cancel-btn" class="uk-button uk-button-primary mt-40 uk-modal-close" type="button">추천 취소</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% else %}
+                                                    <script>document.querySelector("#cancel-btn").style.display = "none"; </script>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="update-delete uk-align-right mt-10">
+                                        <a class="mr-5" href="{{ url_for("articles.article_update", _id=target_article.id, slug=target_article.slug) }}"><span class="mr-10"><i class="fas fa-cogs"></i></span></a>
+                                        <a href="#article-delete-modal" uk-toggle><span><i class="fas fa-trash-alt"></i></span></a>
+                                        <div id="article-delete-modal" class="uk-flex-top" uk-modal>
+                                            <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                정말로 아티클을 삭제하시겠어요?
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <input type="hidden" id="article_id" value="{{ target_article.id }}">
+                                                <div class="user-btn uk-inline ml-15 uk-align-right">
+                                                    <button class="uk-button uk-button-primary mt-40" type="button">삭제</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                     </div>
+                </div>
+
+                <div class="vote-alert"></div>
+
+                <div class="board-form">
+                    <div class="uk-margin content se-wrapper-inner se-wrapper-wysiwyg sun-editor-editable">
+                        {{ target_article.content|safe }}
+                    </div>
+                </div>
+
+                {% if target_article.site_title and target_article.site_url %}
+                    <div class="board-form">
+                        <div class="uk-margin">
+                            참고 사이트: <a href="{{ target_article.site_url }}" target="_blank">{{ target_article.site_title }}</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if target_article.tag_article_set %}
+                    <div class="board-form">
+                        <div class="uk-margin">
+                            {% set len = target_article.tag_article_set|length %}
+                            {% for tag_obj in target_article.tag_article_set %}
+                                {% if loop.index < len %}
+                                    <span class="hashTag mr-10">#{{ tag_obj.tag }},</span>
+                                {% elif loop.index == len %}
+                                    <span class="hashTag mr-10">#{{ tag_obj.tag }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <script src="{{ url_for('static', filename='statics/js/searches/hashTagSearch.js') }}"></script>
+                {% endif %}
+            </div>
+
+            <div class="comment-container">
+                <div class="comment-alert mt-15"></div>
+                <div hidden class="comment-detail pseudo"><!--forEach 짝을 맞추기 위해...--></div>
+                <div class="comment comment-0 mb-10 comment-create">
+                    <!--여기에 동적으로 javascript 이용해서 create sunEditor 삽입-->
+                </div>
+                <div class="comment-open-container mb-10">
+                    {% if current_user.profile_user_set %}
+                        <button class="comment-btn new uk-button" data-comment-id="" data-paired-id="" data-orm-id="">
+                            <i class="fas fa-comments"></i>
+                            <span>본문에 댓글달기</span><!--댓글 달기-->
+                        </button>
+                    {% else %}
+                        <a href="{{ url_for('accounts.account_detail', _id=current_user.id) }}">
+                            <button class="no-comment-btn uk-button">
+                                <i class="fas fa-comments"></i>
+                                <span>프로필 등록후 댓글가능해요!</span><!--댓글 달기-->
+                            </button>
+                        </a>
+                    {% endif %}
+                </div>
+                <hr>
+
+                {% if target_article.comment_article_set %}
+                    <div class="comment-detail-container"> <!--댓글 상세 리스트 및 각 수정/삭제-->
+                        {% for target_comment in target_article.comment_article_set | sort(attribute='created_at', reverse = True) %}
+                            {% if not target_comment.paired_comment_id %}<!--1차 comment-->
+                                <div class="comment-loop mt-15">
+                                    {% include "boards/articles/includes/comment_loop.html" %}
+                                </div>
+                                {% if (target_comment.is_secret != True) or ((target_comment.is_secret == True) and current_user.is_admin)  %}
+                                    <!--댓글에 대한 답변은, 비밀글이 아니면 아무나 reply, 비밀글이면 관리자만 reply 달수 있다.-->
+                                    {% if current_user != target_comment.user %}
+                                        {% if current_user.profile_user_set %}
+                                            <div class="reply-create-container">
+                                                <div class="comment reply-create mt-15">
+                                                <!--여기에 동적으로 javascript 이용해서 create sunEditor 삽입-->
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                                <div class="reply-detail-container">
+                                    {% for reply_comment in reply_com_objs | sort(attribute='created_at', reverse = True) %}<!--2차 comment 즉, reply_comment-->
+                                        {% if reply_comment.paired_comment_id == target_comment.id %}
+                                            {% if reply_comment.is_secret == True %}
+                                                <div class="reply-loop-container">
+                                                    {% include "boards/articles/includes/secret_reply_loop.html" %}
+                                                </div>
+                                            {% else %}
+                                                <div class="reply-loop-container">
+                                                    {% include "boards/articles/includes/not_secret_reply_loop.html" %}
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block end_js %}
+    {% if current_user.is_authenticated %}
+        <!-- 필수: main_js -->
+        <script src="{{ url_for('static', filename='statics/suneditor/suneditor.min.js') }}"></script>
+
+        <!--비필수: codeMirror -->
+        <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/htmlmixed.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/xml.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/css.js') }}"></script>
+
+        <!-- 필수: 버튼에 필요-->
+        <script src="{{ url_for('static', filename='statics/suneditor/katex.min.js') }}"></script>
+        <!-- 필수: Language -->
+        <script src="{{ url_for('static', filename='statics/suneditor/ko.js') }}"></script>
+
+        <!-- Custom -->
+        <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/commentEditor/commentEditor.js') }}"></script>
+
+        <script src="{{ url_for('static', filename='statics/js/articles/article.js') }}"></script>
+
+        {% if target_user != current_user %}
+            <script src="{{ url_for('static', filename='statics/js/articles/vote.js') }}"></script>
+        {% endif %}
+    {% endif %}
+{% endblock %}

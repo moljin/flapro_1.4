@@ -1,0 +1,155 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    Shop 구독
+{% endblock %}
+
+{% block head_css %}
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+        shopSubscribeAjax = '{{ url_for('products.shop_subscribe_ajax') }}';
+        shopSubscribeCancelAjax = '{{ url_for('products.shop_subscribe_cancel_ajax') }}';
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_ecomms.subscription_shop_list') }}">Shop 구독리스트</a></li>
+            <li><span>구독자 리스트</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+        <div class="subscribe-alert mt-15"></div>
+    </section>
+
+{% endblock %}
+
+{% block body_section %}
+    <div class="sub-container">
+        <div class="form-container">
+            <div class="site-view mb-20">
+                <a href="{{ url_for("products.shop_detail", _id=target_shop.id, slug=target_shop.slug) }}" target="_blank">
+                    <button class="uk-button">사이트 보기</button>
+                </a>
+            </div>
+            <form class="articles" method="POST" enctype="multipart/form-data">
+                <fieldset class="uk-fieldset">
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            회원:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="user_email" class="uk-select">
+                                <option value="" selected>&nbsp;&nbsp;--- &nbsp;선택&nbsp; ---</option>
+                                {% for user in users %}
+                                    {% if not user in target_shop.subscribers %}
+                                        {% if user != target_user %}
+                                            {% if user.profile_user_set %}
+                                                <option value="{{ user.email }}">{{ user.email }}</option>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="shop-id" name="shop_id" value="{{ target_shop.id }}">
+                    <button class="uk-button uk-button-primary uk-align-right" type="button" id="subscribe-btn">구독자 저장</button>
+
+                </fieldset>
+            </form>
+            <!--구독자 리스트-->
+            <hr class="mt-30">
+            <div class="inlines list-title mb-10">Shop 구독자 리스트</div>
+            <div class="inlines list-container">
+                <div class="inlines list">
+                    <div class="title">&nbsp;&nbsp;상점이름: <span class="ml-5">{{ target_shop.title }}</span></div>
+                    <div class="title mt-5">&nbsp;&nbsp;구독자 수: <span class="ml-5">{{ target_shop.subscribers|length }} 명</span></div>
+                    <table class="uk-table uk-table-middle uk-table-divider">
+                        <thead>
+                        <tr>
+                            <th scope="col" class="uk-table-shrink"><input class="uk-checkbox" id="all-check" type="checkbox" name="all_checked"></th>
+                            <th scope="col" class="uk-text-nowrap">구독자 이메일</th>
+                            <th scope="col" class="uk-text-nowrap">닉네임</th>
+                            <th scope="col" class="uk-text-nowrap">프로필 이미지</th>
+                            <th scope="col" class="uk-text-nowrap">프로필 소개글</th>
+                            <th scope="col" class="uk-table-shrink uk-text-nowrap">구독일</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in subscribers %}
+                            <tr>
+                                <td data-label="체크"><input class="uk-checkbox single" id="{{ target_shop.id }}" data-user-id="{{ user.id }}" type="checkbox" name="is_checked"></td>
+                                <td data-label="구독자 이메일" class="">{{ user.email }}</td>
+                                <td data-label="닉네임" class="">
+                                    {% if user.profile_user_set %}
+                                        {% if user.profile_user_set[0].nickname %}
+                                            {{ user.profile_user_set[0].nickname }}
+                                        {% endif %}
+                                    {% else %}
+                                        없슴
+                                    {% endif %}
+                                </td>
+                                <td data-label="프로필 이미지" class="profile-img">
+                                    {% if user.profile_user_set %}
+                                        {% if user.profile_user_set[0].profile_img_path %}
+                                            <img class="img-preview" id="img-preview" src="/{{ user.profile_user_set[0].profile_img_path }}" style="margin: 0 auto;">
+                                        {% endif %}
+                                    {% else %}
+                                        없슴
+                                    {% endif %}
+                                </td>
+                                <td data-label="프로필 소개글" class="">
+                                    {% if user.profile_user_set %}
+                                        {% if user.profile_user_set[0].message %}
+                                            {{ user.profile_user_set[0].message|truncate(20) }}
+                                        {% endif %}
+                                    {% else %}
+                                        없슴
+                                    {% endif %}
+                                </td>
+                                <td data-label="구독일" class="uk-text-nowrap">
+                                    {% for shop_s in _subscribers %}
+                                        {% if shop_s.user_id == user.id %}
+                                            {{ shop_s.created_at|daytime("medium") }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <button class="uk-button uk-button-default" uk-toggle="target: #subscribe-delete-modal">선택 삭제</button>
+                </div>
+            </div>
+
+            <div id="subscribe-delete-modal" class="uk-flex-top" uk-modal>
+                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                    정말로 구독을 삭제시겠어요?
+                    <div class="btn uk-inline ml-15 uk-align-right">
+                        <button id="checked-delete-btn" class="uk-button uk-button-primary mt-40" type="button">삭제</button>
+                    </div>
+                </div>
+            </div>
+
+            {% if pagination %}
+                {% include 'includes/pagination/pagination.html' %}
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='statics/js/ecomm/products/subscribe.js') }}"></script>
+{% endblock %}
+

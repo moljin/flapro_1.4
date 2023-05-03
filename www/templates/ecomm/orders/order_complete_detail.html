@@ -1,0 +1,539 @@
+{% extends "base.html" %}
+
+{% block title %}
+    주문상세
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/font-awesome-5.15.1/css/all.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/css/cart.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/css/order.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        cancelPayAjax = "{{ url_for("orders.cancel_pay_ajax") }}"
+        orderDeleteAjax = "{{ url_for("orders.order_delete_ajax") }}"
+
+        CSRF_TOKEN = "{{ csrf_token() }}"
+    </script>
+
+{% endblock %}
+
+{% block above_main %}
+    <div>
+
+    </div>
+{% endblock %}
+
+{% block main %}
+    <section class="order-container complete detail">
+        <div class="pt-10">
+            <div class="detail-container">
+                {% if device == "pc" %}
+                    <div class="padding10 day-num">
+                        <div class="main-width">
+                            <div>주문결제일: {{ order_transaction.created_at|daytime("medium") }}</div>
+                            <div>주문번호: {{ order.order_num }}</div>
+                        </div>
+                    </div>
+                    <div class="cart-product bg-100 padding10">
+                        {% for order_product in order_productitems %}
+                            <div class="cart-product-container main-width mb-20">
+                                <div class="shop-info upper pt-10 pr-10 pb-10">
+                                     <div class="title-del">
+                                         <div class="title" uk-toggle="target: #seller-info-{{ order_product.id }}; animation: uk-animation-slide-fade">판매자 정보</div>
+                                         <a href="#order-delete-modal" uk-toggle><div class="del">주문삭제</div></a>
+                                         <div id="order-delete-modal" class="order-delete-modal uk-flex-top" uk-modal>
+                                             <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                 <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                 정말로 주문정보를 삭제하시겠어요?
+                                                 <div class="btn uk-align-right">
+                                                     <div class="product-delete-btn uk-inline ml-15">
+                                                         <input type="hidden" id="order-id" name="order-id" value="{{ order.id }}">
+                                                         <button id="order-delete-btn" class="uk-button uk-button-primary uk-modal-close" type="button">삭제</button>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                     <div id="seller-info-{{ order_product.id }}" hidden>
+                                        {% if order_product.shop %}
+                                             상점이름: {{ order_product.shop.title }} <br>
+                                            {% for profile in order_product.shop.user.profile_user_set %}
+                                                {{ profile.nickname }} <br>
+                                                연락처: {% if profile.main_cellphone %}{{ profile.main_cellphone }}{% elif profile.main_phonenumber %}{{ profile.main_phonenumber }}{% else %}없슴{% endif %} <br>
+                                            {% endfor %}
+                                        {% else %}
+                                            판매점: <span style="color: red">폐업</span> <br>
+                                        {% endif %}
+                                     </div>
+                                 </div>
+                                <div class="sub-container">
+                                    <div class="cart-lt">
+                                            <div class="pd-thumbnail padding10">
+                                                <a class="uk-link-reset" href="{{ url_for("products.product_detail", _id=order_product.product.id, slug=order_product.product.slug) }}">
+                                                    <img class="thumbnail" src="/{{ order_product.product.img_path_1 }}">
+                                                </a>
+                                            </div>
+                                            <div class="pd-content padding10">
+                                                <a class="uk-link-reset"
+                                                   href="{{ url_for("products.product_detail", _id=order_product.product.id, slug=order_product.product.slug) }}">
+                                                    {{ order_product.product.title|truncate(40) }}</a>
+                                                <div class="price-div">
+                                                    <div class="price">
+                                                        <div class="line-through">{{ order_product.product.price|intcomma }}원</div>
+                                                        <div class="applied-price">{{ (order_product.product.price - order_product.product.base_dc_amount)|intcomma }}원</div>
+                                                    </div>
+                                                </div>
+                                                <div class="fs-13">배송비&nbsp; {{ order_product.product.delivery_pay|intcomma }}원</div>
+                                                <div class="fs-16">수량&nbsp; <span>{{ order_product.pd_subtotal_quantity }}</span>개</div>
+
+                                            </div>
+
+                                            <div class="pd-price pr-10">
+                                                <div class="price-label">상품금액</div>
+                                                <div class="price-won"><span>{{ order_product.pd_subtotal_price|intcomma }}</span>원</div>
+                                            </div>
+                                        </div>
+                                    <div class="cart-rt">
+                                        <div class="op-content padding10" id="op-content-{{ order_product.product_id }}">
+                                            <div id="for-{{ order_product.product_id }}">
+                                                {% for order_option in order_optionitems %}
+                                                    {% if order_product.product_id == order_option.product_id and (order.id == order_option.order_id) %}
+                                                        <div class="cartop-item">{{ order_option.op_title }}({{ order_option.op_price|intcomma }}원) <span>{{ order_option.op_quantity }}</span>개</div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="op-price mr-10">
+                                            <div class="price-label">옵션금액</div>
+                                            <div class="price-won"><span>{{ order_product.op_subtotal_price|intcomma }}</span>원</div>
+                                        </div>
+                                        <div class="p-change">
+                                            <div class="po-price">
+                                                <div class="pd-op-price">
+                                                    <div class="price-label">합계금액</div>
+                                                    <div><span>{{ order_product.line_price|intcomma }}</span>원</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="main-width flashes-container">
+                            {% include 'includes/messages.html' %}
+                        </div>
+                        <div class="cancel-pay-alert main-width"></div>
+                        <div class="main-width mb-20 cont-pay upper" uk-grid>
+                            <div class="order-pay" uk-grid>
+                                <div>
+                                    {% if point_log %}
+                                        <div class="point">
+                                            {% if point_log.is_cancel == True %}
+                                                취소 포인트: <span>{{ point_log.used_point|intcomma }}</span>원
+                                            {% else %}
+                                                적용 포인트: <span>{{ point_log.used_point|intcomma }}</span>원
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+
+                                    {% if order_coupons %}
+                                        <div class="coupon">
+                                            <!--적용취소쿠폰 cancel-->
+                                            {% for order_coupon in order_coupons %}
+                                                {% if order_coupon.is_cancel == True %}
+                                                    취소 쿠폰: {% break %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% for order_coupon in order_coupons %}
+                                                {% if order_coupon.is_cancel == True %}
+                                                    <div class="ml-10">{{ order_coupon.coupon.code }}({{ order_coupon.coupon.amount|intcomma }}원)</div>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <!--적용쿠폰 no cancel-->
+                                            {% for order_coupon in order_coupons %}
+                                                {% if order_coupon.is_cancel == False %}
+                                                    <div>쿠폰 할인: <span>{{ order.order_coupon_total()|intcomma }}</span>원 </div>
+                                                    {% break %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% if order_coupons %}
+                                    <div>
+                                        <!--적용쿠폰 no cancel-->
+                                        {% for order_coupon in order_coupons %}
+                                            {% if order_coupon.is_cancel == False %}
+                                                사용 쿠폰: {% break %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% for order_coupon in order_coupons %}
+                                            {% if order_coupon.is_cancel == False %}
+                                                <div class="ml-10">{{ order_coupon.coupon.code }}({{ order_coupon.coupon.amount|intcomma }}원)</div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <div class="order">총주문금액: <span>{{ order.total_order_amount|intcomma }}</span>원</div>
+                                    <div class="discount">총할인금액: <span>{{ order.total_discount_amount|intcomma }}</span>원</div>
+                                    <div class="delivery">배송비: <span>{{ cart.get_total_delivery_pay()|intcomma }}</span>원</div>
+                                </div>
+                                <div>
+                                    <div class="pay">결제금액(배송비, 할인포함): <span>{{ order_transaction.amount|intcomma }}</span>원</div>
+                                    <div class="method">결제방식: <span>{{ order_transaction.type }}</span></div>
+                                    {% if cancel_pay %}
+                                        <div class="result">결제취소 완료(취소금액: {{ cancel_pay.ordertransaction.amount|intcomma }}원)</div>
+                                    {% else %}
+                                        <div class="result">결제완료</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="main-width receiver-buyer mb-20" uk-grid>
+                            <div class="receiver-info">
+                                <div class="item" uk-grid>
+                                    <div>수령인</div>
+                                    <div>{{ order.name }}</div>
+                                </div>
+                                <div class="item" uk-grid>
+                                    <div>이메일</div>
+                                    <div>{{ order.email }}</div>
+                                </div>
+                                <div class="item" uk-grid>
+                                    <div>전화번호</div>
+                                    <div>{{ order.phonenumber }}</div>
+                                </div>
+                                <div class="item address" uk-grid>
+                                    <div>배송지</div>
+                                    <div class="juso">
+                                        <div>{{ order.postal_code }}</div>
+                                        <div>{{ order.address }} {{ order.detail_address }} {{ order.extra_address }}</div>
+                                    </div>
+                                </div>
+                                <div class="item" uk-grid>
+                                    <div>주문메모</div>
+                                    <div>{{ order.order_memo }}</div>
+                                </div>
+                            </div>
+                            <div class="buyer-info">
+                                <div>주문자 정보</div>
+                                <div uk-grid>
+                                    <div>{% for profile in order.buyer.profile_user_set %}{{ profile.nickname }}{% endfor %}</div>
+                                    <div>{{ order.buyer.email }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="main-width mb-20 cont-pay lower" uk-grid>
+                            <div class="decision cont-cancel" uk-grid>
+                                {% if not cancel_pay %}
+                                    {% if order.order_status == "결제확인중" %}
+                                        <div class="cancel-input-btn" uk-grid>
+                                            <div class="cancel-input">
+                                                <!--<input type="hidden" id="order-id" name="order-id" value="{{ order.id }}">-->
+                                                <input type="hidden" id="merchant-uid" name="merchant-uid" value="{{ order_transaction.merchant_order_id }}">
+                                                <input type="hidden" id="cancel-amount" name="cancel-amount" value="{{ order_transaction.amount }}">
+                                                <input type="hidden" id="pay-type" name="pay-type" value="{{ order_transaction.type }}">
+                                                <input type="text" id="cancel-reason" name="cancel-reason" class="uk-input" value="" placeholder="결제취소 사유">
+                                                <!--가상계좌의 경우 단방향 결제수단이여서 환불 대상을 알 수 없으므로,
+                                                환불 금액 외에 다음의 환불 수령계좌 정보를 입력해야 합니다.
+                                                <input type="text" id="refund-holder" name="refund-holder" class="uk-input" value=""  placeholder="예금주">
+                                                <input type="text" id="refund-bank" name="refund-bank" class="uk-input" value="" placeholder="환불은행">
+                                                <input type="text" id="refund-account" name="refund-account" class="uk-input" value="" placeholder="환불계좌번호">
+                                                -->
+                                            </div>
+                                            <div class="cancel-btn">
+                                                <button class="uk-button uk-button-default" type="button" uk-toggle="target: #cancel-pay-modal">결제 취소</button>
+                                            </div>
+
+                                            <div id="cancel-pay-modal" class="cancel-pay-modal uk-flex-top" uk-modal>
+                                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                    확인을 클릭하면 결제취소가 진행됩니다.
+                                                    <div class="btn uk-align-right">
+                                                        <div class="uk-inline ml-15">
+                                                            <button id="cancel-pay"  class="uk-button uk-button-primary uk-modal-close mt-30" type="button">확인</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="shop-cont">
+                                            <a href="{{ url_for("products.all_product_list") }}"><button class="uk-button uk-button-default cont">쇼핑 계속</button></a>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                                <div class="shop-cont-single">
+                                    <a href="{{ url_for("products.all_product_list") }}"><button class="uk-button uk-button-default cont">쇼핑 계속</button></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %} <!--모바일-->
+                    <div class="padding10 day-num">
+                        {% if imp_success != "true" %}
+                            <div class="main-width flashes" uk-alert>
+                                <div class="alert alert-danger" role="alert">결제가 중단되었어요!</div>
+                                <button class="uk-alert-close mt-5" type="button" uk-close></button>
+                            </div>
+                        {% endif %}
+                        <div class="main-width">
+                            <div>주문결제일: {{ order_transaction.created_at|daytime("medium") }}</div>
+                            <div>주문번호: {{ order.order_num }}</div>
+                        </div>
+                    </div>
+                    <div class="cart-product bg-100 padding10">
+                        {% for order_product in order_productitems %}
+                            <div class="cart-product-container main-width mb-20">
+                                 <div class="shop-info upper pt-10 pr-10 pb-10">
+                                     <div class="title-del">
+                                         <div class="title" uk-toggle="target: #seller-info-{{ order_product.id }}; animation: uk-animation-slide-fade">판매자 정보</div>
+                                         <div class="del">주문삭제</div>
+                                     </div>
+                                     <div id="seller-info-{{ order_product.id }}" hidden>
+                                         주문 샾: {{ order_product.shop.title }} <br>
+                                        {% for profile in order_product.shop.user.profile_user_set %}
+                                            {{ profile.nickname }} <br>
+                                            핸드폰: {{ profile.main_cellphone }} <br>
+                                        {% endfor %}
+                                     </div>
+                                 </div>
+                                <div class="sub-container">
+                                    <div class="cart-lt">
+                                            <div class="pd-thumbnail padding10">
+                                                <a class="uk-link-reset" href="{{ url_for("products.product_detail", _id=order_product.product.id, slug=order_product.product.slug) }}">
+                                                    <img class="thumbnail" src="/{{ order_product.product.img_path_1 }}">
+                                                </a>
+                                            </div>
+                                            <div class="pd-content padding10">
+                                                <a class="uk-link-reset"
+                                                   href="{{ url_for("products.product_detail", _id=order_product.product.id, slug=order_product.product.slug) }}">
+                                                    {{ order_product.product.title|truncate(40) }}</a>
+                                                <div class="price-div">
+                                                    <div class="price">
+                                                        <div class="line-through">{{ order_product.product.price|intcomma }}원</div>
+                                                        <div class="applied-price">{{ (order_product.product.price - order_product.product.base_dc_amount)|intcomma }}원</div>
+                                                    </div>
+                                                </div>
+                                                <div class="fs-13">배송비&nbsp; {{ order_product.product.delivery_pay|intcomma }}원</div>
+                                                <div class="fs-16">수량&nbsp; <span id="pd-sub-qty-{{ order_product.product_id }}">{{ order_product.pd_subtotal_quantity }}</span>개</div>
+
+                                            </div>
+
+                                            <div class="pd-price pr-10">
+                                                <div class="price-label">상품금액</div>
+                                                <div class="price-won"><span id="pd-subtotal-price-{{ order_product.product_id }}">{{ order_product.pd_subtotal_price|intcomma }}</span>원</div>
+                                            </div>
+                                        </div>
+                                    <div class="cart-rt">
+                                        <div class="op-content padding10" id="op-content-{{ order_product.product_id }}">
+                                            <div id="for-{{ order_product.product_id }}">
+                                                {% for order_option in order_optionitems %}
+                                                    {% if order_product.product_id == order_option.product_id and (order.id == order_option.order_id) %}
+                                                        <div class="cartop-item">{{ order_option.op_title }}({{ order_option.op_price|intcomma }}원) <span id="op-qty-{{ order_option.option_id }}">{{ order_option.op_quantity }}</span>개</div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="op-price mr-10">
+                                            <div class="price-label">옵션금액</div>
+                                            <div class="price-won"><span id="op-subtotal-price-{{ order_product.product_id }}">{{ order_product.op_subtotal_price|intcomma }}</span>원</div>
+                                        </div>
+                                        <div class="p-change">
+                                            <div class="po-price">
+                                                <div class="pd-op-price">
+                                                    <div class="price-label">합계금액</div>
+                                                    <div><span id="pd-line-price-{{ order_product.product_id }}">{{ order_product.line_price|intcomma }}</span>원</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <div class="main-width mb-20 cont-pay upper" uk-grid>
+                            <div class="cancel-pay-alert main-width"></div>
+                            <div class="flashes-container">
+                                {% include 'includes/messages.html' %}
+                            </div>
+                            <div class="order-pay" uk-grid>
+                                <div>
+                                    {% if point_log %}
+                                        <div class="point">
+                                            {% if point_log.is_cancel == True %}
+                                                취소 포인트: <span>{{ point_log.used_point|intcomma }}</span>원
+                                            {% else %}
+                                                적용 포인트: <span>{{ point_log.used_point|intcomma }}</span>원
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+
+                                    {% if order_coupons %}
+                                        <div class="coupon">
+                                            <!--적용취소쿠폰 cancel-->
+                                            {% for order_coupon in order_coupons %}
+                                                {% if order_coupon.is_cancel == True %}
+                                                    취소 쿠폰: {% break %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% for order_coupon in order_coupons %}
+                                                {% if order_coupon.is_cancel == True %}
+                                                    <div class="ml-10">{{ order_coupon.coupon.code }}({{ order_coupon.coupon.amount|intcomma }}원)</div>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <!--적용쿠폰 no cancel-->
+                                            {% for order_coupon in order_coupons %}
+                                                {% if order_coupon.is_cancel == False %}
+                                                    <div>쿠폰 할인: <span>{{ order.order_coupon_total()|intcomma }}</span>원 </div>
+                                                    {% break %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% if order_coupons %}
+                                    <div>
+                                        <!--적용쿠폰 no cancel-->
+                                        {% for order_coupon in order_coupons %}
+                                            {% if order_coupon.is_cancel == False %}
+                                                사용 쿠폰: {% break %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% for order_coupon in order_coupons %}
+                                            {% if order_coupon.is_cancel == False %}
+                                                <div class="ml-10">{{ order_coupon.coupon.code }}({{ order_coupon.coupon.amount|intcomma }}원)</div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if imp_success == "true" %}
+                                    <div>
+                                        <div class="order">총주문금액: <span>{{ order.total_order_amount|intcomma }}</span>원</div>
+                                        <div class="discount">총할인금액: <span>{{ order.total_discount_amount|intcomma }}</span>원</div>
+                                        <div class="delivery">배송비: <span>{{ cart.get_total_delivery_pay()|intcomma }}</span>원</div>
+                                    </div>
+
+                                    <div>
+                                        <div class="pay">결제금액(배송비, 할인포함): <span>{{ order_transaction.amount|intcomma }}</span>원</div>
+                                        <div class="method">결제방식: <span>{{ order_transaction.type }}</span></div>
+                                            {% if cancel_pay %}
+                                                <div class="result">결제취소 완료(취소금액: {{ cancel_pay.ordertransaction.amount|intcomma }}원)</div>
+                                            {% else %}
+                                                <div class="result">결제완료</div>
+                                            {% endif %}
+                                    </div>
+                                {% else %}
+                                    <div>
+                                        <div class="order">총주문금액: <span>{{ order.total_order_amount|intcomma }}</span>원</div>
+                                        <div class="discount">총할인금액: <span>{{ order.total_discount_amount|intcomma }}</span>원</div>
+                                        <div class="delivery">배송비: <span>{{ cart.get_total_delivery_pay()|intcomma }}</span>원</div>
+                                    </div>
+                                    <div>
+                                        <div class="pay">결제예정금액(배송비, 할인포함): <span>{{ order_transaction.amount|intcomma }}</span>원</div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if imp_success == "true" %}
+                            <div class="main-width receiver-buyer mb-20" uk-grid>
+                                <div class="receiver-info">
+                                    <div class="item" uk-grid>
+                                        <div>수령인</div>
+                                        <div>{{ order.name }}</div>
+                                    </div>
+                                    <div class="item" uk-grid>
+                                        <div>이메일</div>
+                                        <div>{{ order.email }}</div>
+                                    </div>
+                                    <div class="item" uk-grid>
+                                        <div>전화번호</div>
+                                        <div>{{ order.phonenumber }}</div>
+                                    </div>
+                                    <div class="item address" uk-grid>
+                                        <div>배송지</div>
+                                        <div class="juso">
+                                            <div>{{ order.postal_code }}</div>
+                                            <div>{{ order.address }} {{ order.detail_address }} {{ order.extra_address }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="item" uk-grid>
+                                        <div>주문메모</div>
+                                        <div>{{ order.order_memo }}</div>
+                                    </div>
+                                </div>
+                                <div class="buyer-info">
+                                    <div>주문자 정보</div>
+                                    <div uk-grid>
+                                        <div>{% for profile in order.buyer.profile_user_set %}{{ profile.nickname }}{% endfor %}</div>
+                                        <div>{{ order.buyer.email }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="main-width mb-20 cont-pay lower" uk-grid>
+                            <div class="decision cont-cancel" uk-grid>
+                                {% if imp_success == "true" %}
+                                    {% if not cancel_pay %}
+                                        {% if order.order_status == "결제확인중" %}
+                                            <div class="cancel-input-btn" uk-grid>
+                                                <div class="cancel-input">
+                                                    <!--<input type="hidden" id="order-id" name="order-id" value="{{ order.id }}">-->
+                                                    <input type="hidden" id="merchant-uid" name="merchant-uid" value="{{ order_transaction.merchant_order_id }}">
+                                                    <input type="hidden" id="cancel-amount" name="cancel-amount" value="{{ order_transaction.amount }}">
+                                                    <input type="hidden" id="pay-type" name="pay-type" value="{{ order_transaction.type }}">
+                                                    <input type="text" id="cancel-reason" name="cancel-reason" class="uk-input" value="" placeholder="결제취소 사유">
+                                                    <!--가상계좌의 경우 단방향 결제수단이여서 환불 대상을 알 수 없으므로,
+                                                    환불 금액 외에 다음의 환불 수령계좌 정보를 입력해야 합니다.
+                                                    <input type="text" id="refund-holder" name="refund-holder" class="uk-input" value=""  placeholder="예금주">
+                                                    <input type="text" id="refund-bank" name="refund-bank" class="uk-input" value="" placeholder="환불은행">
+                                                    <input type="text" id="refund-account" name="refund-account" class="uk-input" value="" placeholder="환불계좌번호">
+                                                    -->
+                                                </div>
+                                                <div class="cancel-btn">
+                                                    <button class="uk-button uk-button-default" type="button" uk-toggle="target: #cancel-pay-modal">결제 취소</button>
+                                                </div>
+
+                                                <div id="cancel-pay-modal" class="cancel-pay-modal uk-flex-top" uk-modal>
+                                                    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                        <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                        확인을 클릭하면 결제취소가 진행됩니다.
+                                                        <div class="btn uk-align-right">
+                                                            <div class="uk-inline ml-15">
+                                                                <button id="cancel-pay"  class="uk-button uk-button-default uk-modal-close mt-30" type="button">확인</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="shop-cont">
+                                                <a href="{{ url_for("products.all_product_list") }}"><button class="uk-button uk-button-default cont">쇼핑 계속</button></a>
+                                            </div>
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="shop-cont-single">
+                                            <a href="{{ url_for("products.all_product_list") }}"><button class="uk-button uk-button-default cont">쇼핑 계속</button></a>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div>
+                                        <a href="{{ url_for('carts.cart_view') }}"><button class="uk-button uk-button-default cont">결제 하기</button></a>
+                                    </div>
+                                    <div class="shop-cont-false">
+                                        <a href="{{ url_for("products.all_product_list") }}"><button class="uk-button uk-button-default cont">쇼핑 계속</button></a>
+                                    </div>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/js/ecomm/orders/orders.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}
+    게시글 리스트
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/css/articles.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <section class="articles-container list mt-20 mb-10">
+        <div class="main-width padding10">
+            {% if current_user.is_authenticated %}
+                {% if "all" in request.full_path %}
+                    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                        <ul class="uk-breadcrumb">
+                            <li><a href="{{ url_for('articles.all_ac_list') }}">모든 카테고리</a></li>
+                            {% if current_user_ac_display_true_list %}
+                                <li><a href="{{ url_for('articles.user_ac_list', _id=current_user.id) }}">마이 카테고리</a></li>
+                                    {% if current_user_article_display_true_list %}
+                                        <li><a href="{{ url_for('articles.user_article_list', _id=current_user.id) }}">마이 게시글</a></li>
+                                    {% endif %}
+                            {% endif %}
+                            <li><span>모든게시글</span></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    {% if current_user == target_user %}
+                        <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                            <ul class="uk-breadcrumb">
+                                <li><a href="{{ url_for('articles.all_ac_list') }}">모든 카테고리</a></li>
+                                {% if current_user_ac_display_true_list %}
+                                    <li><a href="{{ url_for('articles.user_ac_list', _id=current_user.id) }}">마이 카테고리</a></li>
+                                {% endif %}
+                                <li><a href="{{ url_for('articles.all_article_list') }}">모든게시글</a></li>
+                                <li><span>마이게시글</span></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                            <ul class="uk-breadcrumb">
+                                <li><a href="{{ url_for('articles.all_ac_list') }}">모든 카테고리</a></li>
+                                {% if current_user_ac_display_true_list %}
+                                    <li><a href="{{ url_for('articles.user_ac_list', _id=current_user.id) }}">마이 카테고리</a></li>
+                                {% endif %}
+                                <li><a href="{{ url_for('articles.all_article_list') }}">모든 게시글</a></li>
+                                {% if current_user_article_display_true_list %}
+                                    <li><a href="{{ url_for('articles.user_article_list', _id=current_user.id) }}">마이 게시글</a></li>
+                                {% endif %}
+                                <li><span>"{{ target_user.profile_user_set[0].nickname }}님"의 게시글</span></li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                {% if "all" in request.full_path %}
+                    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                        <ul class="uk-breadcrumb">
+                            <li><a href="{{ url_for('articles.all_ac_list') }}">모든 카테고리</a></li>
+                            <li><span>모든 게시글</span></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+                        <ul class="uk-breadcrumb">
+                            <li><a href="{{ url_for('articles.all_ac_list') }}">모든 카테고리</a></li>
+                            <li><a href="{{ url_for('articles.all_article_list') }}">모든 게시글</a></li>
+                            <li><span>"{{ target_user.profile_user_set[0].nickname }}"의 게시글</span></li>
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+        {% if "all" in request.full_path %}
+            <form class="mb-15" id="searchForm" method="get" action="{{ url_for('articles.all_article_list') }}" uk-grid>
+                {% include "includes/search.html" %}
+            </form>
+        {% else %}
+            <form class="mb-15" id="searchForm" method="get" action="{{ url_for('articles.user_article_list', _id=target_user.id) }}" uk-grid>
+                {% include "includes/search.html" %}
+            </form>
+        {% endif %}
+
+        {% if kw %}
+            {% if article_objs %}
+                <div>"{{ kw }}"에 대한 검색결과</div>
+                <hr>
+            {% else %}
+                <div>"{{ kw }}"에 대한 검색결과가 없습니다.</div>
+                <hr>
+            {% endif %}
+        {% endif %}
+        <script src="{{ url_for('static', filename='statics/js/searches/search.js') }}"></script>
+
+        {% if article_objs %}
+            <div class="content">
+                <div class="uk-grid-medium uk-child-width-1-2 uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l" uk-grid="masonry: true">
+                    {% for article in article_objs %}
+                        <a href="{{ url_for("articles.article_detail", _id=article.id, slug=article.slug) }}">
+                            <div class="card-container">
+                                <div class="uk-card uk-card-default">
+                                    <div class="uk-card-media-top">
+                                        {% if article.img_path %}
+                                            <img src="/{{ article.img_path }}">
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='statics/images/uikit_sample/sample2.png') }}">
+                                        {% endif %}
+                                    </div>
+                                    <div class="uk-card-body">
+                                        <div class="title mb-10">{{ article.title|truncate(25) }}</div>
+                                        <p>{{ article.meta_description|truncate(50)|safe }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+                {% if pagination %}
+                    {% include 'includes/pagination/pagination.html' %}
+                {% endif %}
+            </div>
+        {% elif not kw %}
+            <div class="content">
+            다른 회원님의 게시글이 아직 없군요!
+            </div>
+        {% endif %}
+        </div>
+    </section>
+{% endblock %}

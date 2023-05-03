@@ -1,0 +1,40 @@
+/*common*/
+/*#upload_img {padding: 4px; margin-right: 10px} !*이미지 업로드 필드 프리뷰 활성화시 필요.... 사용안함*!*/
+.sun-editor .se-dialog .se-dialog-inner .se-dialog-form .se-input-form.se-input-url {margin-right: 10px}
+.se-line-breaker-component {z-index: 4!important;} /*z-index 4로 하지 않으면 클릭이 안된다.*/
+/*create*/
+#img-preview {display: flex; margin: 0 auto}
+.se-component.se-video-container.__se__float-center {justify-content: center}
+
+#suneditor_editorHiddenText > div > div.se-controller.se-resizing-container {z-index: 1}
+#suneditor_editorHiddenText .se-line-breaker-component {z-index: 2; width: 35px; height: 35px}
+#units-help .uk-modal-dialog {border-radius: 5px;}
+.uk-modal {background: rgba(0,0,0,.4); opacity: 0.6}
+
+/*이미지 삽입모달*/
+div._se_tab_content._se_tab_content_image > div > div:nth-child(1) > div:nth-child(1) > div > input {margin-right: 10px}
+div._se_tab_content._se_tab_content_image > div > div:nth-child(1) > div:nth-child(1) > div > input {padding: 4px!important;}
+div._se_tab_content._se_tab_content_image > div > div:nth-child(1) > div:nth-child(2) {display: none!important;}
+.se-dialog-footer > div > label:nth-child(1) {display: none!important;}
+
+/*detail*/
+.form-container.article.detail .se-wrapper-inner.se-wrapper-wysiwyg.sun-editor-editable {font-size: inherit; overflow: hidden}
+
+/*detail 페이지의 댓글에 삽입된 유투브 너비*높이 맞추기*/
+.comment-detail-container .se-video-container figure {
+    position: relative;
+    /*padding-bottom: 42.19%!important;*/
+    /*padding-bottom: 56.25%!important;*/
+    /*padding-top: 30px;*/
+    height: 0;
+    overflow: hidden;
+}
+.comment-detail-container .se-video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+

@@ -1,0 +1,35 @@
+/*공통*/
+#global-profile-img {width:25px; height:25px; border-radius:50%; object-fit: cover }
+/*header {position: sticky; top: 0; z-index: 9999; opacity: 0.95}*/
+header .header .uk-navbar-container{height: 55px; background: #1B1464; color: white}
+header .header a {color: white}
+header .header .uk-navbar-container {display: flex; align-items: center; justify-content: space-between}
+header .header .uk-navbar-container .logo a {color: white; font-weight: 700; font-size: 25px}
+header .header .uk-navbar-container .logo a:hover {font-weight: 700!important;}
+
+/*pc*/
+header .header ul.uk-navbar-nav .uk-navbar-dropdown .uk-navbar-dropdown-nav li {height: 40px; display: flex;}
+header .header ul.uk-navbar-nav .uk-navbar-dropdown .uk-navbar-dropdown-nav li a {width: 100%}
+header .header ul.uk-navbar-nav {height: 55px; display: flex; align-items: center}
+header .header ul.uk-navbar-nav>li>a {font-size: 16px;}
+header .header ul.uk-navbar-nav li a:hover {color: white!important;}
+header .header ul.uk-navbar-nav>li>a[aria-expanded=true] {color: white;}
+header .header .uk-navbar-dropdown.uk-open {top:55px!important; background: #1B1464; padding: 0}
+header .header .uk-navbar-dropdown.uk-open ul li {padding: 0 15px}
+header .header .uk-navbar-dropdown.uk-open ul li:hover {background: #0652DD}
+
+header .header .uk-navbar-container .hamburger {background: transparent; color: white; font-size: 30px}
+header .header .uk-navbar-container .mobile {max-width: none!important; background: #1B1464; width: 100% !important; margin-top: 0; top: 55px!important; left: 0!important;}
+
+.mobile .navbar-container .uk-nav-default .uk-parent a,
+.mobile .navbar-container .uk-nav-default .no-parent a{height: 40px;}
+.mobile .navbar-container .uk-parent>a,
+.mobile .navbar-container .uk-parent .nav-sub .a-item,
+.mobile .navbar-container .no-parent .a-item {padding: 5px 30px}
+
+.mobile .uk-nav-default>li>a:hover {color: white; background: #0652DD}
+.mobile .uk-nav-default .nav-sub a {color: white}
+.mobile .uk-nav-default .nav-sub>li>a {padding-left: 50px!important;}
+.mobile .uk-nav-default .nav-sub>li>ul>li>a {padding-left: 70px!important;}
+.mobile .uk-nav-default .nav-sub>li>a:hover,
+.mobile .uk-nav-default .nav-sub>li>ul>li>a:hover {background: #0652DD}

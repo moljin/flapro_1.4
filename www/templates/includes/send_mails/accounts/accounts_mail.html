@@ -1,0 +1,107 @@
+<div style="padding: 30px;background: lightskyblue">
+    <div style="background: white; padding: 30px">
+        <div style="font-size: 30px; font-weight: 800">Beta-Version</div>
+        <hr style="background-color: #cccccc; height: 1px; opacity: 0.2; margin-top: 15px">
+
+        <p>{{ email.split('@')[0] }}({{ email }})님!</p>
+        <!--email 은 관리자 수신메일에는 관리자 메일, 신청자 수신메일에는 신청자 메일이 적용된다.-->
+        <!--add_if로 분기하기 전의 user.email == 신청자 이메일임에 유의-->
+
+        <div style="text-align: center">
+            <img src="{{ img_link }}" alt="Image관련을 적어라">
+        </div>
+
+        {% if link is not none %}
+            {% if add_if == "register" %}
+                <h3>회원 등록을 환영합니다.</h3>
+                <p><a href="{{ link }}">여기를</a> 누르면 등록 인증 페이지로 이동합니다. </p>
+                <p>인증 페이지에서 인증 완료하면 정상적인 로그인이 가능합니다.</p>
+                감사합니다.
+            {% endif %}
+
+            {% if add_if == "email_update" %}
+                <h3>로그인 이메일 변경하셨습니다.</h3>
+                <p><a href="{{ link }}" id="a-link">여기를</a> 누르면 로그인 이메일 변경 인증 페이지로 이동합니다. </p>
+                <p>인증 페이지에서 인증 완료하면, 변경된 이메일로 로그인이 가능합니다.</p>
+                감사합니다.
+            {% endif %}
+
+            {% if add_if == "not_verified" %}
+                <h3>비밀번호 재설정후 인증완료하기</h3>
+                <p><a href="{{ link }}" id="a-link">여기를</a> 누르면 인증페이지로 이동합니다. </p>
+                <p>인증 페이지에서 인증 완료하면, 설정한 비밀번호로 로그인이 가능합니다.</p>
+                감사합니다.
+            {% endif %}
+
+            {% if add_if == "forget_password" %}
+                {% if user.is_verified %}
+                    <h3>비밀번호 변경하기</h3>
+                    <hr>
+                    <p><a href="{{ link }}" id="a-link">여기를</a> 누르면 비밀번호 변경 화면으로 이동합니다. </p>
+                    감사합니다.
+                {% else %}
+                    <h3>비밀번호 변경을 통한 가입인증</h3>
+                    <hr>
+                    <p><a href="{{ link }}" id="a-link">여기를</a> 누르면 비밀번호 변경 화면으로 이동합니다. </p>
+                    <p>비밀번호 변경을 진행하면 가입인증용 메일이 재발송됩니다.</p>
+                    감사합니다.
+                {% endif %}
+            {% endif %}
+
+        {% else %}
+            {% if add_if == "vendor_request" %}
+                <!--신청자 메일내용 email == 신청자 이메일-->
+                <h4>판매자 신청</h4>
+                <p>{{ email }}님! 판매자 권한을 신청하셨습니다.</p>
+                <p>관리자가 제출하신 서류와 정보를 확인하고 승인 혹은 추가 제출 내용등을 메일로 회신 할 예정입니다.</p>
+                감사합니다.
+            {% endif %}
+            {% if add_if == "vendor_request_admin" %}
+                <!--관리자 메일내용 user.email == 관리자 이메일-->
+                <h4>판매자 신청</h4>
+                <p>{{ user.email }}님께서 판매자 권한을 신청하셨습니다.</p>
+                <p>제출한 서류와 정보등을 확인 후 승인 및 추가 제출내용등의 당 이메일로 회신을 해주시기 바랍니다.</p>
+                감사합니다.
+            {% endif %}
+
+            {% if add_if == "vendor_pending" %}
+                <!--신청자 메일내용 email == 신청자 이메일-->
+                <h4>판매자 신청정보 수정변경</h4>
+                <p>{{ email }}님께서 판매자 신청정보를 수정변경 하셨습니다.</p>
+                <p>관리자가 제출하신 서류와 정보를 확인하고 승인 혹은 추가 제출 내용등을 메일로 회신 할 예정입니다.</p>
+                감사합니다.
+            {% endif %}
+            {% if add_if == "vendor_pending_admin" %}
+                <!--관리자 메일내용 user.email == 관리자 이메일-->
+                <h4>판매자 신청정보 수정변경</h4>
+                <p>{{ user.email }}님께서 판매자 신청정보를 수정변경 하셨습니다.</p>
+                <p>제출한 서류와 정보등을 확인 후 승인 및 추가 제출내용등의 당 이메일로 회신을 해주시기 바랍니다.</p>
+                감사합니다.
+            {% endif %}
+
+            {% if add_if == "vendor_update" %}
+                <!--신청자 메일내용 email == 신청자 이메일-->
+                <h4>판매자정보 수정변경</h4>
+                <p>{{ email }}님께서 판매자정보를 수정변경 하셨습니다.</p>
+                <p>관리자가 제출하신 서류와 정보를 확인하고 승인 혹은 추가 제출 내용등을 메일로 회신 할 예정입니다.</p>
+                감사합니다.
+            {% endif %}
+            {% if add_if == "vendor_update_admin" %}
+                <!--관리자 메일내용 user.email == 관리자 이메일-->
+                <h4>판매자정보 수정변경</h4>
+                <p>{{ user.email }}님께서 판매자정보를 수정변경 하셨습니다.</p>
+                <p>제출한 서류와 정보등을 확인 후 승인 및 추가 제출내용등의 당 이메일로 회신을 해주시기 바랍니다.</p>
+            {% endif %}
+        {% endif %}
+
+        <hr style="background-color: #cccccc; height: 1px; opacity: 0.2; margin-top: 15px">
+
+        <div style="display: flex; margin-top: 20px">
+            <div style="font-size: 13px">
+                <div>서울특별시 강남구 남강구로 256, 12층(구로동) (주)베타버전 코퍼레이션</div>
+                <div>사업자등록번호 : 481-89-02589</div>
+                <div>COPYRIGHT © Beta-Version corp. ALL RIGHTS RESERVED</div>
+            </div>
+        </div>
+    </div>
+</div>

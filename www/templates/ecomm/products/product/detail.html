@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block meta_description %}
+    {% if target_product %}
+        <meta name="description" content="{{ target_product.meta_description }}"/>
+    {% endif %}
+{% endblock %}
+
+{% block title %}
+    상품상세
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/dropzone/dropzone.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/dropzone/dropzoneCustom.css') }}" rel="stylesheet">
+
+    <link href="{{ url_for('static', filename='statics/suneditor/suneditor.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/suneditor/custom/customSunEditor.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/simpleEditor/simpleEditor.css') }}" rel="stylesheet">
+
+    <link href="{{ url_for('static', filename='statics/css/products.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        {% if current_user.is_authenticated %}
+            CSRF_TOKEN = "{{ csrf_token() }}";
+            currentFullPath = "{{ request.full_path }}";
+            currentUserId = "{{ current_user.id }}";
+            targetProductUserId = "{{ target_product.user_id }}";
+            targetProductId = "{{ target_product.id }}";
+            productReviewSave = "{{ url_for("products.product_review_save") }}";
+            productReviewDeleteAjax = "{{ url_for("products.product_review_delete_ajax") }}";
+            productReviewDzImageDeleteAjax = "{{ url_for("products.product_review_dz_image_delete_ajax") }}";
+            productQuestionDeleteAjax = "{{ url_for("products.product_question_delete_ajax") }}";
+
+            productVoteAjax = '{{ url_for('products.product_vote_ajax', _id=target_product.id) }}';
+            productVoteCancelAjax = '{{ url_for('products.product_vote_cancel_ajax', _id=target_product.id) }}';
+
+            optionSelectAjax = "{{ url_for("products.option_select_ajax") }}"
+            sampleImagePath = "{{ url_for('static', filename='statics/images/no-img.jpg') }}"
+
+            productQuestionSave = "{{ url_for("products.product_question_save") }}";
+            {% if current_user == target_user %}
+                productDeleteAjax = "{{ url_for("products.product_delete_ajax") }}";
+            {% endif %}
+            {% if current_user.is_admin or current_user.is_staff or target_product.user %}
+                productQuestionReplySave = "{{ url_for("products.product_question_reply_save") }}";
+            {% endif %}
+        {% endif %}
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="flashes-container">
+        {% include 'includes/messages.html' %}
+    </div>
+    <section class="products-container product detail mt-20 mb-10">
+        <div class="main-width padding10">
+            <div class="form-container">
+                <div class="form-group summary uk-child-width-1-2@s" uk-grid>
+                    <div class="thumbnail">
+                        <div class="uk-card-media-top uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow="ratio: 4:3; autoplay: true; autoplay-interval: 7000">
+                            <ul class="uk-slideshow-items">
+                                <li>
+                                    {% if target_product.img_path_1 %}
+                                        <img class="thumbnail" id="thumbnail-preview1" src="/{{ target_product.img_path_1 }}" uk-cover>
+                                    {% else %}
+                                        <img class="thumbnail" id="thumbnail-preview1" src="{{ url_for('static', filename='statics/images/product/product_image_1.jpg') }}" uk-cover>
+                                    {% endif %}
+                                </li>
+                                <li>
+                                    {% if target_product.img_path_2 %}
+                                        <img class="thumbnail" id="thumbnail-preview2" src="/{{ target_product.img_path_2 }}" uk-cover>
+                                    {% else %}
+                                        <img class="thumbnail" id="thumbnail-preview2" src="{{ url_for('static', filename='statics/images/product/product_image_2.jpg') }}" uk-cover>
+                                    {% endif %}
+                                </li>
+                                <li>
+                                    {% if target_product.img_path_3 %}
+                                        <img class="thumbnail" id="thumbnail-preview3" src="/{{ target_product.img_path_3 }}" uk-cover>
+                                    {% else %}
+                                        <img class="thumbnail" id="thumbnail-preview3" src="{{ url_for('static', filename='statics/images/product/product_image_3.jpg') }}" uk-cover>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="info">
+                        <div class="breadcrumb">
+                            <ul class="uk-breadcrumb  mt-5 ml-4 mb-7">
+                                <li>
+                                    <a href="{{ url_for("accounts.account_detail", _id=target_user.id) }}">
+                                        <div class="uk-inline"><img class="profile-img" src="/{{ target_profile.profile_img_path }}" alt="mdo">
+                                            <div class="uk-inline">{{ target_profile.nickname }}</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    {% if target_shop %}
+                                        <a href="{{ url_for("products.shop_detail", _id=target_shop.id, slug=target_shop.slug) }}">
+                                            <div class="uk-inline"><img class="symbol-img" src="/{{ target_shop.img_path }}" alt="mdo">
+                                                <div class="uk-inline">{{ target_shop.title }}</div>
+                                            </div>
+                                        </a>
+                                    {% else %}
+                                        <div class="uk-inline">판매점폐업</div>
+                                    {% endif %}
+                                </li>
+                                {% if target_category %}
+                                    <li>
+                                        <a href="{{ url_for('products.category_product_list', category_id=target_category.id, shop_id=target_shop.id) }}">
+                                            <div class="uk-inline">{{ target_category.title }}</div>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+
+                        <div class="info-content detail">
+                            <!--오너는 추천/추천중 안보이고, 비로그인시도 추천/추천중 안보임. 로그인한 다른 유저는 추천/추천중이 보인다. -->
+                            {% set view_count = target_product.view_count + 7528 %}
+                            {% set vote_count = target_product.voters|length + 2653 %}
+                            <div class="mb-10">
+                                <div class="vote-alert"></div>
+                                <div class="viewcount-vote-container">
+                                    <div class="count-container" uk-grid>
+                                        <div class="count">조회: <span class="view-count">{{ view_count|intcomma }}</span>명</div>
+                                        <div class="count ml-15">추천: <span class="vote-count">{{ vote_count|intcomma }}</span>명</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div><h3>{{ target_product.title }}</h3></div>
+                            </div>
+
+                            {% if current_user.is_authenticated and current_user != target_user %}
+                                {% if current_user.profile_user_set %}
+                                    <div class="viewcount-vote-container">
+                                        <div class="vote-container mt-5">
+                                            <span><button id="cancel-btn" uk-toggle="target: #vote-cancel-modal" type="button">추천중</button></span>
+                                            <span><button id="vote-btn" type="button">추천</button></span>
+                                            {% if current_user in target_product.voters %}
+                                                <script>document.querySelector("#vote-btn").style.display = "none";</script>
+                                                <div id="vote-cancel-modal" class="uk-flex-top" uk-modal>
+                                                    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                        <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                        정말로 추천을 취소하시겠어요?
+                                                        <div class="vote-cancel-btn uk-align-right uk-inline">
+                                                            <button id="vote-cancel-btn" class="uk-button uk-button-primary mt-40 uk-modal-close" type="button">추천 취소</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <script>document.querySelector("#cancel-btn").style.display = "none";</script>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+
+                            <form method="POST" action="{{ url_for("carts.add_to_cart", _id=target_product.id) }}">
+                                <div class="applied-price" uk-grid>
+                                    <div class="original-price pt-3" style="text-decoration: line-through">{{ target_product.price|intcomma }} 원</div>
+                                    <div class="uk-width-expand expand-pl">{{ (target_product.price - target_product.base_dc_amount)|intcomma }} 원</div>
+                                </div>
+
+                                <div class="mt-10">
+                                    <button class="uk-button uk-button-default pd-minus"><span uk-icon="minus"></span></button>
+                                    <input readonly class="uk-input uk-form-width-xsmall pd" data-pd-id="{{ target_product.id }}" id="pd-count" name="pd-count" type="text" value="1">
+                                    <input type="hidden" id="pd-id" name="pd-id" value="{{ target_product.id }}">
+                                    <input type="hidden" id="pd-price" value="{{ target_product.price }}">
+                                    <input type="hidden" id="pd-applied-price" name="pd-applied-price" value="{{ target_product.price - target_product.base_dc_amount }}">
+                                    <input type="hidden" id="pd-total-price" name="pd-total-price" value="{{ target_product.price - target_product.base_dc_amount }}">
+                                    <button class="uk-button uk-button-default pd-plus"><span uk-icon="plus"></span></button>
+                                    <div class="uk-inline uk-align-right ml-0 mt-5 mb-0"><span id="pd-total-price-span">{{ (target_product.price - target_product.base_dc_amount)|intcomma }}</span>
+                                        원
+                                    </div>
+                                </div>
+
+                                <div class="uk-grid-mt" uk-grid>
+                                    <div class="delivery">배송비:</div>
+                                    <div class="uk-width-expand expand-pl">{{ target_product.delivery_pay|intcomma }} 원</div>
+                                </div>
+                                <hr class="mt-7 mb-7">
+                                {% if target_product.productoption_product_set %}
+                                    <div class="select-container grid-align-items uk-grid-mt mb-7" uk-grid>
+                                        <div class="expand-mr">옵션:</div>
+                                        <div class="uk-width-expand expand-pl">
+                                            <select name="option_id" class="uk-select">
+                                                <option class="none" value="none">&nbsp;&nbsp;--- &nbsp;선택&nbsp; ---</option>
+                                                {% for option in target_options %}
+                                                    <option value="{{ option.id }}">
+                                                        {{ option.title }}/+{{ option.price|intcomma }}원
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <div class="total-price-container">
+                                    <div class="pd-op-total-price mt-3">
+                                        <input type="hidden" id="total-price" name="total-price" value="{{ target_product.price - target_product.base_dc_amount }}">
+                                        합계: <span class="total-price">{{ (target_product.price - target_product.base_dc_amount)|intcomma }}</span> 원
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <button class="uk-button uk-button-default add-to-cart" type="submit">구매하기</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="form-group editor mt-30">
+                    <div class="detail-container" id="detail-container">
+                        <div class="content">
+                            {{ target_product.content|safe }}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    {% if current_user.is_authenticated and current_user == target_user %}
+        <div class="pd-updel-btn" uk-grid>
+            {% if (not target_product.cartproduct_product_set) and (not target_product.orderproduct_product_set) %}
+                <button class="uk-button uk-button-default custom-button-default" type="button" uk-toggle="target: #product_delete_modal">삭제</button>
+                <div id="product_delete_modal" class="uk-flex-top" uk-modal>
+                    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                        <button class="uk-modal-close-default" type="button" uk-close></button>
+                        정말로 상품을 삭제하시겠어요?
+                        <div class="uk-align-right">
+                            <div class="product-delete-btn uk-inline mt-40">
+                                <input type="hidden" id="user_id" name="user_id" value="{{ current_user.id }}">
+                                <button id="product-delete-btn" class="uk-button uk-button-primary uk-modal-close" type="button">삭제</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <a href="{{ url_for("products.product_update", _id=target_product.id, slug=target_product.slug) }}">
+                <button class="uk-button uk-button-default custom-button-default ml-10" type="button">수정</button>
+            </a>
+        </div>
+    {% endif %}
+
+    {% if current_user.is_authenticated %}
+        <section class="main-width padding10">
+            <div class="products-container product review">
+                <div class="main-width">
+                    {% include "ecomm/products/includes/product_review.html" %}
+                </div>
+            </div>
+
+            <div class="products-container product qna">
+                <div class="main-width">
+                    {% include "ecomm/products/includes/product_qanda.html" %}
+                </div>
+            </div>
+            <script src="{{ url_for('static', filename='statics/js/commons/toTopPagination.js') }}"></script>
+        </section>
+    {% endif %}
+
+    {% if current_user.is_authenticated %}
+        <!-- 필수: main_js -->
+        <script src="{{ url_for('static', filename='statics/suneditor/suneditor.min.js') }}"></script>
+
+        <!--비필수: codeMirror -->
+        <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/codemirror.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/htmlmixed.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/xml.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/suneditor/codeMirror/css.js') }}"></script>
+
+        <!-- 필수: 버튼에 필요-->
+        <script src="{{ url_for('static', filename='statics/suneditor/katex.min.js') }}"></script>
+        <!-- 필수: Language -->
+        <script src="{{ url_for('static', filename='statics/suneditor/ko.js') }}"></script>
+
+        <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+        {% if current_user == target_user %}
+            <script src="{{ url_for('static', filename='statics/js/ecomm/products/products.js') }}"></script>
+        {% endif %}
+        <script src="{{ url_for('static', filename='statics/js/ecomm/products/vote.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/js/ecomm/products/options.js') }}"></script>
+
+        <script src="{{ url_for('static', filename='statics/dropzone/dropzone.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/dropzone/dropzoneCommons.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/dropzone/dropzoneReviewQnaInit.js') }}"></script>
+
+    {% endif %}
+{% endblock %}

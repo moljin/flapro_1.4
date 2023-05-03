@@ -1,0 +1,44 @@
+<div style="padding: 30px;background: lightskyblue">
+    <div style="background: white; padding: 30px">
+        <div style="font-size: 30px; font-weight: 800">Beta-Version</div>
+            {% if add_if == "register" %}
+                <h3>회원가입 인증번호</h3>
+                <div style="font-size: 14px; font-weight: 600">
+                    <div>{{ email }}님! </div>
+                    <div style="margin-top: 5px"> 회원가입 화면에 아래 인증번호를 입력해 주세요.</div>
+                </div>
+            {% endif %}
+
+            {% if add_if == "forget_password" %}
+                <h3>비밀번호 재설정 인증번호</h3>
+                <div style="font-size: 14px; font-weight: 600">
+                    <div>{{ email }}님! </div>
+                    <div style="margin-top: 5px"> 비밀번호 재설정 화면에 아래 인증번호를 입력해 주세요.</div>
+                </div>
+            {% endif %}
+
+            {% if add_if == "email" %}
+                <h3>이메일 변경 인증번호</h3>
+                <div style="font-size: 14px; font-weight: 600">
+                    <div>{{ email }}님! </div>
+                    <div style="margin-top: 5px"> 이메일 변경하기 화면에 아래 인증번호를 입력해 주세요.</div>
+                </div>
+            {% endif %}
+
+            <hr style="background-color: #cccccc; height: 1px; opacity: 0.2; margin-top: 15px">
+
+            <div style="font-size: 14px; margin-top: 15px">
+                <span style="font-weight: 600">인증번호&nbsp;&nbsp;&nbsp;&nbsp;</span> <span style="color: #1B1464" id="copyTxt">{{ token }}</span>
+            </div>
+
+            <hr style="background-color: #cccccc; height: 1px; opacity: 0.2; margin-top: 15px">
+
+        <div style="display: flex; margin-top: 20px">
+            <div style="font-size: 13px">
+                <div>서울특별시 강남구 남강구로 256, 12층(구로동) (주)베타버전 코퍼레이션</div>
+                <div>사업자등록번호 : 481-89-02589</div>
+                <div>COPYRIGHT © Beta-Version corp. ALL RIGHTS RESERVED</div>
+            </div>
+        </div>
+    </div>
+</div>

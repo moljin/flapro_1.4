@@ -1,0 +1,73 @@
+{#{% extends "layout.html" %}#}
+{% extends "base.html" %}
+
+{% block title %}
+    로또
+{% endblock %}
+
+{% block head_css %}
+{#    <link href="{{ url_for('static', filename='statics/uikit/uikit.min.css') }}" rel="stylesheet">#}
+{#    <link href="{{ url_for('static', filename='statics/uikit/custom_uikit.css') }}" rel="stylesheet">#}
+{##}
+
+    <link href="{{ url_for('static', filename='statics/css/lotto.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        {#getRandom = "{{ url_for("lotto.lotto_return_random") }}"#}
+        CSRF_TOKEN = "{{ csrf_token() }}"
+    </script>
+    {#    <script src="{{ url_for('static', filename='statics/js/lotto/lotto_test.js') }}"></script>#}
+    <script src="{{ url_for('static', filename='statics/js/libs/jquery-3.6.0.min.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='statics/uikit/uikit.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/uikit/uikit-icons.min.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+    <section class="section-container">
+        <div class="main-width padding10">
+            <br>
+            <div>
+                <h4 class="mb-10">재미로 하는 로또 맞추기 <a href="{{ url_for("commons.index") }}">[INDEX] </a><a href="{{ url_for("commons.main") }}">[MAIN]</a></h4>
+                <p class="mt-20">탑10 로또는 {{ latest }}회까지 가장 빈도수가 높은 당첨번호 10개를 뽑아 그중에서 6개를 무작위로 추출하는 알고리즘으로 되어 있습니다.</p>
+                <p class="mt-10">랜덤 로또는 빈도수에 관계없이, 무작위로 6개를 뽑아내는 방법입니다.</p>
+            </div>
+        </div>
+    </section>
+    <hr class="ml-10 mr-10">
+    <div class="bg-100">
+        <div class="main-width lotto mb-20">
+            <div class="grid" uk-grid>
+                <div class="uk-align-center lotto-btn" uk-grid>
+                    <button class="uk-button uk-button-default mr-10" id="random-lotto" onclick="window.location.href='{{ url_for( 'lottos.random_lotto') }}';">랜덤 로또</button>
+                    <button class="uk-button uk-button-default" id="top10-lotto" onclick="window.location.href='{{ url_for( 'lottos.top10_lotto') }}';">탑10 로또</button>
+                </div>
+            </div>
+        </div>
+        <hr class="ml-10 mr-10">
+        <div class="main-width lotto mb-20">
+            <div class="newball_container uk-align-center">
+                <div class="grid lotto" uk-grid>
+
+                    {% for var in variable %}
+                        <div class="stage">
+                            <div class="ball ball{{ loop.index }}" tabIndex="-1">
+                                <div class="number">{{ var }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+            <br>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{#{% block footer %}#}
+{#    {% include 'includes/footer.html' %}#}
+{#{% endblock %}#}

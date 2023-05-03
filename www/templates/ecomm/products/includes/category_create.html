@@ -1,0 +1,81 @@
+<div class="uk-text-right">
+<a href="#category-register-modal" uk-toggle>상품카테고리 수정・등록</a> {% if target_categories %}/
+<a href="{{ url_for("products.product_create") }}?shop_id={{ target_shop.id }}&shop_title={{ target_shop.title }}&ss={{ target_shop.slug }}">상품 등록</a>{% endif %}
+</div>
+<form id="category-register-modal" class="uk-flex-top" uk-modal action="{{ url_for("products.product_category_new_save") }}" method="POST" enctype="multipart/form-data">
+    {{ pc_form.csrf_token }}
+    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        {% if target_categories %}
+            <legend class="uk-legend">상품카테고리 수정</legend>
+        {% else %}
+            <legend class="uk-legend">상품카테고리 등록</legend>
+        {% endif %}
+        <div class="category-add mt-10 mb-15 uk-text-right">
+            <a href="javascript:void(0);">
+                <button class="add-input-btn uk-button">카테고리 추가
+                    <i class="fas fa-folder-plus ml-7"></i>
+                </button>
+            </a>
+        </div>
+        <div class="mb-10 caution" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <div class="upper">** 등록후 수정과 삭제는 주의를 요함니다.</div>
+            <div class="lower pl-15">(특히, 삭제후에는 카테고리에 분류된 상품들 분류체계가 없어지기 때문에 다시 설정해야 합니다.)</div>
+        </div>
+        {% if target_categories %}
+            <div class="existing-category">
+                <div class="existing-alert"></div>
+                {% for category in target_categories %}
+                    {% if loop.index < target_categories|length %}
+                        <div class="loop-inner mb-10 pt-5 pb-5">
+                            <div class="content uk-width-expand pl-15">
+                                <div class="title">{{ category.title }}</div>
+                                <div class="available">노출 여부:
+                                    {% if category.available_display %}
+                                        <input disabled type="checkbox" class="uk-checkbox ml-10" name="available_display" checked>
+                                    {% else %}
+                                        <input disabled type="checkbox" class="uk-checkbox ml-10" name="available_display">
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="btn uk-width-auto">
+                                <input type="hidden" id="category_id_{{ category.id }}" name="category_id" value="{{ category.id }}">
+                                <button class="category-change-btn uk-button uk-button-default" type="button" uk-tooltip="title: 수정; pos: bottom"><i class="fas fa-cog"></i></button>
+                                <button class="category-save-btn uk-button uk-button-default" type="button" uk-tooltip="title: 저장; pos: bottom"><i class="fas fa-save"></i></button>
+                                <button class="category-delete-btn uk-button uk-button-default" type="button" uk-tooltip="title: 삭제; pos: bottom"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </div>
+                    {% elif loop.index == target_categories|length %}
+                        <div class="loop-inner pt-5 pb-5">
+                            <div class="content uk-width-expand pl-15">
+                                <div class="title">{{ category.title }}</div>
+                                <div class="available">노출 여부:
+                                    {% if category.available_display %}
+                                        <input disabled type="checkbox" class="uk-checkbox ml-10" name="available_display" checked>
+                                    {% else %}
+                                        <input disabled type="checkbox" class="uk-checkbox ml-10" name="available_display">
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="btn uk-width-auto">
+                                <input type="hidden" id="category_id_{{ category.id }}" name="category_id" value="{{ category.id }}">
+                                <button class="category-change-btn uk-button uk-button-default" type="button" uk-tooltip="title: 수정; pos: bottom"><i class="fas fa-cog"></i></button>
+                                <button class="category-save-btn uk-button uk-button-default" type="button" uk-tooltip="title: 저장; pos: bottom"><i class="fas fa-save"></i></button>
+                                <button class="category-delete-btn uk-button uk-button-default" type="button" uk-tooltip="title: 삭제; pos: bottom"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="category-container mt-15">
+        <!--category add form insert by js-->
+        </div>
+        <div class="btn mt-15 uk-text-right">
+            <input type="hidden" name="user_id" value="{{ target_user.id }}">
+            <input type="hidden" name="shop_id" value="{{ target_shop.id }}">
+            <button class="category-register-btn uk-button uk-button-primary">등록</button>
+        </div>
+    </div>
+</form>

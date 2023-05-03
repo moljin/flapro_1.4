@@ -1,0 +1,289 @@
+{% extends "includes/admin/layout/base.html" %}
+{% block title %}
+    멤버십
+{% endblock %}
+
+{% block head_css %}
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}";
+
+        existingNicknameCheckAjax = "{{ url_for("accounts.existing_nickname_check_ajax") }}"
+        existingCorpBrandCheckAjax = "{{ url_for("accounts.existing_corp_brand_check_ajax") }}"
+
+        profileDeleteAjax = "{{ url_for("accounts.profile_delete_ajax") }}"
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
+            <li><a href="{{ url_for('admin_accounts.profile_create') }}">프로필등록</a></li>
+            <li><a href="{{ url_for('admin_accounts.profile_list') }}">프로필리스트</a></li>
+            <li><span>프로필변경</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block above_main %}
+    <section class="adm-index-above-main">
+        <div class="flashes-container">
+            {% include 'includes/messages.html' %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body_section %}
+    <div class="sub-container">
+        <div class="form-container">
+            <div class="site-view mb-20">
+                {% if target_profile.level == "일반이용자" %}
+                    <a href="{{ url_for("accounts.account_detail", _id=target_profile.user.id) }}" target="_blank">
+                {% else %}
+                    <a href="{{ url_for("accounts.account_detail", _id=target_profile.user.id) }}" target="_blank">
+                {% endif %}
+                    <button class="uk-button">사이트 보기</button>
+                </a>
+            </div>
+{#                <form class="profiles" method="POST" action="{{ url_for("admin_accounts.profile_save") }}" enctype="multipart/form-data">#}
+            <form class="profiles" method="POST" action="{{ url_for("accounts.profile_save_ajax") }}" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <fieldset class="uk-fieldset">
+{#                        {% include "includes/messages.html" %}#}
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            회원:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="user_email" class="uk-select" disabled>
+                                {% for user in users %}
+                                    {% if user.id == target_profile.user_id %}
+                                        <option value="{{ user.email }}" selected>{{ user.email }}</option>
+                                    {% else %}
+                                        <option value="{{ user.email }}">{{ user.email }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="profile-update-alert"></div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            닉네임:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {{ form.nickname(class="uk-input mt-5", value=target_profile.nickname, id="nickname", required="required") }}
+                        </div>
+                        <div class="check-btn-div">
+                            <button type="button" class="check-btn" id="nickname-check-btn">중복 체크</button>
+                        </div>
+                        <input type="hidden" id="user_id" name="user_id" value="{{ target_user.id }}">
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            간단메시지:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <textarea class="uk-textarea mt-5" id="message" rows="2" maxlength="100" minlength="2" name="message" required="required" onkeydown="textAreaHeightAuto(this)" onkeyup="textAreaHeightAuto(this)">{{ target_profile.message }}</textarea>
+{#                                {{ form.message(class="uk-textarea mt-5", required="required") }}#}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            Level:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            <select name="level" class="uk-select level">
+                                {% for level in levels %}
+                                    {% if level==target_profile.level %}
+                                        <option value="{{ level }}" selected>{{ level }}</option>
+                                    {% else %}
+                                        <option value="{{ level }}">{{ level }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            커버 이미지:
+                        </div>
+                        {% if target_profile.cover_img_path %}
+                            <div class="cover-img pl-10 pt-5">
+                                <a href="#target-cover-image" uk-toggle>
+                                    <img class="img-preview" id="cover-img-preview" src="/{{ target_profile.cover_img_path }}">
+                                </a>
+                            </div>
+                            <div id="target-cover-image" class="uk-flex-top" uk-modal>
+                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                    <img src="/{{ target_profile.cover_img_path }}">
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="cover-img pl-10 pt-5">
+                                <img class="img-preview" id="cover-img-preview" src="{{ url_for('static', filename='statics/images/cover-img.jpg') }}">
+                            </div>
+                        {% endif %}
+
+                        <div class="uk-width-expand pl-10">
+                            {{ form.cover_image(class="image file uk-input mt-5", id="cover-image") }}
+                        </div>
+                    </div>
+
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            프로필이미지:
+                        </div>
+                        {% if target_profile.profile_img_path %}
+                            <div class="profile-img pl-10 pt-5">
+                                <a href="#target-profile-image" uk-toggle>
+                                    <img class="img-preview" id="profile-img-preview" src="/{{ target_profile.profile_img_path }}" style="margin: 0 auto;">
+                                </a>
+                            </div>
+                            <div id="target-profile-image" class="uk-flex-top" uk-modal>
+                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                    <img src="/{{ target_profile.profile_img_path }}">
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="profile-img pl-10 pt-5">
+                                <img class="img-preview" id="profile-img-preview" src="{{ url_for('static', filename='statics/images/user-none.png') }}" style="margin: 0 auto;">
+                            </div>
+                        {% endif %}
+
+                        <div class="uk-width-expand pl-10">
+                            {{ form.profile_image(class="image file uk-input mt-5", id="profile-image") }}
+                        </div>
+                    </div>
+
+                    <div class="vendor-update-alert"></div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            회사명:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {% if target_profile.corp_brand %}{{ form.corp_brand(class="uk-input mt-5", value=target_profile.corp_brand) }}{% else %}{{ form.corp_brand(class="uk-input mt-5", value="") }}{% endif %}
+                        </div>
+                        <div class="check-btn-div">
+                            <button type="button" class="check-btn" id="corp-brand-check-btn">중복 체크</button>
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            사업자&nbsp;이메일:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {% if target_profile.corp_email %}{{ form.corp_email(class="uk-input mt-5", value=target_profile.corp_email) }}{% else %}{{ form.corp_email(class="uk-input mt-5", value="") }}{% endif %}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            통신판매업번호:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {% if target_profile.corp_online_marketing_number %}{{ form.corp_online_marketing_number(class="uk-input mt-5", value=target_profile.corp_online_marketing_number) }}{% else %}{{ form.corp_online_marketing_number(class="uk-input mt-5", value="") }}{% endif %}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            사업자등록번호:
+                        </div>
+                        <div class="uk-width-expand pl-10">
+                            {% if target_profile.corp_number %}{{ form.corp_number(class="uk-input mt-5", value=target_profile.corp_number) }}{% else %}{{ form.corp_number(class="uk-input mt-5", value="") }}{% endif %}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            사업자&nbsp;등록증:
+                        </div>
+                        {% if target_profile.corp_img_path %}
+                            <div class="corp-img pl-10 pt-5">
+                                <a href="#target-corp-image" uk-toggle>
+                                    <img class="img-preview" id="corp-img-preview" src="/{{ target_profile.corp_img_path }}">
+                                </a>
+                            </div>
+                            <div id="target-corp-image" class="uk-flex-top" uk-modal>
+                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                    <img src="/{{ target_profile.corp_img_path }}">
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="corp-img pl-10 pt-5">
+                                <img class="img-preview" id="corp-img-preview" src="{{ url_for('static', filename='statics/images/no-image.jpg') }}" style="margin: 0 auto;">
+                            </div>
+                        {% endif %}
+                        <div class="uk-width-expand pl-10 pb-7 mt-7">
+                            {{ form.corp_image(class="image file uk-input mt-5", id="corp-image") }}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            사업자주소:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {% if target_profile.corp_address %}{{ form.corp_address(class="uk-input mt-5", value=target_profile.corp_address) }}{% else %}{{ form.corp_address(class="uk-input mt-5", value="") }}{% endif %}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            대표전화번호:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {% if target_profile.main_phonenumber %}{{ form.main_phonenumber(class="uk-input mt-5", value=target_profile.main_phonenumber) }}{% else %}{{ form.main_phonenumber(class="uk-input mt-5", value="") }}{% endif %}
+                        </div>
+                    </div>
+                    <div class="uk-margin" uk-grid>
+                        <div>
+                            사업자휴대폰:
+                        </div>
+                        <div class="uk-width-expand pl-10 pb-7">
+                            {% if target_profile.main_cellphone %}{{ form.main_cellphone(class="uk-input mt-5", value=target_profile.main_cellphone) }}{% else %}{{ form.main_cellphone(class="uk-input mt-5", value="") }}{% endif %}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <input type="hidden" id="profile_id" name="profile_id" value="{{ target_profile.id }}">
+                    <input type="hidden" id="user_email" name="user_email" value="{{ target_user.email }}">
+                    <button class="uk-button uk-button-danger" uk-toggle="target: #profile-delete-modal" type="button">삭제</button>
+                    <button class="uk-button uk-button-primary uk-align-right" type="submit">저장</button>
+
+                    <div id="profile-delete-modal" class="uk-flex-top" uk-modal>
+                        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                            <button class="uk-modal-close-default" type="button" uk-close></button>
+                            정말로 "{{ target_profile.nickname }}"님의 프로필을 삭제하시겠어요?
+                            <div class="modal-submit-cancel-btn uk-align-right">
+                                <div class="profile-delete-btn uk-inline ml-15">
+                                    <button id="profile-delete-btn" class="uk-button uk-button-primary uk-modal-close" type="button">삭제</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <script>
+        <!--js 파일들보다 앞으로 배치해야 한다.-->
+        adminCoverImagePath = document.getElementById("cover-img-preview").getAttribute("src");
+        adminProfileImagePath = document.getElementById("profile-img-preview").getAttribute("src");
+        adminCorpImagePath = document.getElementById("corp-img-preview").getAttribute("src");
+    </script>
+    <script src="{{ url_for('static', filename='statics/js/accounts/profiles.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/js/accounts/vendor.js') }}"></script>
+
+{% endblock %}
+
+
+
+
+
+

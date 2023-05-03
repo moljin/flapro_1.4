@@ -1,0 +1,35 @@
+/*new dz custom*/
+.dz-related-container {display: none}
+.dz-relate-loop {border: solid 1px #e5e5e5; border-radius: 3px;}
+.dropzone {gap: 10px; padding: 10px!important; border: dashed 1px lightgray!important; border-radius: 2px; display: flex; justify-content: center; align-items: center; flex-wrap: wrap;}
+.dropzone .dz-preview {margin: 5px!important;}
+.dropzone .dz-message span.placeholder:empty:not(:focus)::before {content: attr(data-placeholder); color: #bababa;}
+
+.dz-alert {display: none}
+.edit-buttons {display: flex; }
+.edit-buttons.border {border: solid 1px #e5e5e5; border-top: none}
+.dz-btn, .dz-delete-modal-btn, .dz-edit-cancel-btn, #board-submit {padding: 0 10px; border: unset; background: transparent}
+.dz-btn.old {font-size: 18px}
+.dz-delete-modal-btn, .dz-edit-cancel-btn {display: none}
+.uk-lightbox-toolbar {background: unset} /*lightbox toolbar background*/
+
+.dz-remove-btn {border:unset; cursor: pointer!important; position: absolute; top: 0; right: 0; z-index: 25; border-radius: 0 20px 0 10px; background: blue; opacity: 0.7; color: white; padding: 0 5px}
+.dz-remove-btn i {cursor: pointer!important;}
+.dz-remove-btn:hover {background: #041b39; color: white}
+
+.dz-related-form .contentEditable {min-height: 150px; border: solid 1px #e5e5e5; border-radius: 2px;}
+.dz-related-form .contentEditable:empty:not(:focus)::before {content: attr(data-placeholder); color: #bababa;}
+#content-textarea {border-radius: 2px}
+
+.dz-old-image .old-img img{width: 100%; height: 100%; object-fit: cover;}
+.dz-old-image .old-img {position: relative}
+.dz-old-image .old-img .old-img-delete-btn {display: none; position: absolute; top: 0; right: 0; background: blue; opacity: 0.7; border-radius: 0 0 0 10px; padding: 0 5px}
+.dz-old-image .old-img .old-img-delete-btn:hover {background: #041b39;}
+.dz-related-form {position: relative}
+#board-submit {position: absolute; right: 0; font-size: 20px}
+.dz-related-container .alert-danger {width: 100%}
+.dz-related-container .alert-danger .btn {text-align: right}
+.dz-related-container .response-container .delete-confirm-btn {background: blue; opacity: 0.6; border-radius: 3px; padding: 0 10px}
+.dz-related-container .response-container .delete-confirm-btn:hover {background: #041b39;}
+
+

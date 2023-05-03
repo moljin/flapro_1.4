@@ -1,0 +1,434 @@
+{% extends "base.html" %}
+
+{% block title %}
+    카트
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/font-awesome-5.15.1/css/all.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/css/cart.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        optionSelectAjax = "{{ url_for("products.option_select_ajax") }}"
+
+        cartUpdatAjax = "{{ url_for("carts.cart_update_ajax") }}"
+        cartOptionDeleteAjax = "{{ url_for("carts.cart_option_delete_ajax") }}"
+        cartProductDeleteAjax = "{{ url_for("carts.cart_product_delete_ajax") }}"
+
+        addCouponAjax = "{{ url_for("coupons.add_coupon_ajax") }}"
+        cancelCouponAjax = "{{ url_for("coupons.cancel_coupon_ajax") }}"
+        applyPointAjax = "{{ url_for("points.apply_point_ajax") }}"
+        cancelPointAjax = "{{ url_for("points.cancel_point_ajax") }}"
+
+        CSRF_TOKEN = "{{ csrf_token() }}"
+
+        orderInt = "{{ url_for("orders.order_init") }}"
+        orderCreateAjax = "{{ url_for("orders.order_create_ajax") }}"
+        orderCheckoutAjax = "{{ url_for("orders.order_checkout_ajax") }}"
+        orderImpTransaction = "{{ url_for("orders.order_imp_transaction") }}"
+        orderCompleteDetailUrl = "{{ url_for("orders.order_complete_detail") }}"
+
+        orderCompleteMobile = "{{ url_for("orders.order_complete_mobile") }}"
+
+        billingKeyCheckoutAjax = "{{ url_for("orders.billing_key_checkout_ajax") }}"
+    </script>
+    <script src="{{ url_for('static', filename='statics/js/ecomm/orders/iamport.payment-1.1.8.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/js/ecomm/orders/checkout.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+    {% set cart = context["cart"] %}
+    {% set cart_id = context['cart_id'] %}
+    {% set cart_products = context['cart_products'] %}
+    {% set cart_productoptions = context['cart_productoptions'] %}
+    {% set items_total_count = context['items_total_count'] %}
+    {% set cart_total_price = context['cart_total_price'] %}
+
+    {% set coupons = context['coupons'] %}
+    {% set used_coupons = context['used_coupons'] %}
+    {% set add_coupon_form = context['add_coupon_form'] %}
+    {% set point_obj = context['point_obj'] %}
+    {% set point_log_obj = context['point_log_obj'] %}
+    {% set prep_point = context['prep_point'] %}
+    {% set used_point = context['used_point'] %}
+    {% set remained_point = context['remained_point'] %}
+    {% set new_remained_point = context['new_remained_point'] %}
+    {% set customer_uid = context['customer_uid'] %}
+{#    {% if current_cart and (current_cart != None) %}#}
+        <section class="section-main cart-section">
+            <article class="article-container pt-10">
+                <div class="board-container">
+                    <div class="pl-10 pr-10">
+                        <div class="main-width above-shop pt-10 pb-10">
+                            <div><input class="uk-checkbox" id="all-check" type="checkbox" name="all_checked"><span class="ml-10">전체선택</span></div>
+                            <div>
+                                <button class="uk-button uk-button-default" type="button" uk-toggle="target: #cart-delete-modal">선택 삭제</button>
+                            </div>
+                            <div id="cart-delete-modal" class="cart-delete-modal uk-flex-top" uk-modal>
+                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                    장바구니 상품을 삭제하시겠어요?
+                                    <div class="btn uk-align-right">
+                                        <div class="uk-inline ml-15">
+                                            <button id="checked-delete-btn" class="uk-button uk-button-primary uk-modal-close mt-30" type="button">삭제</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="cart-id" value="{{ cart.id }}">
+                    <div class="cart-product bg-100 padding10">
+                        {% if items_total_count > 0 %}
+                            {% for cart_product in cart_products %}
+                                <div class="cart-product-container main-width mb-20" data-cart-product-id="{{ cart_product.product_id }}">
+                                    <div class="shop-info pt-10 pr-10 pb-10">
+                                        <div class="profile mr-10">
+                                            {% for profile in cart_product.product.user.profile_user_set %}
+                                                <a class="profile-link" href="{{ url_for('accounts.account_detail', _id=cart_product.product.user.id) }}">
+                                                    <div class="mr-10"><img class="profile-img" src="/{{ profile.profile_img_path }}" alt="mdo"></div>
+                                                    <div>{{ profile.nickname }}</div>
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="shop">
+                                            <a class="shop-link" href="{{ url_for('products.shop_detail', _id=cart_product.shop.id, slug=cart_product.shop.slug) }}">
+                                                <div class="mr-10">/&nbsp; <img class="symbol-img" src="/{{ cart_product.shop.img_path }}" alt="mdo"></div>
+                                                <div>{{ cart_product.shop.title }}</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="sub-container">
+                                        <div class="cart-lt">
+                                            <div class="pd-check mr-10"><input class="uk-checkbox single" id="{{ cart_product.product_id }}" type="checkbox" name="is_checked"></div>
+                                            <div class="pd-thumbnail padding10">
+                                                <a class="uk-link-reset" href="{{ url_for("products.product_detail", _id=cart_product.product.id, slug=cart_product.product.slug) }}">
+                                                    <img class="thumbnail" src="/{{ cart_product.product.img_path_1 }}">
+                                                </a>
+                                            </div>
+                                            <div class="pd-content padding10">
+                                                <a class="uk-link-reset"
+                                                   href="{{ url_for("products.product_detail", _id=cart_product.product.id, slug=cart_product.product.slug) }}">
+                                                    {{ cart_product.title|truncate(40) }}</a>
+                                                <div class="price-div">
+                                                    <div class="price">
+                                                        <div class="line-through">{{ cart_product.price|intcomma }}원</div>
+                                                        <div class="applied-price">{{ cart_product.applied_price|intcomma }}원</div>
+                                                    </div>
+                                                </div>
+                                                <div class="fs-13">배송비&nbsp; {{ cart_product.product.delivery_pay|intcomma }}원</div>
+                                                <div class="fs-16">수량&nbsp; <span id="pd-sub-qty-{{ cart_product.product_id }}">{{ cart_product.product_subtotal_quantity }}</span>개</div>
+
+                                                <div id="order-change-modal-{{ cart_product.product_id }}" class="order-change-modal uk-flex-top" data-change-pd-id="{{ cart_product.product_id }}" uk-modal>
+                                                    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                        <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                        <div class="product p-container" data-product-id="{{ cart_product.product_id }}">
+                                                            <div class="sub-product">
+                                                                <div class="thumbnail"><img class="thumbnail" src="/{{ cart_product.product.img_path_1 }}"></div>
+                                                                <div>
+                                                                <div>
+                                                                    <div><h3>{{ cart_product.title }}</h3></div>
+                                                                </div>
+                                                                <div class="modal applied-price" uk-grid>
+                                                                    <div class="original-price">{{ cart_product.price|intcomma }} 원</div>
+                                                                    <div class="uk-width-expand expand-pl">{{ (cart_product.price - cart_product.base_dc_amount)|intcomma }} 원</div>
+                                                                </div>
+                                                                <div class="uk-grid-mt delivery" uk-grid>
+                                                                    <div class="delivery">배송비:</div>
+                                                                    <div class="uk-width-expand expand-pl">{{ cart_product.product.delivery_pay|intcomma }} 원</div>
+                                                                </div>
+                                                            </div>
+                                                            </div>
+
+
+                                                            <button class="uk-button uk-button-default pd-minus" id="pd-minus-{{ cart_product.product_id }}" data-applied-price="{{ cart_product.price - cart_product.base_dc_amount }}"><span uk-icon="minus"></span></button>
+                                                            <input readonly class="uk-input uk-form-width-xsmall pd" data-pd-id="{{ cart_product.product_id }}" id="pd-count-{{ cart_product.product_id }}" name="pd-count" type="text" value="{{ cart_product.product_subtotal_quantity }}">
+                                                            <input type="hidden" id="pd-id-{{ cart_product.product_id }}" name="pd-id" value="{{ cart_product.product_id }}">
+                                                            <input type="hidden" id="pd-price-{{ cart_product.product_id }}" value="{{ cart_product.price }}">
+                                                            <input type="hidden" id="pd-applied-price-{{ cart_product.product_id }}" name="pd-applied-price" value="{{ cart_product.price - cart_product.base_dc_amount }}">
+                                                            <input type="hidden" id="pd-total-price-{{ cart_product.product_id }}" name="pd-total-price" value="{{ cart_product.product_subtotal_price }}">
+                                                            <button class="uk-button uk-button-default pd-plus" id="pd-plus-{{ cart_product.product_id }}" data-applied-price="{{ cart_product.price - cart_product.base_dc_amount }}"><span uk-icon="plus"></span></button>
+                                                            <div class="uk-inline uk-align-right ml-0 mt-5 mb-0"><span
+                                                                    id="pd-total-price-span-{{ cart_product.product_id }}">{{ cart_product.product_subtotal_price|intcomma }}</span>원
+                                                            </div>
+                                                        </div>
+                                                        <hr class="mt-15 mb-7">
+
+                                                        {% if cart_product.product.productoption_product_set %}
+                                                            <div class="option select-container grid-align-items uk-grid-mt mt-10 mb-15" data-container-product-id="{{ cart_product.product_id }}" uk-grid>
+                                                                <div class="expand-mr">옵션:</div>
+                                                                <div class="uk-width-expand expand-pl">
+                                                                    <select name="option_id" data-product-id="{{ cart_product.product.id }}" class="uk-select" id="select-{{ cart_product.product.id }}">
+                                                                        <option class="none" value="none">&nbsp;&nbsp;--- &nbsp;선택&nbsp; ---</option>
+                                                                        {% for option in cart_product.product.productoption_product_set %}
+                                                                            <option value="{{ option.id }}">
+                                                                                {{ option.title }} /+ {{ option.price|intcomma }}원/개
+                                                                            </option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+
+                                                        <div class="op-select-insert-container" data-select-insert-pdid="{{ cart_product.product_id }}">
+                                                            {% for cart_option in cart_productoptions %}
+                                                                {% if cart_product.product_id == cart_option.product_id %}
+                                                                    <div class="old op-select-insert" data-option-id="{{ cart_option.option_id }}" data-insert-product-id="{{ cart_product.product_id }}" uk-alert>
+                                                                        <div class="op-title" data-id="op-{{ cart_option.option_id }}">{{ cart_option.title }} / {{ cart_option.price|intcomma }}원</div>
+{#                                                                        <button class="old op-cancel uk-alert-close uk-close" type="button" data-cancel-id="{{ cart_option.option_id }}">+</button>#}
+                                                                        <a class="old op-cancel uk-alert-close" data-cancel-id="{{ cart_option.option_id }}" uk-close></a>
+                                                                        <div>
+                                                                            <button class="uk-button uk-button-default op-minus" data-minus-id="op-minus-{{ cart_option.option_id }}"><span uk-icon="minus"></span></button>
+                                                                            <input readonly class="uk-input uk-form-width-xsmall op" id="op-count-{{ cart_option.option_id }}" name="op-count" type="text" value="{{ cart_option.op_quantity }}">
+                                                                            <input type="hidden" id="data-op-id-{{ cart_option.option_id }}" name="op-id" value="{{ cart_option.option_id }}">
+                                                                            <input type="hidden" id="op-price-{{ cart_option.option_id }}" value="{{ cart_option.price }}">
+                                                                            <input type="hidden" class="op-total-price" id="op-total-price-{{ cart_option.option_id }}" name="op-total-price" value="{{ cart_option.op_line_price }}">
+                                                                            <button class="uk-button uk-button-default op-plus" data-plus-id="op-plus-{{ cart_option.option_id }}"><span uk-icon="plus"></span></button>
+                                                                            <div class="uk-inline uk-align-right ml-0 mt-5 mb-0"><span id="op-total-price-span-{{ cart_option.option_id }}">{{ cart_option.op_line_price|intcomma }}</span> 원</div>
+                                                                        </div>
+                                                                    </div>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+
+                                                        <div class="total-price-container">
+                                                            <div class="pd-op-total-price mt-3">
+                                                                <input type="hidden" id="total-price-{{ cart_product.product_id }}" name="total-price" value="{{ cart_product.line_price }}">
+                                                                합계: <span class="total-price-{{ cart_product.product_id }}">{{ cart_product.line_price|intcomma }}</span> 원
+                                                            </div>
+                                                        </div>
+                                                        <button class="uk-button uk-button-default uk-align-right cart-update-ajax-btn uk-modal-close" type="button" data-ajax-btn-id="{{ cart_product.product_id }}">저장</button>
+                                                    </div>
+                                                </div>
+
+                                                <div id="order-delete-modal-{{ cart_product.product_id }}" class="order-delete-modal uk-flex-top" data-delete-pd-id="{{ cart_product.product_id }}" uk-modal>
+                                                    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                        <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                        장바구니의 상품을 삭제하시겠어요?
+                                                        <div class="btn uk-align-right">
+                                                            <div class="product-delete-btn uk-inline ml-15">
+                                                                <button id="product-delete-btn-{{ cart_product.product_id }}" class="uk-button uk-button-primary uk-modal-close" type="button">삭제</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="pd-price pr-10">
+                                                <div class="price-label">상품금액</div>
+                                                <div class="price-won"><span id="pd-subtotal-price-{{ cart_product.product_id }}">{{ cart_product.product_subtotal_price|intcomma }}</span>원</div>
+                                            </div>
+                                        </div>
+                                        <div class="cart-rt">
+                                            <div class="op-content padding10" id="op-content-{{ cart_product.product_id }}">
+                                                <div id="for-{{ cart_product.product_id }}">
+                                                    {% for cart_option in cart_productoptions %}
+                                                        {% if cart_product.product_id == cart_option.product_id %}
+                                                            <div class="cartop-item">{{ cart_option.title }}({{ cart_option.price|intcomma }}원) <span id="op-qty-{{ cart_option.option_id }}">{{ cart_option.op_quantity }}</span>개</div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            <div class="op-price mr-10">
+                                                <div class="price-label">옵션금액</div>
+                                                <div class="price-won"><span id="op-subtotal-price-{{ cart_product.product_id }}">{{ cart_product.op_subtotal_price|intcomma }}</span>원</div>
+                                            </div>
+                                            <div class="p-change">
+                                                <div class="po-price">
+                                                    <div class="pd-op-price">
+                                                        <div class="price-label">합계금액</div>
+                                                        <div><span id="pd-line-price-{{ cart_product.product_id }}">{{ cart_product.line_price|intcomma }}</span>원</div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="pd-change-btn">
+                                                    <button class="uk-button uk-button-default cartpd-del-btn mt-6 mr-7" type="button" uk-toggle="target: #order-delete-modal-{{ cart_product.product_id }}" data-del-btn-pd-id="{{ cart_product.product_id }}">삭제</button>
+                                                    <button class="uk-button uk-button-default cartpd-up-btn mt-6" type="button" uk-toggle="target: #order-change-modal-{{ cart_product.product_id }}" data-up-btn-pd-id="{{ cart_product.product_id }}">수정</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <div class="main-width mb-20 cont-pay" uk-grid>
+                                <div class="cart-pay" uk-grid>
+                                    <div class="order">총주문금액: <span id="cart_total_price">{{ cart_total_price|intcomma }}</span>원</div>
+                                    <div class="pay">결제금액(배송비, 할인포함): <span id="cart_pay_price">{{ (cart.get_total_price() + cart.get_total_delivery_pay())|intcomma }}</span>원</div>
+                                </div>
+                                <div class="decision" uk-grid>
+                                    <a href="{{ url_for("products.all_product_list") }}"><button class="uk-button uk-button-default cont">쇼핑 계속하기</button></a>
+                                    <button class="order-form-display-btn uk-button uk-button-default pay ml-20" onclick="orderFormDisplay()">주문정보 작성</button>
+{#                                    <button class="order-form-display-btn uk-button uk-button-default pay ml-20" id="order_form_display">주문정보 작성</button>#}
+                                </div>
+                            </div>
+                            <div class="main-width" id="order_form_div">
+                                <form class="order-form" method="POST">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <input class="uk-input form-group" type="text" id="user-name" name="name" required placeholder="수령인 이름">
+                                    <input class="uk-input form-group" type="email" id="user-email" name="email" required placeholder="이메일">
+                                    <input class="uk-input form-group" type="text" id="user-phone" name="phonenumber" required placeholder="휴대전화번호">
+                                    <div class="postcode form-group">
+                                        <input class="uk-input mr-10" type="text" id="postcode" name="postal_code" required placeholder="우편번호">
+                                        <input class="uk-button uk-button-default" type="button" onclick="execDaumPostcode_Btn()" value="주소 검색"><br>
+                                    </div>
+                                    <div id="juso-wrap">
+                                        <img src="https://t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" onclick="foldDaumPostcode()" alt="접기 버튼">
+                                    </div>
+                                    <input class="uk-input form-group" type="text" id="address" name="address" required placeholder="수령지 주소">
+                                    <input class="uk-input form-group" type="text" id="detailAddress" name="detail_address" required placeholder="상세주소">
+                                    <input class="uk-input form-group" type="text" id="extraAddress" name="extra_address" placeholder="주소참고항목">
+                                    <input class="uk-input form-group" type="text" id="order-memo" name="order_memo" placeholder="주문메모">
+                                    <script src="{{ url_for('static', filename='statics/js/ecomm/orders/addressSearch.js') }}"></script>
+                                    <script src="{{ url_for('static', filename='statics/js/ecomm/orders/postcode.v2.js') }}"></script>
+
+                                    <input type="hidden" name="pre_order_id" value="0">
+                                    <input type="hidden" id="ordercart_id" name="ordercart_id" value="{{ cart.id }}">
+                                    <input type="hidden" id="real-pay-price" name="amount" value="{{ (cart.get_total_price() + cart.get_total_delivery_pay()) }}">
+                                    {% if cart_products %}
+                                        {% for cart_product in cart_products %}
+                                            {% if loop.index == 1 %}
+                                                <input type="hidden" id="item-1-name" name="item-1-name" value="{{ cart_product.product.title }}등">
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    <div class="pay-btn">
+                                        <input class="uk-button uk-button-default" type="submit" value="결제하기">
+                                    </div>
+                                </form>
+                            </div>
+                        {% else %}
+                            <div class="main-width mb-20">
+                            카트에 담긴게 없습니다.
+                            </div>
+                            <div class="main-width mb-20 cont-pay uk-grid uk-grid-stack" uk-grid="">
+                                <div class="cart-pay uk-grid uk-first-column" uk-grid="">
+                                    <div class="order uk-first-column">총주문금액: <span id="cart_total_price">0</span>원</div>
+                                    <div class="pay">결제금액(배송비, 할인포함): <span id="cart_pay_price">0</span>원</div>
+                                </div>
+                                <div class="decision uk-grid uk-first-column uk-grid-stack" uk-grid="">
+                                    <a href="{{ url_for("products.all_product_list") }}" class="uk-first-column"><button class="uk-button uk-button-default cont">쇼핑 계속하기</button></a>
+
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pl-10 pr-10">
+                        <div class="mt-20">
+                            <div class="coupon-point-alert main-width"></div>
+                            <div class="usedpoint-container main-width">
+                                <div class="used-container">
+                                    <div class="cp-group uk-width-expand">
+                                        {% if remained_point and (remained_point != 0) %}
+                                            <div class="label">현재 총적립포인트</div>
+                                            <div>{{ remained_point|intcomma }}원</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="cp-group">
+                                        <div class="label">적립 예정포인트</div>
+                                        <div><span id="prep-point">{{ prep_point|intcomma }}</span>원</div>
+                                    </div>
+                                </div>
+                                <div class="used-container">
+                                    <div class="cp-group">
+                                        <div class="label">결제후 예정 총적립포인트</div>
+                                        <div><span id="new-remained-point">{{ new_remained_point|intcomma }}</span>원</div>
+                                    </div>
+                                    <div class="cp-group applied">
+                                        {% if point_log_obj and used_point > 0 %}
+                                            <div class="point-log">
+                                                <div class="label">할인 적용포인트</div>
+                                                <input type="hidden" name="cart_point_log_id" value="{{ cart.point_log_id }}">
+                                                <div class="cancel" uk-grid>
+                                                    <div><span id="applied-used-point">{{ used_point|intcomma }}</span>원</div>
+                                                    <div class="button"><button type="button" class="uk-button uk-button-default point-cancel-btn" uk-toggle="target: #usedpoint-cancel-modal-{{ cart.point_log_id }}" data-point-log-id="{{ cart.point_log_id }}">적용취소</button></div>
+                                                </div>
+                                            </div>
+                                            <div id="usedpoint-cancel-modal-{{ cart.point_log_id }}" class="usedpoint-cancel-modal uk-flex-top" uk-modal>
+                                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                    포인트 적용을 취소하시겠어요?
+                                                    <div class="btn uk-align-right">
+                                                        <div class="uk-inline">
+                                                            <button class="uk-button uk-button-default uk-modal-close" type="button">취소</button>
+                                                        </div>
+                                                        <div class="delete-btn uk-inline ml-15">
+                                                            <button id="point-cancel-btn-{{ cart.point_log_id }}" class="uk-button uk-button-default uk-modal-close" type="button">삭제</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="usedcoupon-container main-width">
+                                {% if used_coupons %}
+                                    <div class="label">
+                                        <span class="usedcoupon-span">적용한 쿠폰</span>
+                                    </div>
+                                    {% for used_coupon in used_coupons %}
+                                        <div class="each" id="each-{{ used_coupon.id }}">
+                                            <div class="code uk-width-expand">{{ used_coupon.code }}
+                                                <span class="period"> &nbsp;({{ used_coupon.coupon.use_from|daytime("minimal") }}~{{ used_coupon.coupon.use_to|daytime("minimal") }})</span>
+                                            </div>
+                                            <div class="amount-button">
+                                                <div class="amount">{{ used_coupon.amount|intcomma }}원</div>
+                                                <div class="button">
+                                                    <button class="uk-button uk-button-default coupon-cancel-btn" type="button" uk-toggle="target: #usedcoupon-cancel-modal-{{ used_coupon.id }}" data-used-coupon-id="{{ used_coupon.id }}">적용취소</button>
+                                                </div>
+                                            </div>
+
+                                            <div id="usedcoupon-cancel-modal-{{ used_coupon.id }}" class="usedcoupon-cancel-modal uk-flex-top" data-usedcoupon-id="{{ used_coupon.id }}" uk-modal>
+                                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                    <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                    쿠폰 적용을 취소하시겠어요?
+                                                    <div class="btn uk-align-right">
+                                                        <div class="uk-inline">
+                                                            <button class="uk-button uk-button-default uk-modal-close" type="button">취소</button>
+                                                        </div>
+                                                        <div class="uk-inline ml-15">
+                                                            <button id="coupon-cancel-btn-{{ used_coupon.id }}" class="uk-button uk-button-default uk-modal-close" type="button">삭제</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                            <div class="main-width total-info">
+                                <div class="first-second" uk-grid>
+                                    <div class="width-first">
+                                        {% if coupons %}
+                                            <div class="coupon-label mr-10">쿠폰:</div>
+                                            <div class="coupon-input">{{ add_coupon_form.code(class="uk-input", id="coupon-code") }}</div>
+                                            <div class="coupon-apply ml-10 mr-10"><button type="button" class="uk-button uk-button-default" id="coupon-apply">적용</button></div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="width-second">
+                                        {% if remained_point %}
+                                            <div class="point-label mr-10">포인트:</div>
+                                            <div class="point-input"><input class="uk-input" type="number" name="used-point" min="0" id="used-point" placeholder="할인포인트"/></div>
+                                            <div class="point-apply ml-10 mr-10"><button type="button" class="uk-button uk-button-default" id="point-apply">적용</button></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+    {#    <script src="{{ url_for('static', filename='statics/js/carts/promotions.js') }}"></script>#}
+{#        <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>#}
+        <script src="{{ url_for('static', filename='statics/js/ecomm/carts/cart.js') }}"></script>
+{#    {% endif %}#}
+{% endblock %}

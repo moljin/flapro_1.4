@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}
+    아이디 변경
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/css/accounts.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token() }}"
+    </script>
+{% endblock %}
+
+
+{% block body %}
+    <section class="accounts-container">
+        <div class="main-width padding10 mt-20 mb-20">
+            <div class="form-container email">
+                <div class="flashes-container">
+                    {% include 'includes/messages.html' %}
+                </div>
+                <div class="username-email-alert main-width"></div>
+                    <div><h3>아이디 변경하기</h3></div>
+                    이건 하지 말자....아이디는 변경 불가능을 정책으로...
+                    <hr class="bold">
+                    {{ form.username(class="uk-input mt-5", placeholder="아이디", required="required") }}
+                    <div class="btn username mt-20"><button class="uk-button uk-button-primary uk-width-1-1" type="button">수정 완료</button></div>
+
+                    <div class="mt-20">
+                        <a href="{{ url_for("accounts.username_email_update", _id=current_user.id, add_if="email") }}">이메일 변경하기</a>
+                    </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
