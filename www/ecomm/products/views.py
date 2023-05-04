@@ -1187,7 +1187,7 @@ def category_product_list():
                            target_category=target_category,
                            target_categories=target_categories,
                            target_user=target_user,
-                           products=product_objs,
+                           target_products=product_objs,
                            pagination=pagination)
 
 
