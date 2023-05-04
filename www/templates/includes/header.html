@@ -93,22 +93,23 @@
             <div class="navbar-container">
                 <ul class="uk-nav-default" uk-nav>
                     <li class="uk-parent">
-                        <a href="#">PARENT <span uk-nav-parent-icon></span></a>
+                        <a href="#">E-Shop <span uk-nav-parent-icon></span></a>
                         <ul class="nav-sub">
-                            <li><a class="a-item" href="#">Sub item</a></li>
-                            <li>
-                                <a class="a-item" href="#">Sub item</a>
-                                <ul>
-                                    <li><a class="a-item" href="#">Sub item</a></li>
-                                    <li><a class="a-item" href="#">Sub item</a></li>
-                                </ul>
-                            </li>
+                            <li><a class="a-item" href="{{ url_for('products.all_shop_list') }}">모든 SHOP</a></li>
+                            <li><a class="a-item" href="{{ url_for("products.all_product_list") }}">모든 상품</a></li>
                         </ul>
                     </li>
                     <li class="uk-parent">
                         <a href="#">게시글 <span uk-nav-parent-icon></span></a>
                         <ul class="nav-sub">
                             <li><a class="a-item" href="{{ url_for('articles.all_ac_list') }}">모든 카테고리</a></li>
+                            <li><a class="a-item" href="{{ url_for('articles.all_article_list') }}">모든 게시글</a></li>
+                        </ul>
+                    </li>
+                    <li class="uk-parent">
+                        <a href="#">PARENT <span uk-nav-parent-icon></span></a>
+                        <ul class="nav-sub">
+                            <li><a class="a-item" href="#">Sub item</a></li>
                             <li>
                                 <a class="a-item" href="#">Sub item</a>
                                 <ul>
